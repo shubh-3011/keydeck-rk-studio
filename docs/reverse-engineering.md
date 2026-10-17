@@ -684,7 +684,15 @@ candidates, based on message code
 addresses inside `.text`. The raw `(ID, notification code, target VA, map-row
 VA)` list is in [`rk-mfc-command-map-candidates.csv`](rk-mfc-command-map-candidates.csv).
 These candidates are not proven live message maps or attributed controls;
-exact button-to-operation routes therefore remain open.
+exact button-to-operation routes therefore remain open. One eight-entry run
+at `0x005B1630` is attributable to the MFC framework class
+`CMFCToolBarButtonCustomizeDialog`: its map descriptor at `0x005B1628`
+points to base-map function `0x00479866` and the entries, a getter at
+`0x005051BF` returns that descriptor, and the getter is in the RTTI-backed
+vtable whose complete-object locator names the class. Its IDs include
+`0x4079`–`0x407E`, `0x4091`, and `0x4092`. Those handlers are framework
+customization UI and do not identify an RK keyboard feature. The remaining
+candidate blocks still need equivalent class-owner evidence.
 
 A separate `CDev3632::AccessData` helper accepts up to 512 bytes and splits
 them into 20-byte packets with 14-byte payload chunks. It queues each frame,
