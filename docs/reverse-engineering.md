@@ -749,7 +749,7 @@ RTTI-backed app-owned map links are summarized here:
 | `CMacroDlg` | `0x005CD558` / `0x0107`; `0x005CD570` / `0x0117` | `WM_COMMAND` code `0x0300` (edit change) | `0x0042B3B0`; `0x0042B530` | The first handler validates a numeric value against a global upper bound and resets invalid input; the second clamps a numeric value to 1–1,048,575. See details below; labels are unresolved. |
 | `CScreenDlg` | `0x005DA4D0` / `0x0107` | `WM_COMMAND` code `0x0300` (edit change) | `0x0046C5B0` | Clamps the numeric value to 65,535 and stores it in dialog state at `this+0x114`; the visible control label is unresolved. |
 | `COemDrvApp` | `0xE146` | `WM_COMMAND`; notification not recovered | `0x0047EEDF` | Branch target returns zero through a shared epilogue; exact command purpose is unresolved. |
-| `COemDrvDlg` | `0x6400`, `0x6401` | `WM_COMMAND`; code `0` | `0x00446770`, `0x00446820` | One handler foregrounds or initializes/shows the dialog; the other closes named helper windows and may save profile data and signal an event. Full downstream effect is unresolved. |
+| `COemDrvDlg` | `0x6400`, `0x6401` | `WM_COMMAND`; code `0` | `0x00446770`, `0x00446820` | One handler foregrounds or initializes/shows the dialog; the other closes named helper windows, may persist profile data, and signals the `SendSysParam` worker's event. See the [UI event and worker path audit](rk-ui-event-worker-path-audit.md). |
 
 Handler-level inspection refined the macro and screen edit behavior. `CMacroDlg`
 handler `0x0042B3B0` reads the integer child at `this+0x2FA0`, accepts values
@@ -764,10 +764,11 @@ recoverable from the generic dialog resources. `CScreenDlg` handler
 For `COemDrvDlg`, handler `0x00446770` foregrounds the window when visible or
 initializes and shows it otherwise. Handler `0x00446820` closes windows named
 `OemDrvMacroTopWindow` and `OemDrvMsgTopWindow`; with a profile-state flag set,
-it writes active `CDev` blocks to `pro.dct` files and the active ID to
-`curid.dct`, then scans profile/PID records and may signal an event. The file
-writes are visible statically, but the signaled event's consumer and any
-downstream device effect remain unresolved.
+it writes active `CDev` object ranges to `pro.dct` files and writes four bytes
+to `curid.dct`, then scans profile/PID records and may signal a device object's
+event. The event's worker and family-specific timeout operations are traced in
+the [UI event and worker path audit](rk-ui-event-worker-path-audit.md). The
+on-disk object schema and those four bytes' meaning remain unresolved.
 
 The other 26 blocks belong to MFC framework classes including dialogs,
 MDI frames, toolbar customization/property pages, preview/task panes, and

@@ -69,6 +69,7 @@ The extractor writes model names, visual layouts, capability metadata, raw profi
 - [Resource and localization audit](docs/rk-resource-localization-audit.md)
 - [Installer and uninstaller script audit](docs/rk-installer-uninstaller-script-audit.md)
 - [System API and static call crosswalk](docs/rk-system-api-crosswalk.md)
+- [UI event and device worker path audit](docs/rk-ui-event-worker-path-audit.md)
 - [Installed RK package file manifest](docs/rk-installed-package-manifest.csv)
 - [RK profile option field inventory](docs/rk-profile-option-field-inventory.csv)
 - [Static profile-to-driver-family map](docs/rk-profile-driver-family-map.csv)
