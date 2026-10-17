@@ -16,6 +16,7 @@ python -m PyInstaller --noconfirm --clean --onefile --windowed --name Keydeck-RK
     --add-data "styles.css;." `
     --add-data "app.js;." `
     --add-data "models.json;." `
+    --add-data "rk-drive-catalog.json;." `
     --hidden-import webview.platforms.edgechromium `
     --hidden-import clr `
     --exclude-module webview.platforms.android `

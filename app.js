@@ -133,10 +133,12 @@ const KEY_ROWS = [
 
 let modelCatalog = [];
 let modelLayouts = {};
+let driveCatalog = null;
 let identifiedDevice = null;
 let authorizedDevices = [];
 let identityMatch = null;
 let activePage = "device";
+let selectedDriveModel = "";
 let currentLayer = "base";
 let selectedKey = "K34";
 let selectedMacroId = "";
@@ -306,6 +308,32 @@ function layoutForModel(model = selectedModel()) {
   return model ? modelLayouts[model.layoutId] || null : null;
 }
 
+function driveDescriptors(device) {
+  const entries = driveCatalog?.models || [];
+  if (!device) return [];
+  const matchingIds = entries.filter(
+    (entry) => Number(entry.vendor_id) === Number(device.vendorId) &&
+      Number(entry.product_id) === Number(device.productId),
+  );
+  if (!matchingIds.length) return [];
+  const collectionPairs = new Set(
+    (device.collections || []).map(
+      (collection) => `${Number(collection.usagePage)}:${Number(collection.usage)}`,
+    ),
+  );
+  const matchingCollections = matchingIds.filter((entry) =>
+    collectionPairs.has(`${Number(entry.usage_page)}:${Number(entry.usage)}`),
+  );
+  return matchingCollections.length ? matchingCollections : matchingIds;
+}
+
+function supportedVendorIds() {
+  return [...new Set([
+    0x258a,
+    ...(driveCatalog?.models || []).map((entry) => Number(entry.vendor_id)),
+  ].filter((value) => Number.isInteger(value) && value > 0))];
+}
+
 function layerEntries(model = selectedModel()) {
   const labels = model?.features?.layers;
   return LAYERS.slice(0, Math.max(1, Math.min(labels?.length || 1, LAYERS.length))).map(
@@ -324,9 +352,10 @@ function modelSizeLabel(model) {
 }
 
 function deviceModelMatch(device) {
-  if (!device || Number(device.vendorId) !== 0x258a)
+  if (!device || !supportedVendorIds().includes(Number(device.vendorId)))
     return { kind: "unsupported", model: null, candidates: [] };
   const pid = hex4(device.productId);
+  const vid = hex4(device.vendorId);
   const name = String(device.productName || "")
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, " ")
@@ -341,10 +370,10 @@ function deviceModelMatch(device) {
     return { kind: "product-name-family", model: null, candidates: nameMatches };
 
   const direct = modelByCode(pid);
-  if (direct?.isDirectPid)
+  const directVendor = String(direct?.features?.wirelessVendorId || "").toUpperCase();
+  if (direct?.isDirectPid && (!directVendor || directVendor === vid))
     return { kind: "product-id", model: direct, candidates: [direct] };
 
-  const vid = hex4(device.vendorId);
   const candidates = modelCatalog.filter((model) => {
     const wirelessPid = model.features?.wirelessProductId;
     const wirelessVid = model.features?.wirelessVendorId;
@@ -426,6 +455,97 @@ function renderModelSelect() {
     : "Select a model layout";
   const matchingOptionCount = select.options.length;
   $("#modelFilterCount").textContent = `${matchingOptionCount} of ${modelCatalog.length} models`;
+}
+
+function renderDriveCatalog() {
+  const entries = driveCatalog?.models || [];
+  const filter = String($("#driveModelFilter")?.value || "").trim().toLowerCase();
+  const grouped = new Map();
+  entries.forEach((entry) => {
+    if (!grouped.has(entry.name)) grouped.set(entry.name, []);
+    grouped.get(entry.name).push(entry);
+  });
+  const matchingNames = [...grouped.keys()]
+    .filter((name) => !filter || name.toLowerCase().includes(filter))
+    .sort((a, b) => a.localeCompare(b));
+  const select = $("#driveModelSelect");
+  select.replaceChildren();
+  matchingNames.forEach((name) => {
+    const option = document.createElement("option");
+    option.value = name;
+    option.textContent = `${name} · ${grouped.get(name).length} connection ${grouped.get(name).length === 1 ? "entry" : "entries"}`;
+    select.append(option);
+  });
+  if (!matchingNames.includes(selectedDriveModel)) {
+    selectedDriveModel = matchingNames.includes("RK-S98") ? "RK-S98" : matchingNames[0] || "";
+  }
+  select.value = selectedDriveModel;
+  $("#driveModelCount").textContent = entries.length
+    ? `${entries.length} connection descriptors · ${grouped.size} labels · ${driveCatalog.imageReferenceCount || 0} RK-hosted images · snapshot ${String(driveCatalog.retrievedAtUtc || "date unknown").slice(0, 10)}`
+    : "Official model metadata is unavailable in this build.";
+
+  const selectedEntries = grouped.get(selectedDriveModel) || [];
+  const name = $("#driveModelName");
+  const summary = $("#driveModelSummary");
+  const photo = $("#driveModelPhoto");
+  const photoNote = $("#driveModelPhotoNote");
+  const connectionList = $("#driveConnectionList");
+  const sourceLink = $("#driveModelSource");
+  connectionList.replaceChildren();
+  if (!selectedEntries.length) {
+    name.textContent = "No model selected";
+    summary.textContent = "Search the public RK Drive registry to browse its listed keyboard variants.";
+    photo.removeAttribute("src");
+    photo.alt = "";
+    photoNote.textContent = "Model images load from RK Drive only while this catalog page is open.";
+    sourceLink.href = "https://drive.rkgaming.com/";
+    return;
+  }
+
+  const representative = selectedEntries[0];
+  name.textContent = representative.name;
+  summary.textContent = `${selectedEntries.length} connection descriptor${selectedEntries.length === 1 ? "" : "s"} in the official Web Driver registry.`;
+  let imageUrl;
+  try {
+    imageUrl = new URL(representative.image_url);
+  } catch (error) {
+    imageUrl = null;
+  }
+  if (imageUrl?.origin === "https://drive.rkgaming.com") {
+    sourceLink.href = imageUrl.href;
+    sourceLink.textContent = "Open RK-hosted image";
+    if (activePage === "drive-catalog") {
+      photo.src = imageUrl.href;
+      photo.alt = `${representative.name} image hosted by RK Drive`;
+      photo.onerror = () => {
+        photo.removeAttribute("src");
+        photoNote.textContent = "RK Drive did not return this image. The local catalog entry is still available.";
+      };
+      photoNote.textContent = "Image is fetched directly from RK Drive while this page is open; it is not bundled with Keydeck.";
+    } else {
+      photo.removeAttribute("src");
+      photo.alt = "";
+      photoNote.textContent = "Open the catalog page to load the image from RK Drive.";
+    }
+  } else {
+    photo.removeAttribute("src");
+    photo.alt = "";
+    photoNote.textContent = "Image reference is not on the expected RK Drive host.";
+    sourceLink.href = "https://drive.rkgaming.com/";
+  }
+
+  selectedEntries.forEach((entry) => {
+    const item = document.createElement("div");
+    item.className = "drive-connection-entry";
+    const connection = document.createElement("span");
+    connection.textContent = entry.connection;
+    const id = document.createElement("strong");
+    id.textContent = `${entry.vendor_id_hex}:${entry.product_id_hex}`;
+    const detail = document.createElement("small");
+    detail.textContent = `HID usage ${entry.usage_page_hex}:${entry.usage_hex} · ${entry.protocol_type} protocol`;
+    item.append(connection, id, detail);
+    connectionList.append(item);
+  });
 }
 
 function renderKeyboard(host) {
@@ -927,6 +1047,15 @@ function setDeviceStatus(device) {
     : connected
       ? "Model unresolved · choose a profile below"
       : "No keyboard selected";
+  const driveMatches = driveDescriptors(device);
+  const driveLabels = [...new Set(driveMatches.map((entry) => entry.name))];
+  $("#webCatalogDeviceMatch").textContent = !connected
+    ? "No device selected"
+    : driveLabels.length === 1
+      ? `Candidate: ${driveLabels[0]} · descriptor match`
+      : driveLabels.length > 1
+        ? `${driveLabels.length} candidate labels · see catalog`
+        : "No exact ID row in this Web Driver snapshot";
   renderAuthorizedDevices();
   $("#screenTransport").textContent = connected
     ? "Descriptor only · no report opened"
@@ -965,7 +1094,7 @@ async function identifyDevice() {
   }
   try {
     const devices = await navigator.hid.requestDevice({
-      filters: [{ vendorId: 0x258a }],
+      filters: supportedVendorIds().map((vendorId) => ({ vendorId })),
     });
     if (!devices.length) return;
     authorizedDevices = [
@@ -1010,7 +1139,7 @@ async function scanAuthorizedDevices() {
   if (!navigator.hid?.getDevices) return;
   try {
     authorizedDevices = (await navigator.hid.getDevices()).filter(
-      (device) => device.vendorId === 0x258a,
+      (device) => supportedVendorIds().includes(Number(device.vendorId)),
     );
     if (authorizedDevices.length) setDeviceStatus(authorizedDevices[0]);
     else setDeviceStatus(null);
@@ -1027,6 +1156,7 @@ function renderAll() {
     currentLayer = "base";
   renderProfileSelect();
   renderModelSelect();
+  renderDriveCatalog();
   renderModelFeatures();
   renderKeyboard($("#deviceKeyboard"));
   renderKeyboard($("#keymapKeyboard"));
@@ -1082,6 +1212,7 @@ function setPage(page) {
     page = "device";
   }
   activePage = page;
+  renderDriveCatalog();
   $$(".page").forEach((section) =>
     section.classList.toggle("active", section.id === "page-" + page),
   );
@@ -1097,6 +1228,7 @@ function setPage(page) {
     macros: "Macros",
     profiles: "Profiles",
     diagnostics: "Device info",
+    "drive-catalog": "RK model catalog",
   };
   $("#crumbTitle").textContent = titles[page] || "Device";
 }
@@ -1211,6 +1343,11 @@ function wireEvents() {
     renderAll();
   });
   $("#modelFilter").addEventListener("input", renderModelSelect);
+  $("#driveModelFilter").addEventListener("input", renderDriveCatalog);
+  $("#driveModelSelect").addEventListener("change", (event) => {
+    selectedDriveModel = event.target.value;
+    renderDriveCatalog();
+  });
   $("#deviceSelect").addEventListener("change", (event) => {
     const device = authorizedDevices[Number(event.target.value)];
     if (device) {
@@ -1408,7 +1545,7 @@ function wireEvents() {
   if (navigator.hid)
     {
       navigator.hid.addEventListener("connect", (event) => {
-        if (event.device.vendorId !== 0x258a) return;
+        if (!supportedVendorIds().includes(Number(event.device.vendorId))) return;
         if (!authorizedDevices.some((device) => deviceKey(device) === deviceKey(event.device)))
           authorizedDevices.push(event.device);
         setDeviceStatus(event.device);
@@ -1440,6 +1577,14 @@ async function loadModelCatalog() {
   } catch (error) {
     modelCatalog = [];
     modelLayouts = {};
+  }
+  try {
+    const response = await fetch("rk-drive-catalog.json", { cache: "no-store" });
+    if (!response.ok) throw new Error("RK Drive metadata unavailable");
+    driveCatalog = await response.json();
+    if (!Array.isArray(driveCatalog.models)) driveCatalog = null;
+  } catch (error) {
+    driveCatalog = null;
   }
   migrateLegacyMappings();
   renderAll();

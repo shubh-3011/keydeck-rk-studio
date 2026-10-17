@@ -9,11 +9,12 @@ This is the user-facing project: [web app and Windows desktop profile editor](ht
 - Inspect previously authorized RK keyboards on startup and track connect/disconnect events in Chrome or Edge.
 - Match exact USB product IDs and names against the local RK catalog; show ambiguous receiver IDs as unresolved instead of guessing.
 - Search 188 named model profiles and display model-specific key layouts, region, RGB mode slots, function layers, and optional screen dimensions.
+- Browse the public RK Drive registry snapshot: 96 displayed keyboard labels, 177 wired/2.4 GHz descriptors, USB IDs, protocol-family labels, and direct links to RK-hosted product photos.
 - Edit local keymap, lighting, screen, macro, and connection preference profiles, then import or export them as JSON.
 - Keep S98 dial and tri-mode preferences in its profile.
 - Run as a hosted web app or as a Windows desktop app with its own persistent WebView2 window.
 
-Keydeck does not open the HID device or send, receive, or replay HID reports. Profile editing is local only. Macro playback, screen transfers, physical connection switching, firmware updates, and hardware writes are not implemented. The **Write changes** control stays disabled.
+Keydeck uses the official registry's vendor IDs to offer descriptor-only device identification and to show possible model candidates. It does not open the HID device or send, receive, or replay HID reports. Profile editing is local only. Advanced DKS/SOCD/snap/toggle/mod-tap editing, macro playback, screen transfers, physical connection switching, firmware updates, and hardware writes are not implemented. The **Write changes** control stays disabled. Catalog images are requested directly from RK only while the catalog page is open; they are not bundled with Keydeck.
 
 ## Try the web version
 
@@ -46,11 +47,13 @@ Desktop profiles and preferences stay on this PC in `%LOCALAPPDATA%\Keydeck-RK-S
 
 ## Device identity and scope
 
-Keydeck asks the browser to enumerate devices the user has already authorized. If none are authorized, **Identify keyboard** opens the browser's device chooser for vendor ID `0x258A`. Product name, vendor ID, product ID, and collection count come from the HID descriptor; no HID report is opened.
+The **RK model catalog** page uses a local metadata snapshot extracted from the public RK Drive JavaScript bundle. It lists connection-specific USB identities and links to images hosted by RK. The metadata is packaged with the desktop build; image requests go to RK only when the catalog page is open. The full extraction method and source hashes are documented in the [research archive](https://github.com/shubh-3011/rk-keyboard-software-research/blob/main/docs/rk-drive-web-app-audit.md).
+
+Keydeck asks the browser to enumerate devices the user has already authorized. If none are authorized, **Identify keyboard** opens the browser's device chooser for vendor IDs present in the bundled RK Drive registry snapshot. Product name, vendor ID, product ID, and collection count come from the HID descriptor; no HID report is opened.
 
 Some keyboards expose generic or shared USB IDs. For example, the installed RK catalog lists `0x0150` as an A70 wireless receiver ID, while public S98 inventories also report `0x258A:0x0150`. Keydeck treats that identity as ambiguous and lets the user choose a model profile for the layout. See [the reverse-engineering audit](docs/reverse-engineering.md) for the evidence and limitations.
 
-The model catalog describes the variants and controls represented in one installed RK utility version. It retains profile options, base key tuples, Fn mappings, lighting-mode values and available localized profile LED labels, and wireless VID/PID pairs as audit data. Unknown fields remain uninterpreted, and none of this data is sent to a keyboard. See [the expanded reverse-engineering audit](docs/reverse-engineering.md) for the software feature inventory and the remaining protocol questions.
+The model catalog describes variants and controls represented in one installed RK utility version. The separate RK Drive catalog records the public web app's own model and connection descriptors; shared receiver IDs stay ambiguous. Neither catalog proves all revisions of a marketed family are compatible. Both catalogs are local metadata, and none of it is sent to a keyboard. See [the expanded reverse-engineering audit](docs/reverse-engineering.md) for evidence and protocol questions.
 
 To regenerate the metadata catalog from a local RK Keyboard Software install:
 

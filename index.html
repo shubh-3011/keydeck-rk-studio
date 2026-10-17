@@ -51,6 +51,9 @@
           <button class="nav-item" data-page="diagnostics">
             <span class="nav-glyph">08</span>Device info
           </button>
+          <button class="nav-item" data-page="drive-catalog">
+            <span class="nav-glyph">09</span>RK model catalog
+          </button>
         </nav>
 
         <div class="sidebar-spacer"></div>
@@ -167,6 +170,9 @@
                   </div>
                   <div class="device-id-row model-match-row">
                     <span>MODEL</span><strong id="deviceModelState">No keyboard selected</strong>
+                  </div>
+                  <div class="device-id-row model-match-row">
+                    <span>RK DRIVE CATALOG</span><strong id="webCatalogDeviceMatch">No device selected</strong>
                   </div>
                   <label class="device-select-wrap" id="deviceSelectWrap" hidden>
                     <span>AUTHORIZED KEYBOARDS</span>
@@ -619,6 +625,53 @@
                 </p>
               </section>
             </div>
+          </section>
+
+          <section class="page" id="page-drive-catalog">
+            <div class="page-title-row">
+              <div>
+                <p class="eyebrow">OFFICIAL WEB DRIVER REGISTRY</p>
+                <h1>RK model catalog</h1>
+                <p class="page-subtitle">
+                  Browse the public RK Drive model and connection entries. This
+                  local index does not communicate with a keyboard.
+                </p>
+              </div>
+              <a class="button button-light" href="https://drive.rkgaming.com/" target="_blank" rel="noopener noreferrer">
+                Open RK Drive
+              </a>
+            </div>
+            <section class="panel drive-catalog-panel">
+              <div class="drive-catalog-toolbar">
+                <div>
+                  <label class="field-label" for="driveModelFilter">SEARCH MODELS</label>
+                  <input class="field-input" id="driveModelFilter" type="search" placeholder="Search model or region" autocomplete="off" />
+                  <small class="field-help" id="driveModelCount">Loading official registry</small>
+                </div>
+                <div>
+                  <label class="field-label" for="driveModelSelect">MODEL VARIANT</label>
+                  <select class="field-input" id="driveModelSelect" aria-label="Choose an RK Drive model"></select>
+                </div>
+              </div>
+              <div class="drive-model-card" id="driveModelCard" aria-live="polite">
+                <div class="drive-model-photo-wrap">
+                  <img id="driveModelPhoto" alt="" loading="lazy" referrerpolicy="no-referrer" />
+                  <p id="driveModelPhotoNote" class="micro-note">Product image is hosted by RK Drive.</p>
+                </div>
+                <div class="drive-model-details">
+                  <p class="section-kicker">REGISTRY ENTRY</p>
+                  <h2 id="driveModelName">Choose a model</h2>
+                  <p class="muted" id="driveModelSummary">Official Web Driver model metadata.</p>
+                  <div class="drive-connection-list" id="driveConnectionList"></div>
+                  <p class="callout subtle-callout">
+                    Shared receiver IDs can match many models. These entries
+                    document the site's registry; they do not confirm hardware
+                    compatibility or enable configuration writes.
+                  </p>
+                  <a id="driveModelSource" class="text-button" href="https://drive.rkgaming.com/" target="_blank" rel="noopener noreferrer">View official RK Drive</a>
+                </div>
+              </div>
+            </section>
           </section>
 
           <section class="page" id="page-macros">
