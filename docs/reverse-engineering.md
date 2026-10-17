@@ -675,36 +675,40 @@ forms/classes including `COemDrvDlg`, `CKeyDlg`, `CKeyFunPickDlg`, `CLedDlg`,
 `CTipsDlg`, and `CWelcomDlg`. MFC `WM_COMMAND` message-map records are
 present—for example IDs `0x420E`–`0x4216` point to handlers at
 `0x0049A660`, `0x0049CF85`, `0x00494C21`, `0x0049A475`, `0x00494C6C`,
-`0x0049A5F9`, `0x0049A51A`, `0x00494D2E`, and `0x00497F8F`—but the available
-static evidence does not reliably associate every map with a class, visible
-control, or named feature. A heuristic scan found 112 candidate
-`WM_COMMAND`-shaped rows in 21 multi-entry runs and additional singleton
-candidates, based on message code
+`0x0049A5F9`, `0x0049A51A`, `0x00494D2E`, and `0x00497F8F`. The generic dialog resources do not
+identify every visible control or label. A heuristic scan found 112 candidate
+`WM_COMMAND`-shaped rows in 30 blocks (21 multi-entry runs and nine
+singletons), based on message code
 `0x111`, signature `0x39`, equal ID/range fields, a 24-byte stride, and handler
 addresses inside `.text`. The raw `(ID, notification code, target VA, map-row
-VA)` list is in [`rk-mfc-command-map-candidates.csv`](rk-mfc-command-map-candidates.csv).
-These candidates are not proven live message maps or attributed controls;
-exact button-to-operation routes therefore remain open. One eight-entry run
+VA)` list is in [`rk-mfc-command-map-candidates.csv`](rk-mfc-command-map-candidates.csv). All
+30 blocks were validated against `WM_COMMAND` entry fields and linked to an
+MFC owner through the `AFX_MSGMAP` descriptor, getter, vtable, and RTTI complete
+object locator; the address chains and inheritance caveats are in
+[`rk-mfc-map-owner-evidence.csv`](rk-mfc-map-owner-evidence.csv). Two blocks
+have inherited/shared-getter ambiguity. Class ownership does not reveal every
+visible control or establish its effect. One eight-entry run
 at `0x005B1630` is attributable to the MFC framework class
 `CMFCToolBarButtonCustomizeDialog`: its map descriptor at `0x005B1628`
 points to base-map function `0x00479866` and the entries, a getter at
 `0x005051BF` returns that descriptor, and the getter is in the RTTI-backed
 vtable whose complete-object locator names the class. Its IDs include
 `0x4079`–`0x407E`, `0x4091`, and `0x4092`. Those handlers are framework
-customization UI and do not identify an RK keyboard feature. The remaining
-candidate blocks still need equivalent class-owner evidence. Additional
-RTTI-backed map links are summarized here:
+customization UI and do not identify an RK keyboard feature. Additional
+RTTI-backed app-owned map links are summarized here:
 
 | Owner class | Map entry / command ID | Notification | Handler | Static interpretation and limit |
 | --- | --- | --- | --- | --- |
 | `CMacroDlg` | `0x005CD558` / `0x0107`; `0x005CD570` / `0x0117` | `WM_COMMAND` code `0x0300` (edit change) | `0x0042B3B0`; `0x0042B530` | A nearby string, `Loop Count = 1 ~ %d`, suggests loop-count validation for at least one edit field; the exact field-to-handler mapping is unresolved. |
 | `CScreenDlg` | `0x005DA4D0` / `0x0107` | `WM_COMMAND` code `0x0300` (edit change) | `0x0046C5B0` | This is a separate screen-dialog map entry sharing numeric ID `0x0107`; the visible control label and full effect are unresolved. |
 | `COemDrvApp` | `0xE146` | `WM_COMMAND`; notification not recovered | `0x0047EEDF` | App-owned command route; exact action is unresolved. |
-| `COemDrvDlg` | `0x6400`, `0x6401` | `WM_COMMAND`; notification not recovered | `0x00446770`, `0x00446820` | Dialog-owned routes; exact visible controls and effects are unresolved. |
+| `COemDrvDlg` | `0x6400`, `0x6401` | `WM_COMMAND`; code `0` | `0x00446770`, `0x00446820` | Handler `0x00446820` closes named helper windows, then consults profile/device and event/timer state; visible control label and exact purpose are unresolved. |
 
-Other identified MFC owners include framework toolbar/customization,
-keyboard-property-page, and color-dialog classes. Their presence in the
-candidate inventory does not establish an RK hardware feature.
+The other 26 blocks belong to MFC framework classes including dialogs,
+MDI frames, toolbar customization/property pages, preview/task panes, and
+color UI. Their presence in the candidate inventory does not establish an RK
+hardware feature. The evidence CSV distinguishes those framework maps from
+the four app-owned dialog/application maps.
 
 A separate `CDev3632::AccessData` helper accepts up to 512 bytes and splits
 them into 20-byte packets with 14-byte payload chunks. It queues each frame,

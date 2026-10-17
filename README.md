@@ -71,6 +71,7 @@ The extractor writes model names, visual layouts, capability metadata, raw profi
 - [Static native API callsite cross-references](docs/rk-native-api-xrefs.csv)
 - [Dynamic API lookup candidates](docs/rk-dynamic-api-targets.csv)
 - [MFC command-map handler candidates](docs/rk-mfc-command-map-candidates.csv)
+- [MFC message-map owner evidence](docs/rk-mfc-map-owner-evidence.csv)
 
 ## License
 
