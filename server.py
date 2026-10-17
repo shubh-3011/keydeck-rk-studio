@@ -10,6 +10,12 @@ from pathlib import Path
 
 ROOT = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
 HOST = "127.0.0.1"
+DEFAULT_PORT = 38457
+
+
+class LocalHTTPServer(ThreadingHTTPServer):
+    # Do not let this app share its port with another process bound to 0.0.0.0.
+    allow_reuse_address = False
 
 
 class Handler(SimpleHTTPRequestHandler):
@@ -21,16 +27,17 @@ class Handler(SimpleHTTPRequestHandler):
         super().end_headers()
 
     def log_message(self, format_string, *args):
-        print(f"{self.address_string()} - {format_string % args}")
+        # The desktop build runs without a console; keep request logs out of app data.
+        return
 
 
-def serve(port: int = 8765) -> ThreadingHTTPServer:
-    return ThreadingHTTPServer((HOST, port), Handler)
+def serve(port: int = DEFAULT_PORT) -> ThreadingHTTPServer:
+    return LocalHTTPServer((HOST, port), Handler)
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Serve Keydeck on this PC.")
-    parser.add_argument("--port", type=int, default=8765)
+    parser.add_argument("--port", type=int, default=DEFAULT_PORT)
     args = parser.parse_args()
     server = serve(args.port)
     print(f"Keydeck: http://{HOST}:{server.server_address[1]}")

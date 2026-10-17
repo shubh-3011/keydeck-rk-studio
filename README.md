@@ -9,7 +9,7 @@ Keydeck is an unofficial, open-source profile studio for Royal Kludge keyboards.
 - Search 188 named model profiles and display model-specific key layouts, region, RGB mode slots, function layers, and optional screen dimensions.
 - Edit local keymap, lighting, screen, macro, and connection preference profiles, then import or export them as JSON.
 - Keep S98 dial and tri-mode preferences in its profile.
-- Run as a static web app or as a Windows executable that opens the local interface in a browser.
+- Run as a hosted web app or as a Windows desktop app with its own persistent WebView2 window.
 
 Keydeck does not open the HID device or send, receive, or replay HID reports. Profile editing is local only. Macro playback, screen transfers, physical connection switching, firmware updates, and hardware writes are not implemented. The **Write changes** control stays disabled.
 
@@ -25,20 +25,22 @@ Python 3.10 or newer is required. From this folder:
 python server.py
 ```
 
-Then open <http://127.0.0.1:8765>. The server binds to loopback and serves static files only. It has no profile API, analytics, remote storage, or telemetry.
+Then open <http://127.0.0.1:38457>. The server binds to loopback and serves static files only. It has no profile API, analytics, remote storage, or telemetry.
 
 ## Windows executable
 
-Download the latest `Keydeck-RK-Studio.exe` from [GitHub Releases](https://github.com/shubh-3011/keydeck-rk-studio/releases/latest), or build it locally with the steps below.
+Download the latest `Keydeck-RK-Studio.exe` from [GitHub Releases](https://github.com/shubh-3011/keydeck-rk-studio/releases/latest), or build it locally with the steps below. The desktop app opens in its own window and does not launch Chrome or Edge.
 
-Install PyInstaller, then run:
+Install the desktop build dependencies, then run:
 
 ```powershell
-python -m pip install pyinstaller
+python -m pip install -r requirements-desktop.txt
 ./build.ps1
 ```
 
-The build creates `dist/Keydeck-RK-Studio.exe`. It starts the local static server, opens the browser, and provides an Exit button. Chrome or Edge is needed for device identification.
+The build creates `dist/Keydeck-RK-Studio.exe`. It serves the bundled app on loopback at `127.0.0.1:38457` and renders it in an embedded Microsoft Edge WebView2 window. Microsoft Edge WebView2 Runtime must be installed on the PC. The executable does not require the hosted site or a general-purpose browser to run.
+
+Desktop profiles and preferences stay on this PC in `%LOCALAPPDATA%\Keydeck-RK-Studio\WebView2`. The hosted web version uses that browser's own local storage, so the two versions do not sync automatically; use the built-in JSON import/export controls to move profiles between them. The desktop app binds only to loopback, does not send profile data to a service, and does not open or write to the keyboard.
 
 ## Device identity and scope
 

@@ -1,51 +1,93 @@
-"""Small desktop launcher for the local Keydeck web interface."""
+"""Run the bundled Keydeck interface in a persistent local WebView2 window."""
 
 from __future__ import annotations
 
+import ctypes
+import os
 import threading
-import tkinter as tk
-import webbrowser
+from pathlib import Path
 
-from server import serve
-
-
-server = serve(0)
-url = f"http://127.0.0.1:{server.server_address[1]}/"
-threading.Thread(target=server.serve_forever, daemon=True).start()
-
-root = tk.Tk()
-root.title("Keydeck · RK Keyboard Studio")
-root.geometry("410x260")
-root.resizable(False, False)
-root.configure(bg="#f4f5f2")
-
-tk.Label(root, text="KEYDECK", bg="#f4f5f2", fg="#245d4c", font=("Segoe UI", 10, "bold")).pack(anchor="w", padx=28, pady=(25, 3))
-tk.Label(root, text="RK keyboard studio", bg="#f4f5f2", fg="#202522", font=("Segoe UI", 18, "bold")).pack(anchor="w", padx=28)
-tk.Label(root, text="The local interface is ready in your browser.", bg="#f4f5f2", fg="#69736b", font=("Segoe UI", 10)).pack(anchor="w", padx=28, pady=(8, 14))
-
-url_entry = tk.Entry(root, relief="flat", bg="#ffffff", fg="#4e5a51", font=("Consolas", 9), readonlybackground="#ffffff")
-url_entry.insert(0, url)
-url_entry.configure(state="readonly")
-url_entry.pack(fill="x", padx=28, ipady=8)
-
-button_row = tk.Frame(root, bg="#f4f5f2")
-button_row.pack(fill="x", padx=28, pady=15)
+from server import DEFAULT_PORT, HOST, serve
 
 
-def open_site():
-    webbrowser.open_new_tab(url)
+APP_TITLE = "Keydeck RK Studio"
+PORT = DEFAULT_PORT
+URL = f"http://{HOST}:{PORT}/"
 
 
-def close_app():
-    server.shutdown()
-    server.server_close()
-    root.destroy()
+def local_data_directory() -> Path:
+    """Return the per-user directory for persistent desktop web data."""
+    local_app_data = os.environ.get("LOCALAPPDATA")
+    if local_app_data:
+        base = Path(local_app_data)
+    else:
+        base = Path.home() / "AppData" / "Local"
+    path = base / "Keydeck-RK-Studio"
+    path.mkdir(parents=True, exist_ok=True)
+    return path
 
 
-tk.Button(button_row, text="Open Keydeck", command=open_site, relief="flat", bg="#397965", fg="white", activebackground="#245d4c", activeforeground="white", font=("Segoe UI", 9, "bold"), padx=13, pady=8).pack(side="left")
-tk.Button(button_row, text="Exit", command=close_app, relief="flat", bg="#e8ebe7", fg="#46504a", activebackground="#dce2dc", font=("Segoe UI", 9), padx=18, pady=8).pack(side="right")
+def show_error(message: str) -> None:
+    """Show an error even in the windowed, console-free executable."""
+    if os.name == "nt":
+        ctypes.windll.user32.MessageBoxW(None, message, APP_TITLE, 0x10)
+    else:
+        print(f"{APP_TITLE}: {message}")
 
-tk.Label(root, text="Use desktop Chrome or Edge for descriptor-only identification. This build does not open the HID device or exchange reports.", wraplength=350, justify="left", bg="#f4f5f2", fg="#858f87", font=("Segoe UI", 8)).pack(anchor="w", padx=28)
-root.protocol("WM_DELETE_WINDOW", close_app)
-root.after(450, open_site)
-root.mainloop()
+
+def main() -> None:
+    try:
+        import webview
+    except ImportError:
+        show_error(
+            "The desktop window runtime is missing. Rebuild the executable using "
+            "build.ps1 or install the desktop requirements."
+        )
+        return
+
+    server = None
+    try:
+        server = serve(PORT)
+    except OSError as exc:
+        if getattr(exc, "winerror", None) == 10048 or getattr(exc, "errno", None) in (48, 98, 10048):
+            show_error(
+                f"Keydeck could not start because localhost port {PORT} is already in use.\n\n"
+                "Close another Keydeck instance or stop the local server using this port, "
+                "then launch Keydeck again."
+            )
+            return
+        show_error(f"Keydeck could not start its local interface.\n\n{exc}")
+        return
+
+    try:
+        threading.Thread(target=server.serve_forever, name="keydeck-local-server", daemon=True).start()
+        data_directory = local_data_directory()
+        webview_data_directory = data_directory / "WebView2"
+        webview_data_directory.mkdir(parents=True, exist_ok=True)
+        webview.create_window(
+            APP_TITLE,
+            URL,
+            width=1440,
+            height=940,
+            min_size=(1024, 680),
+            background_color="#f4f5f2",
+        )
+        webview.start(
+            gui="edgechromium",
+            private_mode=False,
+            storage_path=str(webview_data_directory),
+            debug=False,
+        )
+    except Exception as exc:
+        show_error(
+            "Keydeck could not open its desktop window. Make sure Microsoft Edge WebView2 "
+            f"Runtime is installed, then try again.\n\nDetails: {exc}"
+        )
+    finally:
+        if server is not None:
+            server.shutdown()
+            server.server_close()
+
+
+if __name__ == "__main__":
+    main()
