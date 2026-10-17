@@ -48,7 +48,7 @@ Keydeck asks the browser to enumerate devices the user has already authorized. I
 
 Some keyboards expose generic or shared USB IDs. For example, the installed RK catalog lists `0x0150` as an A70 wireless receiver ID, while public S98 inventories also report `0x258A:0x0150`. Keydeck treats that identity as ambiguous and lets the user choose a model profile for the layout. See [the reverse-engineering audit](docs/reverse-engineering.md) for the evidence and limitations.
 
-The model catalog describes the variants and controls represented in one installed RK utility version. It now retains the profile options, base key tuples, Fn mappings, lighting-mode values, and wireless VID/PID pairs as audit data. Unknown fields remain uninterpreted, and none of this data is sent to a keyboard. See [the expanded reverse-engineering audit](docs/reverse-engineering.md) for the software feature inventory and the remaining protocol questions.
+The model catalog describes the variants and controls represented in one installed RK utility version. It retains profile options, base key tuples, Fn mappings, lighting-mode values and available localized profile LED labels, and wireless VID/PID pairs as audit data. Unknown fields remain uninterpreted, and none of this data is sent to a keyboard. See [the expanded reverse-engineering audit](docs/reverse-engineering.md) for the software feature inventory and the remaining protocol questions.
 
 To regenerate the metadata catalog from a local RK Keyboard Software install:
 
@@ -56,7 +56,7 @@ To regenerate the metadata catalog from a local RK Keyboard Software install:
 python scripts/extract_rk_catalog.py --rk-root "C:\Program Files (x86)\RK Keyboard Software"
 ```
 
-The extractor writes model names, visual layouts, capability metadata, raw profile configuration, and unregistered profiles to `models.json`. It does not copy RK executables, firmware, images, or HID payloads.
+The extractor writes model names, visual layouts, capability metadata, raw profile configuration, and unregistered profiles to `models.json`, plus the static profile-to-handler map in `docs/rk-profile-driver-family-map.csv`. It does not copy RK executables, firmware, images, or HID payloads.
 
 ## References
 
@@ -64,6 +64,12 @@ The extractor writes model names, visual layouts, capability metadata, raw profi
 - [RK S98 product specifications](https://rkgamingstore.com/products/s98-wireless-mechanical-keyboard)
 - [KludgeKnight](https://github.com/vinc3m1/kludgeknight), an open-source RK web configurator used as a behavioral reference
 - [Reverse-engineering audit and limits](docs/reverse-engineering.md)
+- [Installed RK package file manifest](docs/rk-installed-package-manifest.csv)
+- [RK profile option field inventory](docs/rk-profile-option-field-inventory.csv)
+- [Static profile-to-driver-family map](docs/rk-profile-driver-family-map.csv)
+- [Static native API import inventory](docs/rk-native-api-imports.md)
+- [Static native API callsite cross-references](docs/rk-native-api-xrefs.csv)
+- [Dynamic API lookup candidates](docs/rk-dynamic-api-targets.csv)
 
 ## License
 

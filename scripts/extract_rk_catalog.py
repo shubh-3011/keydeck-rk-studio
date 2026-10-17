@@ -2,17 +2,20 @@
 """Extract read-only model layouts and profile data from an installed RK app.
 
 The generated JSON contains model names, layout rectangles, capability
-metadata, and decoded profile fields. It never copies the RK executable,
-firmware, report payloads, or image assets.
+metadata, and decoded profile fields. A companion CSV records the static
+profile-to-handler selector and raw wireless identity fields. Neither output
+copies the RK executable, firmware, report payloads, or image assets.
 """
 
 from __future__ import annotations
 
 import argparse
+import csv
 import hashlib
 import json
 import re
 from pathlib import Path
+from xml.etree import ElementTree
 
 
 def read_text(path: Path) -> str:
@@ -106,6 +109,26 @@ def assignments(lines: list[str]) -> dict[str, list[object]]:
     return result
 
 
+def extract_lighting_labels(rk_root: Path, code: str) -> dict[str, list[dict[str, str]]]:
+    """Preserve profile-local LED labels without assigning protocol semantics."""
+    labels: dict[str, list[dict[str, str]]] = {}
+    profile_dir = rk_root / "Dev" / code
+    for path in sorted(profile_dir.glob("*/led.xml")):
+        locale = path.parent.name
+        try:
+            root = ElementTree.fromstring(read_text(path))
+        except ElementTree.ParseError:
+            continue
+        entries = [
+            {"key": node.tag, "label": node.text.strip()}
+            for node in root.iter()
+            if len(node) == 0 and node.text and node.text.strip()
+        ]
+        if entries:
+            labels[locale] = entries
+    return labels
+
+
 def extract_keys(lines: list[str]) -> tuple[list[dict[str, object]], int, int]:
     keys: list[dict[str, object]] = []
     label = ""
@@ -158,6 +181,12 @@ def main() -> None:
         "--output",
         type=Path,
         default=Path(__file__).resolve().parents[1] / "models.json",
+    )
+    parser.add_argument(
+        "--driver-map-output",
+        type=Path,
+        default=Path(__file__).resolve().parents[1] / "docs" / "rk-profile-driver-family-map.csv",
+        help="write the installed profile-to-handler selection map",
     )
     args = parser.parse_args()
 
@@ -254,6 +283,7 @@ def main() -> None:
                     if re.fullmatch(r"FN\d+", section)
                 },
                 "sectionNames": [section for section in sections if section],
+                "lightingLabels": extract_lighting_labels(args.rk_root, code),
             },
         })
 
@@ -286,11 +316,12 @@ def main() -> None:
                     if re.fullmatch(r"FN\d+", section)
                 },
                 "sectionNames": [section for section in orphan_sections if section],
+                "lightingLabels": extract_lighting_labels(args.rk_root, code),
             },
         })
     args.output.parent.mkdir(parents=True, exist_ok=True)
     catalog = {
-        "version": 2,
+        "version": 3,
         "source": "RK Keyboard Software 4.06 Cfg.ini and Dev/*/KB.ini",
         "vendorId": "258A",
         "profileFieldNames": sorted(profile_field_names),
@@ -303,7 +334,42 @@ def main() -> None:
         json.dumps(catalog, ensure_ascii=False, separators=(",", ":")) + "\n",
         encoding="utf-8",
     )
+    args.driver_map_output.parent.mkdir(parents=True, exist_ok=True)
+    with args.driver_map_output.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(
+            handle,
+            fieldnames=[
+                "profile_code",
+                "model_name",
+                "usb_vid",
+                "usb_pid",
+                "direct_profile",
+                "fw_raw",
+                "static_handler",
+                "psd_raw",
+                "wireless_vid",
+                "wireless_pid",
+            ],
+        )
+        writer.writeheader()
+        for model in models:
+            options = model["profileData"]["options"]
+            fw_raw = str(options.get("Fw", ""))
+            fw_value = number(fw_raw, 0)
+            writer.writerow({
+                "profile_code": model["code"],
+                "model_name": model["name"],
+                "usb_vid": "258A",
+                "usb_pid": model["code"] if model["isDirectPid"] else "",
+                "direct_profile": str(bool(model["isDirectPid"])).lower(),
+                "fw_raw": fw_raw if fw_raw else "(omitted; loader default 0)",
+                "static_handler": "CDevG5KB" if fw_value else "CDevRKKB",
+                "psd_raw": options.get("Psd", ""),
+                "wireless_vid": model["features"]["wirelessVendorId"] or "",
+                "wireless_pid": model["features"]["wirelessProductId"] or "",
+            })
     print(f"Wrote {len(models)} model profiles and {len(layouts)} unique layouts to {args.output} from {cfg_path}")
+    print(f"Wrote profile-to-handler map to {args.driver_map_output}")
 
 
 if __name__ == "__main__":
