@@ -1,0 +1,10 @@
+[
+  { "code": "0174", "name": "RK S98RGB", "region": "ANSI" },
+  { "code": "01AF", "name": "RK-S98RGB-New", "region": "ANSI" },
+  { "code": "01BF", "name": "RK-S98RGB ISO Return Keyboard", "region": "ISO" },
+  { "code": "022F", "name": "RK-S98 Keyboard", "region": "ANSI" },
+  { "code": "0224", "name": "RK-S98 DE Keyboard", "region": "German ISO" },
+  { "code": "0223", "name": "RK-S98 TH Keyboard", "region": "Thai" },
+  { "code": "0230", "name": "RK-S98 RU Keyboard", "region": "Russian" },
+  { "code": "022B", "name": "RK-S98 ES Keyboard", "region": "Spanish" }
+]
