@@ -209,24 +209,41 @@ its actual size, and no successful parse was observed.
 ### Installer and uninstaller components
 
 `InitSetup.dll` is an x86 setup helper with one `SetupInit` export (file
-version `1.0.0.2`). Its static code checks a supplied path, recursively
-enumerates descendants, normalizes file attributes, deletes files, and removes
-nested directories while leaving the passed root directory. Its external
-caller and argument are unresolved. `unins000.dat` contains a
-`{localappdata}/RKKB` path, but the analyzed files do not prove that this
-path is passed to `SetupInit`.
+version `1.0.0.2`, RVA `0x1080`). It accepts one path. Null returns false;
+missing path logs an AppData-path message and returns true; an existing path
+calls recursive worker `0x100010F0`. The worker enumerates `path\*.*`,
+using `FindFirstFileW` at `0x100011DD` and `FindNextFileW` at `0x1000127F`.
+It recurses into child directories at `0x1000124D`, normalizes file attributes
+to `0x80` with `SetFileAttributesW` at `0x10001265`, deletes files through a
+dynamically resolved `DeleteFileW` pointer at `0x10001273`, normalizes nested
+directory attributes at `0x100012D1`, and removes nested directories with
+`RemoveDirectoryW` at `0x100012D8`. Recursive errors can be logged, but the
+export still returns true for any non-null path. The installer executable
+itself is absent from the installed package snapshot, so the helper's actual
+caller, argument, and place in install flow are unknown.
 
-`uninstall.dll` has no exports and contains icon/bitmap resources; its
-imports do not show file, registry, service, or device operations. The
-uninstaller `unins000.exe` is an Inno Setup 5.3.4 engine. The installed
-`unins000.dat` log records the Program Files tree, `%LOCALAPPDATA%/RKKB`,
-Start Menu and Desktop shortcuts, and the RK uninstall registry entry. Its
-executable imports generic file/registry/process/shell functions, but no HID
-or SetupAPI DLL. The log also records custom uninstall callbacks and the
-`InitSetup.dll` reference; the callback target and order are unresolved, so
-the log does not establish whether uninstall deletes runtime data under
-`%LOCALAPPDATA%/RKKB`. These components were inspected statically and were
-not executed.
+`uninstall.dll` has no exports and contains icon/bitmap resources; its imports
+are runtime support only, with no network, keyboard, HID, or service behavior
+identified. The uninstaller `unins000.exe` is an Inno Setup 5.3.4 engine. The
+installed `unins000.dat` log records the Program Files tree,
+`%LOCALAPPDATA%\RKKB\lang.ini`, Start Menu and Desktop shortcuts, and
+uninstall registry key
+`Software\Microsoft\Windows\CurrentVersion\Uninstall\{F5704F18-47C0-41F4-ABF6-0B85B099288E}_is1`.
+It names callbacks including `InitializeSetup`, `MyAfterInstall`,
+`MyAfterInstall2`, `CurUninstallStepChanged`, and
+`InitializeUninstallProgressForm`, plus `SetupInit` and
+`{localappdata}\RKKB`. These are log/script metadata and do not prove which
+callback invokes `SetupInit` or the path passed to it.
+
+`unins000.exe` has no HID, SetupAPI, or Service Control Manager imports. It
+dynamically resolves `RegDeleteKeyExW/A` for generic uninstall registry
+cleanup (wide resolver at `0x0047F8E0`; name resolution near
+`0x0047F93C`/`0x0047F95C`). Its `DeviceIoControl` call at `0x004804B4` uses
+`FSCTL_SET_COMPRESSION` on a file handle, not a keyboard handle. A conditional
+shutdown path at `0x004AE9CC` calls `ExitWindowsEx` at `0x004AEA38` with
+`EWX_REBOOT`; caller `0x004F5BAC` exists, but runtime conditions determine
+whether a reboot is requested. The exact install/uninstall callback sequence
+and runtime effects were not executed or established.
 
 The IAT byte scan found direct-import calls, calls routed through import
 thunks, and import-forwarding thunks in executable sections:
