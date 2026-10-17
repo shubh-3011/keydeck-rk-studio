@@ -608,9 +608,41 @@ bytes in RAM. These are readback-verification paths within an update flow,
 not an independent full-flash dump or save-to-host workflow. UI strings
 include firmware version checks, CRC failures, device-type mismatch, and
 USB/BLE update status.
+
+The update stage dispatcher `FUN_00402A40` selects section C (labelled MFU
+firmware upgrade) when the global stage is `3` and the main-window flag at
+`+0x8E6F` is clear. If that flag is set and `+0x8E6E` is nonzero it returns;
+otherwise it labels the operation HID firmware upgrading and enters the
+section-B path. The code proves these flag branches, but not which physical
+transport or UI action sets the flags.
+
+Both B and C stage helpers check device handles, send a 0x408-byte staging
+report filled with `0x45` except the first byte `0x05`, sleep two seconds,
+then write a section only when its length is below `0xF001`, rounded up to
+0x800-byte boundaries. The write helper is retried up to five times; its
+verifier is retried up to ten times. On success the updater sends a 0x408-byte
+`0x55` finalization report (first byte `0x05`) followed by a zero-filled
+report beginning `05 5A`. The B verification path reads 0x800-byte chunks
+from `06 72` responses and compares them with the host staging buffer; C has a
+separate verifier and host buffer. Failure returns a nonzero status. These
+staging, write, verify, and finalize reports are active device operations;
+none was sent during this audit.
+
+The BLE version/status path uses `FUN_00406C20` and `FUN_0040B770`. The UI
+labels it “Read BLE Version” or “BLE firmware upgrading” from a window flag.
+`FUN_0040B770` calls `FUN_0040BB10` up to three times. That helper polls
+report ID `6` using 0x408-byte `HidD_GetFeature` reports, sleeps 100 ms
+between up to six reads, checks response prefix `05 01`, and compares version
+bytes with `FUN_00404450`. Status strings include CRC failure (`0x0B`),
+device-type mismatch (`0x10`), same version (`0x0F`), generic upgrade failure,
+and BLE upgrade failure. `FUN_0040B770` then sends its own 0x408-byte
+SetFeature control/status report at `0x0040B800`. The exact response fields
+and relation between this path and the B/C section dispatcher remain
+unresolved.
+
 The updater therefore has a separate firmware-transfer path; its report
-fields and full `.upf` format have not been decoded. It was not run. The one
-installed `.upf` package is 193,652 bytes; its header begins with `5A A5`
+fields and full `.upf` format remain only partly decoded. It was not run. The
+one installed `.upf` package is 193,652 bytes; its header begins with `5A A5`
 followed by the ASCII marker `BLESINO`, and includes VID `258A`, PID `01AF`,
 and version text `V1.00`.
 
