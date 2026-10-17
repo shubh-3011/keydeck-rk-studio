@@ -57,13 +57,14 @@ software-catalog mapping, not physical-device validation.
 The package-wide extension census is 295 PNG, 284 TXT, 190 INI, 22 XML, 4
 BMP, 4 TTF, 3 EXE, 2 DLL, 2 GIF, 1 DAT, 1 ICO, and 1 SKN file, plus one UPF
 firmware package. Each of the seven UI localization XML files contains 247
-leaf keys with the same tag set. `Text/Japanese/text.xml` is malformed because
-its opening `<config>` is closed as `</Config>`; this prevents strict XML
-parsing, but it does not indicate a missing `tc_screen1` key. The English file
-was used for the feature-label inventory; the other language files were
-compared by key and value counts. The manifest covers all remaining assets,
-but this static pass has not assigned a semantic meaning to every individual
-image, animation frame, skin, or font.
+intended leaf keys. `Text/Japanese/text.xml` is malformed at `tc_screen1`:
+the closing token is `/tc_screen1>` and lacks its opening `<`. An
+in-memory-only normalization recovers the same 247-key set; the installed XML
+was not modified. Locale values are not identical; exact-string comparisons
+and file-by-file findings are in the [resource and localization audit](rk-resource-localization-audit.md).
+The manifest covers all remaining assets, but this static pass has not
+assigned a semantic meaning to every individual image, animation frame, skin,
+or font.
 
 The app's resource paths form this local data graph:
 
@@ -71,7 +72,7 @@ The app's resource paths form this local data graph:
 | --- | --- |
 | `Cfg.ini`, `lang.ini` | Global models, defaults, and language selection. |
 | `Dev/%04X/KB.ini` | Per-model capability, layout, layer, display, firmware, LED, and wireless fields. |
-| `Text/<language>/text.xml` | UI labels and messages; Japanese XML currently has a case-mismatched root closing tag, while the leaf-key set matches the other locales. |
+| `Text/<language>/text.xml` | UI labels and messages; Japanese XML has a malformed `tc_screen1` closing token (missing `<`), while an in-memory normalization recovers the same 247-key set. |
 | `Dev/{en,Japanese,Korean,sc,tw}/led.xml`; selected `Dev/<profile>/{en,sc}/led.xml` | Five generic localized LED-name resources have 60 leaf labels each. Ten profile-specific resources exist for `014E`, `015B`, `01C7`, `020B`, and `023D` in English and simplified Chinese; `014E` has three labels per locale and each other profile has 13. These labels correspond to profile LED slot counts, but do not define the meaning of the six values in each `LedOpt*` tuple or its device command. |
 | `keyimg.png`, `kbled.png` | Model UI/keyboard illustration assets. |
 | `Dev/%04X/screen.gif`, `%04X/screen_img%d.png`, `gif_delay.gcc` | Per-device screen GIF, decoded PNG frame cache (up to 512 stale frames are purged), and a four-byte playback-delay cache. |
@@ -989,13 +990,17 @@ The English resource strings and model configuration fields expose these
 feature groups. Availability varies by model, and the list describes the RK
 utility rather than features already implemented by Keydeck.
 
-The seven locale XMLs have the same 247 UI leaf keys; the Japanese file has a
-case-mismatched root closing tag. The key groups include 33 macro labels, 43
+The seven locale XMLs have the same 247 intended UI leaf keys after
+in-memory-only normalization of the Japanese file's malformed `tc_screen1`
+closing token. Their values vary by locale. The key groups include 33 macro labels, 43
 advanced-settings/update labels, 29 status/layer/tap/reset messages, 21
 screen controls, ten music controls plus ten audio-effect labels, and distinct
 shortcut/action groups for media, mouse, browser, system, office, and
 keyboard-input choices. Five generic LED locale XMLs have 60 labels each,
 with ten additional model-localized LED XML files as described above.
+The [resource and localization audit](rk-resource-localization-audit.md)
+contains the per-file hashes, exact-string locale comparisons, all 362 UI/LED
+key rows, and per-profile illustration/effect-resource coverage.
 
 | RK utility workflow | Evidence in package |
 | --- | --- |

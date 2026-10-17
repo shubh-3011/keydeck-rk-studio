@@ -66,6 +66,7 @@ The extractor writes model names, visual layouts, capability metadata, raw profi
 - [Reverse-engineering audit and limits](docs/reverse-engineering.md)
 - [Updater and firmware readback audit](docs/rk-firmware-readback-audit.md)
 - [Profile catalog and `KB.ini` schema audit](docs/rk-profile-schema-audit.md)
+- [Resource and localization audit](docs/rk-resource-localization-audit.md)
 - [Installed RK package file manifest](docs/rk-installed-package-manifest.csv)
 - [RK profile option field inventory](docs/rk-profile-option-field-inventory.csv)
 - [Static profile-to-driver-family map](docs/rk-profile-driver-family-map.csv)
