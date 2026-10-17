@@ -60,6 +60,7 @@ The extractor writes model names, visual layouts, capability metadata, raw profi
 
 ## References
 
+- [Standalone RK software reverse-engineering research archive](https://github.com/shubh-3011/rk-keyboard-software-research)
 - [RK's official web configurator](https://drive.rkgaming.com/)
 - [RK S98 product specifications](https://rkgamingstore.com/products/s98-wireless-mechanical-keyboard)
 - [KludgeKnight](https://github.com/vinc3m1/kludgeknight), an open-source RK web configurator used as a behavioral reference
