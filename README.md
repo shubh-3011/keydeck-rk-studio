@@ -2,7 +2,7 @@
 
 Keydeck is an unofficial, open-source profile studio for Royal Kludge keyboards. It builds model-specific layouts and capability summaries from the RK Keyboard Software 4.06 catalog installed on the development PC. The catalog contains 188 named model profiles, 90 distinct visual layouts, and a separate unregistered profile retained for audit. Keydeck is not affiliated with or endorsed by Royal Kludge.
 
-This is the user-facing project: [web app and Windows desktop profile editor](https://github.com/shubh-3011/keydeck-rk-studio). The separate [RK software research repository](https://github.com/shubh-3011/rk-keyboard-software-research) contains the static audit, coverage limits, evidence tables, and a downloadable research-edition Windows workbench built from source.
+This is the user-facing project: [web app and Windows desktop profile editor](https://github.com/shubh-3011/keydeck-rk-studio). The separate [RK software research repository](https://github.com/shubh-3011/rk-keyboard-software-research) is the open-source RK software directory and static audit archive. It contains coverage limits, evidence tables, and a downloadable research-edition Windows workbench built from source.
 
 ## Features
 
