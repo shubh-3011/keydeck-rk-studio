@@ -29,6 +29,8 @@ Then open <http://127.0.0.1:8765>. The server binds to loopback and serves stati
 
 ## Windows executable
 
+Download the latest `Keydeck-RK-Studio.exe` from [GitHub Releases](https://github.com/shubh-3011/keydeck-rk-studio/releases/latest), or build it locally with the steps below.
+
 Install PyInstaller, then run:
 
 ```powershell
