@@ -34,6 +34,8 @@ Then open <http://127.0.0.1:38457>. The server binds to loopback and serves stat
 
 Download the latest `Keydeck-RK-Studio.exe` from [GitHub Releases](https://github.com/shubh-3011/keydeck-rk-studio/releases/latest), or build it locally with the steps below. The desktop app opens in its own window and does not launch Chrome or Edge.
 
+**Architecture status:** the current EXE bundles Python with PyInstaller and opens the local HTML/CSS/JavaScript interface in pywebview backed by Microsoft Edge WebView2. It is a local desktop window, not a fully native WinUI/WPF interface. It has no notification-area tray or start-on-login feature. A native reconstruction is not available yet; see the separate [research roadmap](https://github.com/shubh-3011/rk-keyboard-software-research/blob/main/REBUILD-ROADMAP.md).
+
 Install the desktop build dependencies, then run:
 
 ```powershell
