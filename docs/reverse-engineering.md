@@ -250,13 +250,39 @@ and file-system helpers; literal strings are evidence for candidate names,
 not proof that the branch executes.
 
 The five analyzed PEs do not import `ntdll.dll`, and no plausible direct
-`sysenter` or `int 0x2e` wrapper was identified in inspected code. A byte scan
-reported two `0F 05` patterns in `DeviceDriver.exe`, but both are inside data
-and padding rather than executable instruction paths. This is not a runtime
+syscall wrapper was identified. A raw opcode scan of executable sections
+found these `0F 05`, `0F 34`, and `CD 2E` byte patterns:
+
+| PE | `0F 05` | `0F 34` | `CD 2E` |
+| --- | ---: | ---: | ---: |
+| `DeviceDriver.exe` | 5 | 4 | 1 |
+| `Update.exe` | 4 | 2 | 0 |
+| `InitSetup.dll` | 0 | 1 | 0 |
+| `uninstall.dll` | 0 | 0 | 0 |
+| `unins000.exe` | 1 | 0 | 0 |
+
+Full disassembly emits `syscall` mnemonics at `0x464224` and `0x464354` in
+`DeviceDriver.exe`, but both lie in lookup-table data, not executable paths.
+Other raw matches overlap call displacements, immediates, or data. No
+`sysenter` or `int 0x2e` instruction path was decoded. This is not a runtime
 system-call trace and cannot rule out transitions inside imported Windows
 libraries, dynamically loaded modules, COM servers, or device drivers. COM
 methods reached through interface vtables, unresolved dynamic function
 pointers, and kernel-level calls remain outside the import/xref inventory.
+
+The main app also uses classic OLE/COM APIs: `CoInitialize`/`CoInitializeEx`,
+`CoCreateInstance`, `CoGetClassObject`, CLSID conversion, clipboard,
+drag/drop, storage/stream, menu, and accelerator functions. `CoCreateInstance`
+callsites include `0x4049E4`, `0x43C85D`, `0x45B094`, and `0x47BD42`;
+`RegisterDragDrop` is called at `0x55C8D8` and `DoDragDrop` at `0x50DC0A`.
+COM interface calls then dispatch indirectly, including calls through
+`[ecx+0x50]` at `0x4049F8`, `[ecx+0x2C]` at `0x404A05`, and `[ecx+0x0C]` at
+`0x4ACA6A`; the target methods are unresolved.
+
+`Update.exe` loads `combase.dll` with `LoadLibraryExW` at `0x53746F` and
+resolves `RoInitialize`/`RoUninitialize` at `0x537476`/`0x53754B`. Its wrapper
+calls `RoInitialize(1)`, which is WinRT framework initialization evidence,
+not a keyboard protocol.
 
 Targeted callsite inspection narrowed several potentially ambiguous imports:
 the main app's `SetWindowsHookExW` references use thread-scoped CBT,
@@ -579,10 +605,13 @@ present—for example IDs `0x420E`–`0x4216` point to handlers at
 `0x0049A660`, `0x0049CF85`, `0x00494C21`, `0x0049A475`, `0x00494C6C`,
 `0x0049A5F9`, `0x0049A51A`, `0x00494D2E`, and `0x00497F8F`—but the available
 static evidence does not reliably associate every map with a class, visible
-control, or named feature. Another raw entry maps `0x4079` to `0x00504763`;
-notification ID `0x40E3` codes 1 and 2 map to `0x0055700F` and `0x005570EE`.
-Exact button-to-operation routes therefore remain open; these IDs and
-addresses are leads, not semantic labels.
+control, or named feature. A heuristic scan found 112 candidate
+`WM_COMMAND`-shaped rows across 21 multi-entry runs, based on message code
+`0x111`, signature `0x39`, equal ID/range fields, a 24-byte stride, and handler
+addresses inside `.text`. The raw `(ID, notification code, target VA, map-row
+VA)` list is in [`rk-mfc-command-map-candidates.csv`](rk-mfc-command-map-candidates.csv).
+These candidates are not proven live message maps or attributed controls;
+exact button-to-operation routes therefore remain open.
 
 A separate `CDev3632::AccessData` helper accepts up to 512 bytes and splits
 them into 20-byte packets with 14-byte payload chunks. It queues each frame,
