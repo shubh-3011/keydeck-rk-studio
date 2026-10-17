@@ -6,9 +6,9 @@
     <meta name="theme-color" content="#f4f5f2" />
     <meta
       name="description"
-      content="Keydeck is an unofficial open source RK S98 keyboard profile studio."
+      content="Keydeck is an unofficial open source Royal Kludge keyboard profile studio."
     />
-    <title>Keydeck | RK S98 Studio</title>
+    <title>Keydeck | RK Keyboard Studio</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -18,7 +18,7 @@
           <span class="brand-mark" aria-hidden="true"
             ><i></i><i></i><i></i><i></i
           ></span>
-          <span><strong>KEYDECK</strong><small>RK keyboard studio</small></span>
+            <span><strong>KEYDECK</strong><small>RK keyboard studio</small></span>
         </a>
 
         <div class="sidebar-caption">CONFIGURE</div>
@@ -29,14 +29,14 @@
           <button class="nav-item" data-page="keys">
             <span class="nav-glyph">02</span>Key map
           </button>
-          <button class="nav-item" data-page="lighting">
+          <button class="nav-item" id="lightingNavButton" data-page="lighting">
             <span class="nav-glyph">03</span>Lighting
           </button>
-          <button class="nav-item" data-page="screen">
+          <button class="nav-item" id="screenNavButton" data-page="screen">
             <span class="nav-glyph">04</span>Smart display
           </button>
           <button class="nav-item" data-page="knob">
-            <span class="nav-glyph">05</span>Knob & modes
+            <span class="nav-glyph">05</span>Controls & modes
           </button>
         </nav>
 
@@ -57,16 +57,16 @@
         <section class="sidebar-device">
           <div class="device-mini-top">
             <span class="connection-lamp" id="sidebarLamp"></span
-            ><span id="sidebarDeviceState">No keyboard identified</span>
+            ><span id="sidebarDeviceState">No keyboard detected</span>
           </div>
-          <strong id="sidebarDeviceName">RK S98</strong>
+          <strong id="sidebarDeviceName">Choose a model</strong>
           <small id="sidebarDeviceId">USB device access is off</small>
           <button class="button button-dark button-wide" data-identify>
             Identify keyboard
           </button>
         </section>
         <div class="sidebar-footer">
-          <span>UNOFFICIAL OPEN SOURCE PROJECT</span><span>KEYDECK 0.2.0</span>
+          <span>UNOFFICIAL OPEN SOURCE PROJECT</span><span>KEYDECK 0.3.0</span>
         </div>
       </aside>
 
@@ -103,13 +103,13 @@
             <div class="page-title-row">
               <div>
                 <p class="eyebrow">
-                  DEVICE WORKSPACE <span class="eyebrow-dot"></span> LOCAL
-                  PROFILE
+                  KEYBOARD PROFILE <span class="eyebrow-dot"></span> LOCAL
+                  SETTINGS
                 </p>
-                <h1>Royal Kludge S98</h1>
+                  <h1 id="deviceModelHeadline">Royal Kludge keyboard</h1>
                 <p class="page-subtitle">
-                  A focused control surface for your 96% keyboard, smart display
-                  and dial.
+                  Choose a profile to see its layout and capabilities. Device
+                  identification uses USB descriptor information only.
                 </p>
               </div>
               <button class="button button-outline identify-main" data-identify>
@@ -122,21 +122,20 @@
                 <div class="panel-heading">
                   <div>
                     <p class="section-kicker">LAYOUT</p>
-                    <h2>S98 · 96%</h2>
+                    <h2 id="keyboardLayoutTitle">Keyboard layout</h2>
                     <p class="muted" id="overviewLayoutCaption">
-                      ANSI profile · choose a region in Device info
+                      Choose a model profile to load its layout.
                     </p>
                   </div>
-                  <label class="region-control"
-                    ><span>REGION</span
-                    ><select
-                      id="modelSelect"
-                      aria-label="S98 model variant"
-                    ></select
-                  ></label>
+                  <div class="model-picker">
+                    <label for="modelFilter">MODEL PROFILE</label>
+                    <input id="modelFilter" type="search" placeholder="Filter models" autocomplete="off" />
+                    <small id="modelFilterCount">Loading model catalog</small>
+                    <select id="modelSelect" aria-label="Choose model profile"></select>
+                  </div>
                 </div>
                 <div class="keyboard-frame">
-                  <div class="keyboard-host" id="s98Keyboard"></div>
+                  <div class="keyboard-host" id="deviceKeyboard"></div>
                 </div>
                 <div class="hardware-footer">
                   <span
@@ -147,6 +146,7 @@
                     Open key map
                   </button>
                 </div>
+                <div class="model-feature-summary" id="modelFeatureSummary" aria-live="polite"></div>
               </section>
 
               <aside class="device-side-column">
@@ -165,16 +165,23 @@
                   <div class="device-id-row">
                     <span>USB ID</span><strong id="deviceIdValue">—</strong>
                   </div>
+                  <div class="device-id-row model-match-row">
+                    <span>MODEL</span><strong id="deviceModelState">No keyboard selected</strong>
+                  </div>
+                  <label class="device-select-wrap" id="deviceSelectWrap" hidden>
+                    <span>AUTHORIZED KEYBOARDS</span>
+                    <select id="deviceSelect" aria-label="Choose authorized keyboard"></select>
+                  </label>
                   <button class="button button-dark button-wide" data-identify>
                     Identify keyboard
                   </button>
                 </section>
 
-                <section class="panel display-status-panel">
+                <section class="panel display-status-panel" id="screenFeatureCard">
                   <div class="panel-heading compact-panel-heading">
                     <div>
                       <p class="section-kicker">SMART DISPLAY</p>
-                      <h2>320 × 172</h2>
+                      <h2 id="screenOverviewSize">Model display</h2>
                     </div>
                     <span class="screen-frame-mark"></span>
                   </div>
@@ -199,7 +206,7 @@
 
                 <section class="panel quick-controls-panel">
                   <div class="section-kicker">QUICK CONTROLS</div>
-                  <div class="quick-control">
+                  <div class="quick-control" id="quickLightingControl">
                     <div>
                       <strong>Backlight</strong
                       ><small id="overviewBrightness">72%</small>
@@ -214,7 +221,7 @@
                       aria-label="Profile brightness"
                     />
                   </div>
-                  <div class="quick-control">
+                  <div class="quick-control" id="quickEffectControl">
                     <div>
                       <strong>Effect</strong
                       ><small id="overviewEffect">Static</small>
@@ -222,23 +229,23 @@
                     <button class="text-button" data-go="lighting">RGB</button>
                   </div>
                   <p class="micro-note">
-                    These are profile values. Device output is disabled while
-                    the S98 protocol is verified.
+                  These are local profile values. Keydeck does not send HID
+                  reports or apply them to a keyboard.
                   </p>
                 </section>
               </aside>
             </div>
 
             <section class="feature-strip">
-              <article>
+              <article id="triModeCard">
                 <span class="feature-index">A</span>
                 <div>
-                  <strong>Tri-mode</strong
-                  ><small>USB-C · 2.4 GHz · Bluetooth</small>
+                  <strong>Connection options</strong
+                  ><small id="connectionFeatureSummary">Profile preferences</small>
                 </div>
                 <button class="text-button" data-go="knob">Set mode</button>
               </article>
-              <article>
+              <article id="smartDisplayFeature">
                 <span class="feature-index">B</span>
                 <div>
                   <strong>Smart display</strong
@@ -246,7 +253,7 @@
                 </div>
                 <button class="text-button" data-go="screen">Configure</button>
               </article>
-              <article>
+              <article id="rotaryFeature">
                 <span class="feature-index">C</span>
                 <div>
                   <strong>Rotary dial</strong
@@ -264,25 +271,20 @@
                 <h1>Key map</h1>
                 <p class="page-subtitle">
                   Edit a profile layer and review each assignment before using a
-                  compatible device writer.
+                  supported hardware protocol.
                 </p>
               </div>
-              <label class="region-control"
-                ><span>LAYER</span
-                ><select id="layerSelect">
-                  <option value="base">Base</option>
-                  <option value="fn">Fn 1</option>
-                  <option value="fn2">Fn 2</option>
-                  <option value="game">Game</option>
-                </select></label
-              >
+              <div class="layer-picker">
+                <label class="region-control" for="layerSelect"><span>LAYER</span><select id="layerSelect"></select></label>
+                <small id="layerSelectCaption" class="field-help">Model layers</small>
+              </div>
             </div>
             <div class="keymap-layout">
               <section class="panel keyboard-panel">
                 <div class="panel-heading">
                   <div>
-                    <p class="section-kicker">RK S98 LAYOUT</p>
-                    <h2>Select a key</h2>
+                    <p class="section-kicker">MODEL LAYOUT</p>
+                    <h2 id="keymapLayoutTitle">Select a key</h2>
                   </div>
                   <span class="mapping-legend"
                     ><i class="legend-dot key-mapped-dot"></i>Remapped in this
@@ -337,10 +339,9 @@
                 <div class="callout">
                   <strong>Hardware output is locked</strong>
                   <p>
-                    RK keymap writes replace the complete onboard map. This
-                    release has no writer; output stays disabled until a
-                    compatible protocol implementation and exact hardware
-                    variant are verified.
+                    The editor stores local profile data only. Keymap reports
+                    can replace the complete onboard map, so this app never
+                    opens the HID device or sends reports.
                   </p>
                 </div>
               </section>
@@ -353,7 +354,8 @@
                 <p class="eyebrow">LIGHTING</p>
                 <h1>RGB settings</h1>
                 <p class="page-subtitle">
-                  Set a profile effect, color, brightness and speed.
+                  Store model-specific lighting preferences. Values are not
+                  sent to the keyboard.
                 </p>
               </div>
               <div class="status-chip">
@@ -373,6 +375,7 @@
                   <option>Spectrum</option>
                   <option>Off</option>
                 </select>
+                <small class="field-help" id="lightingModeInfo">Mode slots from the installed profile</small>
                 <div class="field-separator"></div>
                 <div class="control-heading">
                   <label class="field-label" for="colorPicker"
@@ -458,18 +461,19 @@
                 <div class="section-kicker">DEVICE SUPPORT</div>
                 <h2>Save now, apply when matched</h2>
                 <p>
-                  Lighting controls follow the S98 workspace. Changes stay in
-                  this profile until the detected device identity and its report
-                  format are confirmed.
+                  The installed profile lists device capability slots, but
+                  their report names are not decoded. Changes stay local; no
+                  report is sent.
                 </p>
                 <div class="support-row">
                   <span>Selected model</span
-                  ><strong id="selectedModelName">RK-S98 Keyboard</strong>
+                  ><strong id="selectedModelName">RK keyboard</strong>
                 </div>
                 <div class="support-row">
                   <span>Device identity</span
                   ><strong id="lightingDeviceState">Not identified</strong>
                 </div>
+                <div class="support-row"><span>Lighting data</span><strong id="lightingFeatureState">No profile loaded</strong></div>
                 <button class="text-button" data-go="diagnostics">
                   Open device info
                 </button>
@@ -480,14 +484,13 @@
           <section class="page" id="page-screen">
             <div class="page-title-row">
               <div>
-                <p class="eyebrow">S98 SMART DISPLAY</p>
-                <h1>Display settings</h1>
-                <p class="page-subtitle">
-                  The S98 screen is 320 × 172 pixels. Choose an asset and keep
-                  its metadata with this profile.
+                <p class="eyebrow">MODEL DISPLAY</p>
+                <h1 id="screenPageTitle">Display settings</h1>
+                <p class="page-subtitle" id="screenPageDescription">
+                  Display profile settings stay local.
                 </p>
               </div>
-              <div class="status-chip">320 × 172 · UP TO 60 FRAMES</div>
+              <div class="status-chip" id="screenSpecBadge">DISPLAY PROFILE</div>
             </div>
             <div class="settings-columns screen-columns">
               <section class="panel settings-panel">
@@ -537,9 +540,9 @@
                   not sent to the keyboard.
                 </p>
                 <div class="screen-specs">
-                  <div><span>Resolution</span><strong>320 × 172</strong></div>
+                  <div><span>Resolution</span><strong id="screenResolution">Not listed</strong></div>
                   <div>
-                    <span>Animation</span><strong>Up to 60 frames</strong>
+                    <span>Frame limit</span><strong id="screenFrameLimit">Not listed</strong>
                   </div>
                   <div>
                     <span>Transport</span
@@ -549,9 +552,8 @@
                 <div class="callout">
                   <strong>No firmware operation</strong>
                   <p>
-                    Image upload and screen data transfers will stay locked
-                    until this keyboard's exact S98 variant and screen protocol
-                    are matched.
+                    Image upload and screen data transfers are not implemented.
+                    This page stores profile metadata only.
                   </p>
                 </div>
               </aside>
@@ -562,16 +564,16 @@
             <div class="page-title-row">
               <div>
                 <p class="eyebrow">HARDWARE CONTROLS</p>
-                <h1>Knob & connection modes</h1>
+                <h1>Controls & connection modes</h1>
                 <p class="page-subtitle">
-                  Store dial actions and your preferred connection mode with
-                  each profile.
+                  Store local preferences for controls listed in this model
+                  profile. No setting is applied to hardware.
                 </p>
               </div>
             </div>
             <div class="settings-columns">
-              <section class="panel settings-panel">
-                <div class="section-kicker">ROTARY DIAL</div>
+              <section class="panel settings-panel" id="knobControls">
+                <div class="section-kicker" id="knobHardwareLabel">Rotary dial preferences</div>
                 <label class="field-label" for="knobRotate">ROTATE</label
                 ><select class="field-select" id="knobRotate">
                   <option>Volume</option>
@@ -598,7 +600,7 @@
                 </button>
               </section>
               <section class="panel settings-panel">
-                <div class="section-kicker">TRI-MODE CONNECTION</div>
+                <div class="section-kicker">CONNECTION PREFERENCE</div>
                 <label class="field-label" for="connectionMode"
                   >PREFERRED MODE</label
                 ><select class="field-select" id="connectionMode">
@@ -608,21 +610,12 @@
                   <option value="Bluetooth 2">Bluetooth 2</option>
                   <option value="Bluetooth 3">Bluetooth 3</option>
                 </select>
-                <div class="connection-modes">
-                  <div>
-                    <strong>USB-C</strong><small>Profile preference</small>
-                  </div>
-                  <div>
-                    <strong>2.4 GHz</strong><small>Profile preference</small>
-                  </div>
-                  <div>
-                    <strong>Bluetooth</strong><small>Three device slots</small>
-                  </div>
-                </div>
+                <div class="connection-modes" id="connectionModeCards"></div>
+                <small class="field-help" id="connectionModeState"></small>
                 <p class="micro-note">
-                  Selecting a mode here changes only the profile. Physical mode
-                  switching and battery telemetry are not sent or read by this
-                  build.
+                  The profile catalog can identify some wireless receiver IDs.
+                  This selector stores a preference only; it does not switch
+                  the keyboard or read battery status.
                 </p>
               </section>
             </div>
@@ -637,6 +630,7 @@
                   Keep reusable sequences with a profile. Playback is not
                   implemented, so nothing sends keystrokes.
                 </p>
+                <small class="field-help" id="macroCapability">Macro capacity depends on the selected model profile.</small>
               </div>
               <button class="button button-primary" id="newMacro">
                 New macro
@@ -735,18 +729,22 @@
                   <span>Product ID</span><strong id="diagProduct">—</strong>
                 </div>
                 <div class="diagnostic-row">
-                  <span>Matching S98 profile</span
+                  <span>Model profile match</span
                   ><strong id="diagProfile">None</strong>
                 </div>
                 <div class="diagnostic-row">
                   <span>HID collections</span
                   ><strong id="diagCollections">—</strong>
                 </div>
+                <div class="diagnostic-row">
+                  <span>Collection types</span
+                  ><strong id="diagCollectionTypes">—</strong>
+                </div>
                 <div class="callout" id="supportCallout">
                   <strong>No device access granted</strong>
                   <p>
-                    Identify the keyboard to compare its USB product ID with the
-                    S98 profiles in this project.
+                    Identify a keyboard to compare its USB ID with the 188
+                    model profiles in this project.
                   </p>
                 </div>
               </section>

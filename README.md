@@ -1,43 +1,66 @@
-# Keydeck — RK S98 Studio
+# Keydeck RK Studio
 
-Keydeck is an unofficial open-source profile studio for Royal Kludge S98 keyboards. It gives the S98 a cleaner workspace for key layers, RGB preferences, display assets, dial actions, connection-mode preferences, macros, profile backup and device identification. It is an independent project and is not affiliated with or endorsed by Royal Kludge.
+Keydeck is an unofficial, open-source profile studio for Royal Kludge keyboards. It builds model-specific layouts and capability summaries from the RK Keyboard Software 4.06 catalog installed on the development PC. The current catalog contains 188 model variants and 90 distinct visual layouts. Keydeck is not affiliated with or endorsed by Royal Kludge.
+
+## Features
+
+- Inspect previously authorized RK keyboards on startup and track connect/disconnect events in Chrome or Edge.
+- Match exact USB product IDs and names against the local RK catalog; show ambiguous receiver IDs as unresolved instead of guessing.
+- Search 188 model profiles and display the model-specific key layout, region, RGB mode slots, function layers, and optional screen dimensions.
+- Edit local keymap, lighting, screen, macro, and connection preference profiles, then import or export them as JSON.
+- Keep S98 dial and tri-mode preferences in its profile.
+- Run as a static web app or as a Windows executable that opens the local interface in a browser.
+
+Keydeck does not open the HID device or send, receive, or replay HID reports. Profile editing is local only. Macro playback, screen transfers, physical connection switching, firmware updates, and hardware writes are not implemented. The **Write changes** control stays disabled.
 
 ## Try the web version
 
-Open the deployed Keydeck site in a recent desktop version of Chrome or Edge. The profile editor works in other modern browsers. WebHID device identification requires a secure context, such as HTTPS or localhost, and a browser that implements WebHID.
+Open the [Keydeck web app](https://keydeck-rk-s98.vercel.app/) in desktop Chrome or Edge. WebHID requires a secure context such as HTTPS or localhost. The profile editor itself works without WebHID.
 
 ## Run locally
 
-Python 3.10 or newer is required. From the project folder:
+Python 3.10 or newer is required. From this folder:
 
-    python server.py
+```powershell
+python server.py
+```
 
-Then open http://127.0.0.1:8765. The server binds to loopback and serves static files only. It has no device API and does not send profile data anywhere.
+Then open <http://127.0.0.1:8765>. The server binds to loopback and serves static files only. It has no profile API, analytics, remote storage, or telemetry.
 
 ## Windows executable
 
-Run build.ps1 in PowerShell. It packages the interface and Python launcher into a Windows executable under dist. The launcher starts the loopback web server, opens your default browser, and includes an Exit button to stop it. Chrome or Edge is required for WebHID identification.
+Install PyInstaller, then run:
 
-## Device access and current scope
+```powershell
+python -m pip install pyinstaller
+./build.ps1
+```
 
-Identify keyboard opens the browser's WebHID device picker for vendor ID 258A. After selection, Keydeck displays the USB product and vendor IDs plus collection count from the browser-provided descriptor. The app does not call open(), receiveFeatureReport(), sendFeatureReport(), sendReport(), update firmware, or inject key events.
+The build creates `dist/Keydeck-RK-Studio.exe`. It starts the local static server, opens the browser, and provides an Exit button. Chrome or Edge is needed for device identification.
 
-Profile changes are stored in the browser and can be exported as JSON. Lighting, remaps, macros, display metadata, knob mappings and connection preferences are not applied to the keyboard in this release. The Write changes control is intentionally disabled. The RK keymap protocol may overwrite the complete onboard map, so hardware output needs a matched product profile and verified report format first.
+## Device identity and scope
 
-The S98 profile list is limited to variants present in the RK Keyboard Software catalog available during development. A USB identity that is absent from that list is reported as unmatched; Keydeck will not guess a model based on the user's selected profile.
+Keydeck asks the browser to enumerate devices the user has already authorized. If none are authorized, **Identify keyboard** opens the browser's device chooser for vendor ID `0x258A`. Product name, vendor ID, product ID, and collection count come from the HID descriptor; no HID report is opened.
 
-## S98 features represented
+Some keyboards expose generic or shared USB IDs. For example, the installed RK catalog lists `0x0150` as an A70 wireless receiver ID, while public S98 inventories also report `0x258A:0x0150`. Keydeck treats that identity as ambiguous and lets the user choose a model profile for the layout. See [the reverse-engineering audit](docs/reverse-engineering.md) for the evidence and limitations.
 
-The workspace includes the S98 96% layout, RGB settings, 320 × 172 display asset metadata, dial action preferences, USB-C/2.4 GHz/Bluetooth mode preferences, four key layers, profile backup, and macro sequence editing. The S98 screen and tri-mode specifications are based on the [RK S98 product page](https://rkgamingstore.com/products/s98-wireless-mechanical-keyboard). Asset selection stores only a filename and dimensions; it does not upload image bytes.
+The model catalog describes the variants and controls represented in one installed RK utility version. It does not claim that every RK keyboard generation or hardware protocol is covered. Exact RGB mode names and the native feature-report protocol have not been fully reverse engineered, so the app displays profile mode slots without sending them.
 
-## Project references
+To regenerate the metadata catalog from a local RK Keyboard Software install:
 
-The interaction design was informed by open-source keyboard configurators, including [KludgeKnight](https://github.com/vinc3m1/kludgeknight). Keydeck has its own interface and implementation; it does not bundle that project's source code. S98 variant IDs were cross-checked against the locally installed RK catalog and public device lists.
+```powershell
+python scripts/extract_rk_catalog.py --rk-root "C:\Program Files (x86)\RK Keyboard Software"
+```
 
-## Privacy
+The extractor writes model names, key rectangles, and capability metadata to `models.json`. It does not copy RK executables, firmware, images, or HID payloads.
 
-Profiles are stored in browser localStorage. The web build serves static files and uses no analytics, remote API, account, or telemetry. The interface uses system fonts and does not load third-party assets. Device identity is inspected only after the user selects a keyboard in the browser picker.
+## References
+
+- [RK's official web configurator](https://drive.rkgaming.com/)
+- [RK S98 product specifications](https://rkgamingstore.com/products/s98-wireless-mechanical-keyboard)
+- [KludgeKnight](https://github.com/vinc3m1/kludgeknight), an open-source RK web configurator used as a behavioral reference
+- [Reverse-engineering audit and limits](docs/reverse-engineering.md)
 
 ## License
 
-MIT. See LICENSE.
+Keydeck is released under the MIT License. See [LICENSE](LICENSE). Royal Kludge and model names remain their respective trademarks.

@@ -126,6 +126,10 @@ a {
   background: #eef1ed;
   color: var(--ink);
 }
+.nav-item:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
 .nav-item.active {
   background: #e7eee9;
   color: #225e4d;
@@ -458,6 +462,15 @@ h2 {
   gap: 5px;
   padding: 8px 4px;
 }
+.keyboard-host.keyboard-stage {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 620px;
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
+}
 .key-row {
   display: flex;
   gap: 4px;
@@ -465,11 +478,10 @@ h2 {
   height: 35px;
 }
 .keycap {
-  position: relative;
-  flex: var(--w, 1) 1 0;
-  min-width: 15px;
-  height: 34px;
-  padding: 2px 4px;
+  position: absolute;
+  min-width: 0;
+  height: auto;
+  padding: 1px 2px;
   border: 1px solid #d6dbd5;
   border-radius: 4px;
   background: linear-gradient(180deg, #fff 0%, #f8f9f7 100%);
@@ -478,7 +490,7 @@ h2 {
     0 3px 4px #28342c0a;
   color: #636d65;
   font:
-    500 8px "DM Mono",
+    500 clamp(6px, 0.72vw, 9px) "DM Mono",
     monospace;
   white-space: nowrap;
   overflow: hidden;
@@ -502,6 +514,68 @@ h2 {
   outline: 2px solid #397965;
   outline-offset: 1px;
   color: #255b49;
+}
+.model-picker {
+  width: min(230px, 40%);
+  min-width: 175px;
+  display: grid;
+  gap: 4px;
+}
+.model-picker label,
+.device-select-wrap > span {
+  color: #829087;
+  font: 500 8px "DM Mono", monospace;
+  letter-spacing: 0.7px;
+}
+.model-picker input,
+.model-picker select,
+.device-select-wrap select {
+  width: 100%;
+  height: 29px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: #fff;
+  color: #39413c;
+  font-size: 10px;
+  outline: none;
+}
+.model-picker small,
+.field-help {
+  color: #8a938c;
+  font: 400 8px "DM Mono", monospace;
+}
+.model-feature-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 12px;
+}
+.feature-chip {
+  border: 1px solid #e0e7e1;
+  border-radius: 100px;
+  background: #fbfcfa;
+  color: #68746b;
+  padding: 4px 7px;
+  font: 400 8px "DM Mono", monospace;
+}
+.layer-picker {
+  display: grid;
+  justify-items: end;
+  gap: 4px;
+}
+.layer-picker .field-help {
+  padding-right: 3px;
+}
+.device-select-wrap {
+  display: grid;
+  gap: 5px;
+  margin: 10px 0 12px;
+}
+.model-match-row strong {
+  max-width: 210px;
+  text-align: right;
+  line-height: 1.4;
 }
 .hardware-footer {
   height: 35px;
@@ -1051,7 +1125,7 @@ h2 {
 }
 .connection-modes {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));
   gap: 7px;
   margin-top: 21px;
 }
@@ -1075,6 +1149,9 @@ h2 {
 }
 .connection-modes + .micro-note {
   margin-top: 14px;
+}
+[hidden] {
+  display: none !important;
 }
 .profile-toolbar {
   display: flex;
@@ -1418,6 +1495,13 @@ td {
   }
   .region-control {
     align-self: flex-start;
+  }
+  .model-picker {
+    width: 100%;
+    min-width: 0;
+  }
+  .keyboard-host.keyboard-stage {
+    min-width: 620px;
   }
 }
 .macro-list {

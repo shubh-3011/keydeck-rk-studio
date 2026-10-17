@@ -1,15 +1,15 @@
 const STORAGE_KEY = "keydeck-rk-s98-v2";
-const EFFECTS = [
-  "Static",
-  "Breathing",
-  "Wave",
-  "Reactive",
-  "Ripple",
-  "Spectrum",
-  "Off",
-];
-const LAYERS = ["base", "fn", "fn2", "game"];
-const LAYER_LABELS = { base: "Base", fn: "Fn 1", fn2: "Fn 2", game: "Game" };
+const LAYERS = ["base", "fn", "fn2", "game", "fn4", "fn5", "fn6", "fn7"];
+const LAYER_LABELS = {
+  base: "Base",
+  fn: "Fn 1",
+  fn2: "Fn 2",
+  game: "Game",
+  fn4: "Fn 4",
+  fn5: "Fn 5",
+  fn6: "Fn 6",
+  fn7: "Fn 7",
+};
 const KEY_ROWS = [
   [
     ["Esc", "Esc", 1],
@@ -132,10 +132,13 @@ const KEY_ROWS = [
 ];
 
 let modelCatalog = [];
+let modelLayouts = {};
 let identifiedDevice = null;
+let authorizedDevices = [];
+let identityMatch = null;
 let activePage = "device";
 let currentLayer = "base";
-let selectedKey = "W";
+let selectedKey = "K34";
 let selectedMacroId = "";
 let toastTimer = 0;
 
@@ -149,7 +152,7 @@ function starterProfile(name) {
     id: makeId(),
     name: name || "Daily setup",
     modelCode: "022F",
-    lighting: { effect: "Static", color: "#75D6C1", brightness: 72, speed: 55 },
+    lighting: { effect: "mode:1", color: "#75D6C1", brightness: 72, speed: 55 },
     screen: { brightness: 70, clock: true, assetName: "", width: 0, height: 0 },
     knob: { rotate: "Volume", press: "Play / pause", longPress: "None" },
     connection: "USB-C",
@@ -178,9 +181,7 @@ function normalizeProfile(profile) {
       : "022F";
   value.lighting =
     value.lighting && typeof value.lighting === "object" ? value.lighting : {};
-  value.lighting.effect = EFFECTS.includes(value.lighting.effect)
-    ? value.lighting.effect
-    : "Static";
+  value.lighting.effect = String(value.lighting.effect || "mode:1");
   value.lighting.color = /^#[0-9a-f]{6}$/i.test(value.lighting.color || "")
     ? value.lighting.color.toUpperCase()
     : "#75D6C1";
@@ -297,6 +298,76 @@ function modelByCode(code) {
   );
 }
 
+function selectedModel() {
+  return modelByCode(activeProfile().modelCode) || modelByCode("022F");
+}
+
+function layoutForModel(model = selectedModel()) {
+  return model ? modelLayouts[model.layoutId] || null : null;
+}
+
+function layerEntries(model = selectedModel()) {
+  const labels = model?.features?.layers;
+  return LAYERS.slice(0, Math.max(1, Math.min(labels?.length || 1, LAYERS.length))).map(
+    (id, index) => ({ id, label: labels?.[index] || LAYER_LABELS[id] }),
+  );
+}
+
+function modelSizeLabel(model) {
+  const count = Number(model?.keyCount || 0);
+  if (count >= 97 && count <= 104) return "96%";
+  if (count >= 80 && count <= 89) return "TKL / 75%";
+  if (count >= 70 && count <= 79) return "75%";
+  if (count >= 65 && count <= 69) return "65%";
+  if (count >= 59 && count <= 64) return "60%";
+  return count ? `${count}-key layout` : "Layout not catalogued";
+}
+
+function deviceModelMatch(device) {
+  if (!device || Number(device.vendorId) !== 0x258a)
+    return { kind: "unsupported", model: null, candidates: [] };
+  const pid = hex4(device.productId);
+  const name = String(device.productName || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+  const nameMatches = modelCatalog.filter((model) => {
+    const label = model.name.toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+    return label.length > 5 && name.includes(label);
+  });
+  if (nameMatches.length === 1)
+    return { kind: "product-name", model: nameMatches[0], candidates: nameMatches };
+  if (nameMatches.length > 1)
+    return { kind: "product-name-family", model: null, candidates: nameMatches };
+
+  const direct = modelByCode(pid);
+  if (direct?.isDirectPid)
+    return { kind: "product-id", model: direct, candidates: [direct] };
+
+  const candidates = modelCatalog.filter(
+    (model) => model.features?.wirelessProductId === pid,
+  );
+  if (candidates.length)
+    return { kind: "receiver-id", model: null, candidates };
+  const familyCandidates = modelCatalog.filter((model) =>
+    name.split(/\s+/).includes(String(model.family).toLowerCase()),
+  );
+  return familyCandidates.length
+    ? { kind: "product-name-family", model: null, candidates: familyCandidates }
+    : { kind: "unmatched", model: null, candidates: [] };
+}
+
+function collectionKind(collection) {
+  const page = Number(collection?.usagePage || 0);
+  const usage = Number(collection?.usage || 0);
+  if (page === 0x01 && usage === 0x06) return "keyboard";
+  if (page === 0x01 && usage === 0x02) return "mouse";
+  if (page === 0x0c) return "consumer control";
+  if (page === 0x01 && usage === 0x80) return "system control";
+  if (page >= 0xff00) return "vendor-defined";
+  return `usage ${hex4(page)}:${hex4(usage)}`;
+}
+
 function renderProfileSelect() {
   const select = $("#profileSelect");
   select.replaceChildren();
@@ -311,76 +382,126 @@ function renderProfileSelect() {
 
 function renderModelSelect() {
   const select = $("#modelSelect");
+  const filter = String($("#modelFilter")?.value || "").trim().toLowerCase();
+  const currentModel = selectedModel();
   select.replaceChildren();
-  modelCatalog.forEach((model) => {
+  modelCatalog
+    .filter((model) => {
+      if (!filter) return true;
+      return `${model.name} ${model.code} ${model.family} ${model.region}`
+        .toLowerCase()
+        .includes(filter);
+    })
+    .forEach((model) => {
     const option = document.createElement("option");
     option.value = model.code;
-    option.textContent = model.name + " · " + model.code;
+    option.textContent = `${model.name} · ${model.code}`;
     select.append(option);
   });
-  const selectedCode = modelByCode(activeProfile().modelCode)
-    ? activeProfile().modelCode
-    : (modelCatalog[0] && modelCatalog[0].code) || "022F";
-  select.value = selectedCode;
-  if (modelCatalog.length)
-    activeProfile().modelCode = select.value || selectedCode;
-  $("#overviewLayoutCaption").textContent =
-    (modelByCode(select.value)?.region || "ANSI") + " profile · 96% layout";
+  select.value = [...select.options].some(
+    (option) => option.value === currentModel?.code,
+  )
+    ? currentModel.code
+    : "";
+  const layout = layoutForModel(currentModel);
+  $("#overviewLayoutCaption").textContent = currentModel
+    ? `${currentModel.region} · ${modelSizeLabel(currentModel)} · ${layout?.keys?.length || 0} visual keys`
+    : "Filter and choose a model profile";
   $("#selectedModelName").textContent =
-    modelByCode(select.value)?.name || "S98 variant";
+    currentModel?.name || "Select a model";
+  const exactProfileMatch = identityMatch?.model?.code === currentModel?.code;
+  $("#deviceModelHeadline").textContent = currentModel
+    ? exactProfileMatch
+      ? currentModel.name
+      : `Selected profile · ${currentModel.name}`
+    : "Select a keyboard profile";
+  $("#keyboardLayoutTitle").textContent = currentModel
+    ? `${currentModel.family} · ${modelSizeLabel(currentModel)}`
+    : "Keyboard layout";
+  $("#keymapLayoutTitle").textContent = currentModel
+    ? `${currentModel.name} · ${currentModel.region}`
+    : "Select a model layout";
+  const matchingOptionCount = select.options.length;
+  $("#modelFilterCount").textContent = `${matchingOptionCount} of ${modelCatalog.length} models`;
 }
 
 function renderKeyboard(host) {
   if (!host) return;
   host.replaceChildren();
   const profile = activeProfile();
-  KEY_ROWS.forEach((row, rowIndex) => {
-    const rowElement = document.createElement("div");
-    rowElement.className = "key-row row-" + rowIndex;
-    row.forEach(([id, label, width]) => {
-      const key = document.createElement("button");
-      key.type = "button";
-      key.className = "keycap";
-      key.textContent = label;
-      key.title = label;
-      key.style.setProperty("--w", String(width));
-      key.dataset.key = id;
-      const mapping = profile.layers[currentLayer][id];
-      if (mapping && mapping.type !== "Default") key.classList.add("mapped");
-      if (
-        [
-          "Backspace",
-          "Tab",
-          "CapsLock",
-          "Enter",
-          "LeftShift",
-          "RightShift",
-          "LeftCtrl",
-          "LeftAlt",
-          "Space",
-          "Fn",
-        ].includes(id)
-      )
-        key.classList.add("modifier");
-      if (id === selectedKey && activePage === "keys")
-        key.classList.add("selected");
-      if (mapping && mapping.type !== "Default")
-        key.title = label + " → " + (mapping.value || mapping.type);
-      key.addEventListener("click", () => {
-        selectedKey = id;
-        if (host.id === "keymapKeyboard") return renderAll();
-        setPage("keys");
-        renderAll();
-      });
-      rowElement.append(key);
+  const model = selectedModel();
+  const layout = layoutForModel(model);
+  const layoutWidth = Number(layout?.width || 0);
+  const layoutHeight = Number(layout?.height || 0);
+  host.classList.add("keyboard-stage");
+  host.style.aspectRatio = `${layoutWidth || 1} / ${layoutHeight || 1}`;
+  const keys = layout?.keys || [];
+  if (!keys.some((key) => key.id === selectedKey))
+    selectedKey = keys[0]?.id || "";
+  keys.forEach((descriptor) => {
+    const { id, label, x, y, w, h } = descriptor;
+    const key = document.createElement("button");
+    key.type = "button";
+    key.className = "keycap";
+    key.textContent = label;
+    key.title = `${label} · ${id}`;
+    key.dataset.key = id;
+    key.style.left = `${(x / layoutWidth) * 100}%`;
+    key.style.top = `${(y / layoutHeight) * 100}%`;
+    key.style.width = `${(w / layoutWidth) * 100}%`;
+    key.style.height = `${(h / layoutHeight) * 100}%`;
+    const mapping = profile.layers[currentLayer][id];
+    if (mapping && mapping.type !== "Default") key.classList.add("mapped");
+    if (/shift|ctrl|alt|win|caps|tab|enter|backspace|space|fn/i.test(label))
+      key.classList.add("modifier");
+    if (id === selectedKey && activePage === "keys")
+      key.classList.add("selected");
+    if (mapping && mapping.type !== "Default")
+      key.title = `${label} → ${mapping.value || mapping.type}`;
+    key.addEventListener("click", () => {
+      selectedKey = id;
+      if (host.id === "keymapKeyboard") return renderAll();
+      setPage("keys");
+      renderAll();
     });
-    host.append(rowElement);
+    host.append(key);
   });
 }
 
 function renderLighting() {
+  const model = selectedModel();
+  const features = model?.features || {};
   const lighting = activeProfile().lighting;
-  $("#effectSelect").value = lighting.effect;
+  const effectSelect = $("#effectSelect");
+  const slots = features.lightingModeSlots || [];
+  effectSelect.replaceChildren();
+  slots.forEach((slot) => {
+    const option = document.createElement("option");
+    option.value = `mode:${slot}`;
+    option.textContent = `Mode slot ${slot}`;
+    effectSelect.append(option);
+  });
+  if (lighting.effect && ![...effectSelect.options].some((option) => option.value === lighting.effect)) {
+    const legacy = document.createElement("option");
+    legacy.value = lighting.effect;
+    legacy.textContent = `Saved label: ${lighting.effect}`;
+    effectSelect.append(legacy);
+  }
+  effectSelect.value = lighting.effect;
+  effectSelect.disabled = !features.rgb || !slots.length;
+  $("#lightingModeInfo").textContent = features.rgb
+    ? `${slots.length} lighting mode slots are listed for this profile. Mode names are not decoded, and values stay local.`
+    : "The installed RK profile does not list RGB backlighting for this model.";
+  $("#lightingFeatureState").textContent = features.rgb
+    ? `${slots.length} mode slots · profile only`
+    : "No RGB profile";
+  $("#quickLightingControl").hidden = !features.rgb;
+  $("#quickEffectControl").hidden = !features.rgb;
+  $("#colorPicker").disabled = !features.rgb;
+  $("#brightnessRange").disabled = !features.rgb;
+  $("#speedRange").disabled = !features.rgb;
+  $("#quickBrightness").disabled = !features.rgb;
+  $$(".swatch").forEach((swatch) => (swatch.disabled = !features.rgb));
   $("#colorPicker").value = lighting.color;
   $("#colorHex").textContent = lighting.color;
   $("#brightnessRange").value = lighting.brightness;
@@ -389,7 +510,10 @@ function renderLighting() {
   $("#overviewBrightness").textContent = lighting.brightness + "%";
   $("#speedRange").value = lighting.speed;
   $("#speedValue").textContent = lighting.speed + "%";
-  $("#overviewEffect").textContent = lighting.effect;
+  $("#overviewEffect").textContent = lighting.effect.startsWith("mode:")
+    ? `Slot ${lighting.effect.slice(5)}`
+    : `Saved: ${lighting.effect}`;
+  $("#saveLighting").disabled = !features.rgb;
   $$(".swatch").forEach((swatch) =>
     swatch.classList.toggle(
       "active",
@@ -400,18 +524,33 @@ function renderLighting() {
 
 function renderEditor() {
   const profile = activeProfile();
-  $("#layerSelect").value = currentLayer;
+  const model = selectedModel();
+  const layout = layoutForModel(model);
+  const layers = layerEntries(model);
+  const layerSelect = $("#layerSelect");
+  layerSelect.replaceChildren();
+  layers.forEach(({ id, label }) => {
+    const option = document.createElement("option");
+    option.value = id;
+    option.textContent = label;
+    layerSelect.append(option);
+  });
+  if (!layers.some(({ id }) => id === currentLayer)) currentLayer = "base";
+  layerSelect.value = currentLayer;
   const mapping = profile.layers[currentLayer][selectedKey];
-  const descriptor = KEY_ROWS.flat().find((row) => row[0] === selectedKey);
-  const label = descriptor ? descriptor[1] : selectedKey;
+  const descriptor = layout?.keys?.find((key) => key.id === selectedKey);
+  const label = descriptor?.label || selectedKey;
   $("#selectedKeyName").textContent = label;
   $("#selectedKeycap").textContent = label;
-  $("#selectedLayerName").textContent = LAYER_LABELS[currentLayer];
+  $("#selectedLayerName").textContent =
+    layers.find(({ id }) => id === currentLayer)?.label || LAYER_LABELS[currentLayer];
   $("#actionSelect").value = mapping?.type || "Default";
   $("#actionValue").value = mapping?.value || label;
   $("#actionValueWrap").hidden =
     !mapping || !["Custom", "Macro", "Media"].includes(mapping.type);
   const count = Object.keys(profile.layers[currentLayer]).length;
+  $("#layerSelectCaption").textContent =
+    `${layers.length} layer${layers.length === 1 ? "" : "s"} in this model profile`;
   $("#mappingCount").textContent = count
     ? count +
       " remap" +
@@ -422,6 +561,8 @@ function renderEditor() {
 }
 
 function renderScreen() {
+  const model = selectedModel();
+  const screenSpec = model?.features?.screen;
   const screen = activeProfile().screen;
   $("#screenBrightness").value = screen.brightness;
   $("#screenBrightnessValue").textContent = screen.brightness + "%";
@@ -436,23 +577,167 @@ function renderScreen() {
   $("#screenTransferText").textContent = asset
     ? "Asset metadata is stored in this profile. The image file stays on this PC and has not been transferred."
     : "Asset metadata stays local. The image is not uploaded and is not sent to the keyboard.";
+  $("#screenPageTitle").textContent = screenSpec
+    ? `${screenSpec.width} × ${screenSpec.height} display settings`
+    : "No display in this profile";
+  $("#screenOverviewSize").textContent = screenSpec
+    ? `${screenSpec.width} × ${screenSpec.height}`
+    : "No display listed";
+  $("#screenPageDescription").textContent = screenSpec
+    ? `Store display preferences for ${model.name}. Assets stay on this PC; no data is sent to the keyboard.`
+    : "The installed RK profile does not list a screen for this model.";
+  $("#screenSpecBadge").textContent = screenSpec
+    ? `${screenSpec.width} × ${screenSpec.height}${screenSpec.maxFrames ? ` · ${screenSpec.maxFrames} frame cap` : ""}`
+    : "NO DISPLAY PROFILE";
+  $("#screenResolution").textContent = screenSpec
+    ? `${screenSpec.width} × ${screenSpec.height}`
+    : "Not listed";
+  $("#screenFrameLimit").textContent = screenSpec?.maxFrames
+    ? `${screenSpec.maxFrames} frames`
+    : "Not listed";
+  $("#screenFeatureCard").hidden = !screenSpec;
+  $("#page-screen").hidden = !screenSpec;
+  $("#screenNavButton").hidden = !screenSpec;
   $("#screenTransport").textContent = identifiedDevice
-    ? "Identity only · no report opened"
-    : "Not connected";
+    ? "Descriptor only · no report opened"
+    : "No device selected";
+  $("#saveScreen").disabled = !screenSpec;
 }
 
 function renderKnob() {
   const profile = activeProfile();
+  const model = selectedModel();
+  const hasDial = model?.family === "S98";
+  const modes = connectionChoices(model);
+  $("#knobControls").hidden = !hasDial;
+  $("#knobHardwareLabel").textContent = hasDial
+    ? "Rotary dial preferences"
+    : "No dial control is listed for this model";
+  $("#connectionMode").replaceChildren();
+  modes.forEach((mode) => {
+    const option = document.createElement("option");
+    option.value = mode.value;
+    option.textContent = mode.label;
+    $("#connectionMode").append(option);
+  });
+  const modeCards = $("#connectionModeCards");
+  modeCards.replaceChildren();
+  modes.forEach((mode) => {
+    const card = document.createElement("div");
+    const active = mode.value === profile.connection;
+    card.innerHTML = `<strong>${escapeHtml(mode.label)}</strong><small>${active ? "Selected profile value" : "Profile option"}</small>`;
+    modeCards.append(card);
+  });
+  const selectedMode = modes.some((mode) => mode.value === profile.connection)
+    ? profile.connection
+    : modes[0]?.value || "USB-C";
   $("#knobRotate").value = profile.knob.rotate;
   $("#knobPress").value = profile.knob.press;
   $("#knobLongPress").value = profile.knob.longPress;
-  $("#connectionMode").value = profile.connection;
+  $("#connectionMode").value = selectedMode;
+  $("#connectionModeState").textContent = modes.length > 1
+    ? `${modes.length} profile preferences · no physical mode switch`
+    : "Only USB identity is listed for this model";
+  $("#connectionFeatureSummary").textContent = modes.length > 1
+    ? modes.slice(1).map((mode) => mode.label).join(" · ")
+    : "USB identity only · other modes unknown";
+  $("#triModeCard").hidden = modes.length < 2;
+  $("#smartDisplayFeature").hidden = !model?.features?.screen;
+  $("#rotaryFeature").hidden = !hasDial;
+  $("#saveKnob").disabled = !hasDial;
+}
+
+function connectionChoices(model) {
+  if (model?.family === "S98")
+    return [
+      { value: "USB-C", label: "USB-C wired" },
+      { value: "2.4 GHz", label: "2.4 GHz receiver" },
+      { value: "Bluetooth 1", label: "Bluetooth slot 1" },
+      { value: "Bluetooth 2", label: "Bluetooth slot 2" },
+      { value: "Bluetooth 3", label: "Bluetooth slot 3" },
+    ];
+  const name = String(model?.name || "").toLowerCase();
+  const modes = [{ value: "USB-C", label: "USB wired" }];
+  if (/three.?mode|tri.?mode|3.?mode/.test(name)) {
+    modes.push(
+      { value: "2.4 GHz", label: "2.4 GHz receiver" },
+      { value: "Bluetooth 1", label: "Bluetooth" },
+    );
+  } else if (model?.features?.wirelessProductId) {
+    modes.push({ value: "2.4 GHz", label: "Wireless receiver (catalog PID)" });
+  } else if (/bluetooth|\bbt\b/.test(name)) {
+    modes.push({ value: "Bluetooth 1", label: "Bluetooth" });
+  }
+  return modes;
+}
+
+function migrateLegacyMappings() {
+  let changed = false;
+  const aliases = {
+    Tilde: ["`", "~"],
+    Print: ["PrtSc", "Print"],
+    Scroll: ["ScrLock", "Scroll", "Scr"],
+    Pause: ["Pause", "Pau"],
+    Insert: ["Insert", "Ins"],
+    PageUp: ["PgUp"],
+    PageDown: ["PgDn"],
+    NumDivide: ["Num /", "Num/"],
+    NumMultiply: ["Num*", "Num *"],
+    NumMinus: ["Num-"],
+    NumPlus: ["Num+"],
+    NumPlus2: ["Num+"],
+    NumDecimal: ["Num .", "Num."],
+    LeftShift: ["LShift"],
+    RightShift: ["RShift"],
+    LeftCtrl: ["LCtrl"],
+    RightCtrl: ["RCtrl"],
+    LeftWin: ["LWin"],
+    LeftAlt: ["LAlt"],
+    RightAlt: ["RAlt"],
+    Fn: ["FN", "Fn"],
+    Menu: ["App", "Menu"],
+  };
+  state.profiles.forEach((profile) => {
+    const layout = layoutForModel(modelByCode(profile.modelCode));
+    if (!layout?.keys?.length) return;
+    const keysByLabel = new Map();
+    layout.keys.forEach((key) => {
+      const normalized = key.label.toLowerCase().replace(/\s+/g, "").trim();
+      if (!keysByLabel.has(normalized)) keysByLabel.set(normalized, []);
+      keysByLabel.get(normalized).push(key);
+    });
+    Object.values(profile.layers).forEach((layerMap) => {
+      Object.entries(layerMap).forEach(([oldId, mapping]) => {
+        if (layout.keys.some((key) => key.id === oldId)) return;
+        const legacy = KEY_ROWS.flat().find(([id]) => id === oldId);
+        if (!legacy) return;
+        const labels = aliases[oldId] || [legacy[1]];
+        const candidates = labels.flatMap((label) =>
+          keysByLabel.get(label.toLowerCase().replace(/\s+/g, "").trim()) || [],
+        );
+        if (!candidates.length) return;
+        let target = candidates[0];
+        if (/^Num/.test(oldId)) target = candidates.find((key) => /^Num/i.test(key.label)) || candidates.at(-1);
+        if (oldId === "NumEnter" || oldId === "NumEnter2")
+          target = candidates.find((key) => key.x > layout.width * 0.82) || candidates.at(-1);
+        if (layerMap[target.id]) return;
+        layerMap[target.id] = mapping;
+        delete layerMap[oldId];
+        changed = true;
+      });
+    });
+  });
+  if (changed) saveState();
 }
 
 function renderMacros() {
   const list = $("#macroList");
   list.replaceChildren();
   const profile = activeProfile();
+  const macroBuffers = selectedModel()?.features?.macroBuffers || 0;
+  $("#macroCapability").textContent = macroBuffers
+    ? `This RK profile lists ${macroBuffers} macro buffers. Keydeck keeps sequences local and does not write them.`
+    : "This model profile does not specify macro buffer capacity. Sequences remain local in Keydeck.";
   if (!profile.macros.length) {
     const empty = document.createElement("div");
     empty.className = "empty-state";
@@ -504,7 +789,7 @@ function renderProfiles() {
       "</div><h3>" +
       escapeHtml(profile.name) +
       "</h3><p>" +
-      escapeHtml(model?.name || "S98 profile") +
+      escapeHtml(model?.name || "RK model profile") +
       " · " +
       profile.macros.length +
       " macros</p><div class='profile-card-actions'><button class='button button-light' data-activate='" +
@@ -565,54 +850,83 @@ function renderProfiles() {
 function setDeviceStatus(device) {
   identifiedDevice = device || null;
   const connected = Boolean(device);
-  const lampText = connected ? "Keyboard identified" : "No keyboard identified";
+  identityMatch = connected ? deviceModelMatch(device) : null;
+  const match = identityMatch;
+  if (match?.model && activeProfile().modelCode !== match.model.code) {
+    activeProfile().modelCode = match.model.code;
+    saveState();
+  }
+  const lampText = connected ? "RK HID device detected" : "No keyboard detected";
   $("#sidebarDeviceState").textContent = lampText;
-  $("#sidebarDeviceName").textContent = device?.productName || "RK S98";
+  $("#sidebarDeviceName").textContent = match?.model?.name || descriptorName(device) || deviceIdLabel(device) || "Choose a model";
   $("#sidebarDeviceId").textContent = connected
-    ? "Descriptor only · reports closed"
+    ? `VID:PID ${hex4(device.vendorId)}:${hex4(device.productId)} · descriptor only`
     : "USB device access is off";
   $("#devicePillText").textContent = connected
-    ? device.productName || "RK device identified"
+    ? match?.model?.name || "RK keyboard detected · model unresolved"
     : "Not identified";
   $("#deviceIdentity").textContent = connected
-    ? "Browser permission granted. HID reports are not opened, read or written."
-    : "Choose Identify keyboard to inspect its USB identity. The app will not open or write HID reports.";
+    ? "Browser permission granted. This app reads the USB/HID descriptor only; HID reports are not opened or exchanged."
+    : "Identify a keyboard to inspect its USB identity. The app will not open or exchange HID reports.";
   $("#deviceIdValue").textContent = connected
     ? hex4(device.vendorId) + ":" + hex4(device.productId)
     : "—";
-  $("#diagName").textContent = device?.productName || "Not identified";
+  $("#diagName").textContent = connected
+    ? descriptorName(device) || "Unavailable (invalid descriptor text)"
+    : "Not identified";
   $("#diagVendor").textContent = connected ? "0x" + hex4(device.vendorId) : "—";
   $("#diagProduct").textContent = connected
     ? "0x" + hex4(device.productId)
     : "—";
   $("#diagCollections").textContent = connected
-    ? String(device.collections.length)
+    ? String(device.collections?.length || 0)
+    : "—";
+  $("#diagCollectionTypes").textContent = connected
+    ? [...new Set((device.collections || []).map(collectionKind))].join(", ") || "Not reported"
     : "—";
   $$("#sidebarLamp,#deviceLamp").forEach((lamp) =>
     lamp.classList.toggle("connected", connected),
   );
-  const model = connected ? modelByCode(hex4(device.productId)) : null;
   const callout = $("#supportCallout");
+  const method = match?.kind === "product-id"
+    ? "USB product ID"
+    : match?.kind === "product-name"
+      ? "USB product name"
+      : "";
   if (!connected) {
     $("#diagProfile").textContent = "None";
     callout.innerHTML =
-      "<strong>No device access granted</strong><p>Identify the keyboard to compare its USB product ID with the S98 profiles in this project.</p>";
-  } else if (model) {
-    $("#diagProfile").textContent = model.name;
+      "<strong>No device access granted</strong><p>Identify a keyboard to compare its descriptors with the 188 model profiles in this project.</p>";
+  } else if (match?.model) {
+    $("#diagProfile").textContent = `${match.model.name} · ${method}`;
     callout.innerHTML =
-      "<strong>S98 identity matches " +
-      escapeHtml(model.code) +
-      "</strong><p>Descriptor inspection is complete. This build does not send device commands.</p>";
+      `<strong>Model match: ${escapeHtml(match.model.name)}</strong><p>Matched by ${escapeHtml(method)} against profile ${escapeHtml(match.model.code)}. The app has not opened a HID report.</p>`;
+  } else if (match?.candidates?.length) {
+    const shown = match.candidates.slice(0, 4).map((model) => model.name);
+    const names = shown.join(", ") +
+      (match.candidates.length > shown.length ? ` and ${match.candidates.length - shown.length} more` : "");
+    const reason = match.kind === "receiver-id"
+      ? `Product ID 0x${hex4(device.productId)} is listed as a receiver ID for ${escapeHtml(names)}. Receiver IDs can be shared.`
+      : `The device name is not specific enough to distinguish ${escapeHtml(names)}.`;
+    $("#diagProfile").textContent = "Several model profiles";
+    callout.innerHTML =
+      `<strong>RK keyboard detected; model is not unique</strong><p>${reason} Choose the correct model profile below; the app will show its layout without probing the keyboard.</p>`;
   } else {
-    $("#diagProfile").textContent = "No S98 match";
+    $("#diagProfile").textContent = "No catalog match";
     callout.innerHTML =
-      "<strong>Unrecognized product ID</strong><p>This ID does not match an S98 profile. The device writer is locked and no HID report was opened.</p>";
+      "<strong>RK keyboard detected; model unresolved</strong><p>This USB identity does not uniquely match the installed model catalog. Choose the correct model profile to display its layout. No report probe was run.</p>";
   }
   $("#lightingDeviceState").textContent = connected
-    ? "0x" + hex4(device.productId)
+    ? `${hex4(device.vendorId)}:${hex4(device.productId)}`
     : "Not identified";
+  $("#deviceModelState").textContent = match?.model
+    ? `${match.model.name} · matched by ${method}`
+    : connected
+      ? "Model unresolved · choose a profile below"
+      : "No keyboard selected";
+  renderAuthorizedDevices();
   $("#screenTransport").textContent = connected
-    ? "Identity only · no report opened"
+    ? "Descriptor only · no report opened"
     : "Not connected";
   if (device)
     window.localStorage.setItem(
@@ -624,6 +938,19 @@ function setDeviceStatus(device) {
 
 function hex4(number) {
   return Number(number).toString(16).padStart(4, "0").toUpperCase();
+}
+
+function descriptorName(device) {
+  const name = String(device?.productName || "").trim();
+  // WebHID product names can be malformed on some receivers. Keep those bytes
+  // out of the UI and avoid presenting mojibake as a model identification.
+  return /^[\x20-\x7E]{2,80}$/.test(name) ? name : "";
+}
+
+function deviceIdLabel(device) {
+  return device
+    ? `RK HID device ${hex4(device.vendorId)}:${hex4(device.productId)}`
+    : "";
 }
 
 async function identifyDevice() {
@@ -638,24 +965,67 @@ async function identifyDevice() {
       filters: [{ vendorId: 0x258a }],
     });
     if (!devices.length) return;
-    const device = devices[0];
-    setDeviceStatus(device);
-    showToast(
-      modelByCode(hex4(device.productId))
-        ? "S98 profile identity found. Device commands remain disabled."
-        : "Device identified. No matching S98 profile; hardware writes remain locked.",
-    );
+    authorizedDevices = [
+      ...new Map(
+        [...authorizedDevices, ...devices].map((device) => [deviceKey(device), device]),
+      ).values(),
+    ];
+    setDeviceStatus(devices[0]);
+    renderAll();
+    showToast(identityMatch?.model
+      ? `${identityMatch.model.name} matched from the USB descriptor.`
+      : "RK keyboard identified. Choose a model profile; no HID report was opened.");
   } catch (error) {
     if (error && error.name === "NotFoundError") return;
     showToast("The browser could not identify that device.");
   }
 }
 
+function deviceKey(device) {
+  return `${device.vendorId}:${device.productId}:${device.productName || ""}:${device.serialNumber || ""}`;
+}
+
+function renderAuthorizedDevices() {
+  const select = $("#deviceSelect");
+  const wrap = $("#deviceSelectWrap");
+  if (!select || !wrap) return;
+  select.replaceChildren();
+  authorizedDevices.forEach((device, index) => {
+    const option = document.createElement("option");
+    option.value = String(index);
+    option.textContent = `${descriptorName(device) || "RK HID device"} · ${hex4(device.vendorId)}:${hex4(device.productId)}`;
+    select.append(option);
+  });
+  wrap.hidden = authorizedDevices.length < 2;
+  const activeIndex = authorizedDevices.findIndex(
+    (device) => deviceKey(device) === (identifiedDevice && deviceKey(identifiedDevice)),
+  );
+  if (activeIndex >= 0) select.value = String(activeIndex);
+}
+
+async function scanAuthorizedDevices() {
+  if (!navigator.hid?.getDevices) return;
+  try {
+    authorizedDevices = (await navigator.hid.getDevices()).filter(
+      (device) => device.vendorId === 0x258a,
+    );
+    if (authorizedDevices.length) setDeviceStatus(authorizedDevices[0]);
+    else setDeviceStatus(null);
+    renderAll();
+  } catch (error) {
+    console.warn("Could not inspect previously authorized HID descriptors.");
+  }
+}
+
 function renderAll() {
   state.profiles = state.profiles.map(normalizeProfile);
+  const model = selectedModel();
+  if (model && !layerEntries(model).some(({ id }) => id === currentLayer))
+    currentLayer = "base";
   renderProfileSelect();
   renderModelSelect();
-  renderKeyboard($("#s98Keyboard"));
+  renderModelFeatures();
+  renderKeyboard($("#deviceKeyboard"));
   renderKeyboard($("#keymapKeyboard"));
   renderLighting();
   renderEditor();
@@ -666,7 +1036,48 @@ function renderAll() {
   if (identifiedDevice) setDeviceStatus(identifiedDevice);
 }
 
+function renderModelFeatures() {
+  const model = selectedModel();
+  const features = model?.features || {};
+  const summary = $("#modelFeatureSummary");
+  summary.replaceChildren();
+  const items = [
+    `${model?.keyCount || "?"} key profile`,
+    `${features.layers?.length || 1} layer${features.layers?.length === 1 ? "" : "s"}`,
+  ];
+  if (features.rgb)
+    items.push(`${features.lightingModeSlots?.length || 0} RGB mode slots`);
+  if (features.screen)
+    items.push(`Display ${features.screen.width} × ${features.screen.height}`);
+  if (features.macroBuffers)
+    items.push(`${features.macroBuffers} macro buffers`);
+  if (features.wirelessProductId)
+    items.push(`Receiver ID ${features.wirelessProductId}`);
+  if (model?.family === "S98") items.push("Rotary dial");
+  items.forEach((text) => {
+    const chip = document.createElement("span");
+    chip.className = "feature-chip";
+    chip.textContent = text;
+    summary.append(chip);
+  });
+  $("#lightingNavButton").disabled = !features.rgb;
+  $("#lightingNavButton").title = features.rgb
+    ? "Edit local lighting preferences"
+    : "No RGB backlight is listed for this model";
+  if (!features.screen && activePage === "screen") setPage("device");
+  if (!features.rgb && activePage === "lighting") setPage("device");
+}
+
 function setPage(page) {
+  const model = selectedModel();
+  if (page === "screen" && !model?.features?.screen) {
+    showToast("This model profile does not list a keyboard display.");
+    page = "device";
+  }
+  if (page === "lighting" && !model?.features?.rgb) {
+    showToast("This model profile does not list RGB backlighting.");
+    page = "device";
+  }
   activePage = page;
   $$(".page").forEach((section) =>
     section.classList.toggle("active", section.id === "page-" + page),
@@ -679,7 +1090,7 @@ function setPage(page) {
     keys: "Key map",
     lighting: "Lighting",
     screen: "Smart display",
-    knob: "Knob & modes",
+    knob: "Controls & modes",
     macros: "Macros",
     profiles: "Profiles",
     diagnostics: "Device info",
@@ -791,9 +1202,18 @@ function wireEvents() {
     renderAll();
   });
   $("#modelSelect").addEventListener("change", (event) => {
+    if (!event.target.value) return;
     activeProfile().modelCode = event.target.value;
-    saveState("S98 profile variant saved.");
+    saveState("Model profile saved.");
     renderAll();
+  });
+  $("#modelFilter").addEventListener("input", renderModelSelect);
+  $("#deviceSelect").addEventListener("change", (event) => {
+    const device = authorizedDevices[Number(event.target.value)];
+    if (device) {
+      setDeviceStatus(device);
+      renderAll();
+    }
   });
   $("#layerSelect").addEventListener("change", (event) => {
     currentLayer = event.target.value;
@@ -983,24 +1403,44 @@ function wireEvents() {
     showToast("Hardware writes are disabled in this release."),
   );
   if (navigator.hid)
-    navigator.hid.addEventListener("disconnect", (event) => {
-      if (identifiedDevice && event.device === identifiedDevice) {
-        setDeviceStatus(null);
-        showToast("Keyboard disconnected.");
-      }
-    });
+    {
+      navigator.hid.addEventListener("connect", (event) => {
+        if (event.device.vendorId !== 0x258a) return;
+        if (!authorizedDevices.some((device) => deviceKey(device) === deviceKey(event.device)))
+          authorizedDevices.push(event.device);
+        setDeviceStatus(event.device);
+        renderAll();
+      });
+      navigator.hid.addEventListener("disconnect", (event) => {
+        authorizedDevices = authorizedDevices.filter(
+          (device) => deviceKey(device) !== deviceKey(event.device),
+        );
+        if (identifiedDevice && deviceKey(event.device) === deviceKey(identifiedDevice)) {
+          const next = authorizedDevices[0] || null;
+          setDeviceStatus(next);
+          renderAll();
+          showToast(next ? "Selected the next authorized RK device." : "Keyboard disconnected.");
+        } else {
+          renderAuthorizedDevices();
+        }
+      });
+    }
 }
 
 async function loadModelCatalog() {
   try {
     const response = await fetch("models.json", { cache: "no-store" });
     if (!response.ok) throw new Error("catalog unavailable");
-    const models = await response.json();
-    modelCatalog = Array.isArray(models) ? models : [];
+    const catalog = await response.json();
+    modelCatalog = Array.isArray(catalog) ? catalog : catalog.models || [];
+    modelLayouts = Array.isArray(catalog) ? {} : catalog.layouts || {};
   } catch (error) {
-    modelCatalog = [{ code: "022F", name: "RK-S98 Keyboard", region: "ANSI" }];
+    modelCatalog = [];
+    modelLayouts = {};
   }
+  migrateLegacyMappings();
   renderAll();
+  scanAuthorizedDevices();
 }
 
 wireEvents();
