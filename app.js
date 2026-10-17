@@ -344,9 +344,12 @@ function deviceModelMatch(device) {
   if (direct?.isDirectPid)
     return { kind: "product-id", model: direct, candidates: [direct] };
 
-  const candidates = modelCatalog.filter(
-    (model) => model.features?.wirelessProductId === pid,
-  );
+  const vid = hex4(device.vendorId);
+  const candidates = modelCatalog.filter((model) => {
+    const wirelessPid = model.features?.wirelessProductId;
+    const wirelessVid = model.features?.wirelessVendorId;
+    return wirelessPid === pid && (!wirelessVid || wirelessVid === vid);
+  });
   if (candidates.length)
     return { kind: "receiver-id", model: null, candidates };
   const familyCandidates = modelCatalog.filter((model) =>

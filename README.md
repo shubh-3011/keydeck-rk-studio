@@ -1,12 +1,12 @@
 # Keydeck RK Studio
 
-Keydeck is an unofficial, open-source profile studio for Royal Kludge keyboards. It builds model-specific layouts and capability summaries from the RK Keyboard Software 4.06 catalog installed on the development PC. The current catalog contains 188 model variants and 90 distinct visual layouts. Keydeck is not affiliated with or endorsed by Royal Kludge.
+Keydeck is an unofficial, open-source profile studio for Royal Kludge keyboards. It builds model-specific layouts and capability summaries from the RK Keyboard Software 4.06 catalog installed on the development PC. The catalog contains 188 named model profiles, 90 distinct visual layouts, and a separate unregistered profile retained for audit. Keydeck is not affiliated with or endorsed by Royal Kludge.
 
 ## Features
 
 - Inspect previously authorized RK keyboards on startup and track connect/disconnect events in Chrome or Edge.
 - Match exact USB product IDs and names against the local RK catalog; show ambiguous receiver IDs as unresolved instead of guessing.
-- Search 188 model profiles and display the model-specific key layout, region, RGB mode slots, function layers, and optional screen dimensions.
+- Search 188 named model profiles and display model-specific key layouts, region, RGB mode slots, function layers, and optional screen dimensions.
 - Edit local keymap, lighting, screen, macro, and connection preference profiles, then import or export them as JSON.
 - Keep S98 dial and tri-mode preferences in its profile.
 - Run as a static web app or as a Windows executable that opens the local interface in a browser.
@@ -46,7 +46,7 @@ Keydeck asks the browser to enumerate devices the user has already authorized. I
 
 Some keyboards expose generic or shared USB IDs. For example, the installed RK catalog lists `0x0150` as an A70 wireless receiver ID, while public S98 inventories also report `0x258A:0x0150`. Keydeck treats that identity as ambiguous and lets the user choose a model profile for the layout. See [the reverse-engineering audit](docs/reverse-engineering.md) for the evidence and limitations.
 
-The model catalog describes the variants and controls represented in one installed RK utility version. It does not claim that every RK keyboard generation or hardware protocol is covered. Exact RGB mode names and the native feature-report protocol have not been fully reverse engineered, so the app displays profile mode slots without sending them.
+The model catalog describes the variants and controls represented in one installed RK utility version. It now retains the profile options, base key tuples, Fn mappings, lighting-mode values, and wireless VID/PID pairs as audit data. Unknown fields remain uninterpreted, and none of this data is sent to a keyboard. See [the expanded reverse-engineering audit](docs/reverse-engineering.md) for the software feature inventory and the remaining protocol questions.
 
 To regenerate the metadata catalog from a local RK Keyboard Software install:
 
@@ -54,7 +54,7 @@ To regenerate the metadata catalog from a local RK Keyboard Software install:
 python scripts/extract_rk_catalog.py --rk-root "C:\Program Files (x86)\RK Keyboard Software"
 ```
 
-The extractor writes model names, key rectangles, and capability metadata to `models.json`. It does not copy RK executables, firmware, images, or HID payloads.
+The extractor writes model names, visual layouts, capability metadata, raw profile configuration, and unregistered profiles to `models.json`. It does not copy RK executables, firmware, images, or HID payloads.
 
 ## References
 
