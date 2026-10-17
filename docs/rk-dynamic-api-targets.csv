@@ -108,6 +108,7 @@ unins000.exe,LoadLibraryExW,0x00408082,call to import thunk,[]
 unins000.exe,LoadLibraryExW,0x004080C2,call to import thunk,[]
 unins000.exe,LoadLibraryExW,0x00408101,call to import thunk,[]
 unins000.exe,GetProcAddress,0x00407CC8,call to import thunk,"[""kernel32.dll"", ""GetLongPathNameW""]"
+unins000.exe,LoadLibraryExA,0x004A1596,call to import thunk,[]
 unins000.exe,LoadLibraryA,0x004A15A8,call to import thunk,[]
 unins000.exe,LoadLibraryW,0x00413C39,call to import thunk,[]
 unins000.exe,LoadLibraryW,0x00437F1D,call to import thunk,"[""uxtheme.dll""]"

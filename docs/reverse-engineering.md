@@ -37,15 +37,16 @@ installer helper, and uninstaller are in
 [`rk-native-api-imports.md`](rk-native-api-imports.md). The import report
 lists declared native APIs; it does not imply that each API executes on every
 run or that every runtime call is known. Address-level IAT cross-references
-for all 1,915 imports are in
+for 1,915 ordinary imports and three delay imports (1,918 rows total) are in
 [`rk-native-api-xrefs.csv`](rk-native-api-xrefs.csv). That CSV records direct
 x86 `call [IAT]` sites, caller instructions that target import thunks,
 import-forwarding `jmp [IAT]` sites, and other absolute IAT references found
 in executable sections. Dynamically resolved API names and nearby literal
 strings are separately recorded in
-[`rk-dynamic-api-targets.csv`](rk-dynamic-api-targets.csv). These are static
-byte/address-level references, not a function-level call graph or a record of
-executed system calls.
+[`rk-dynamic-api-targets.csv`](rk-dynamic-api-targets.csv). That inventory has
+128 statically identified `LoadLibrary*`/`GetProcAddress` callsites across the
+five PEs. These are static byte/address-level references, not a function-level
+call graph or a record of executed system calls.
 
 The static profile selector for every configured model is captured in
 [`rk-profile-driver-family-map.csv`](rk-profile-driver-family-map.csv). It
@@ -259,16 +260,19 @@ and runtime effects were not executed or established.
 The IAT byte scan found direct-import calls, calls routed through import
 thunks, and import-forwarding thunks in executable sections:
 
-| Binary | Static import entries | `call [IAT]` sites | Calls through import thunks | `jmp [IAT]` thunks |
-| --- | ---: | ---: | ---: |
-| `DeviceDriver.exe` | 672 | 6,479 | 1,174 | 673 |
+| Binary | Import entries (ordinary + delay) | `call [IAT]` sites | Calls through import thunks | `jmp [IAT]` thunks |
+| --- | ---: | ---: | ---: | ---: |
+| `DeviceDriver.exe` | 675 (672 ordinary + 3 delay) | 6,479 | 1,178 | 676 |
 | `Dev/01AF/Update.exe` | 618 | 7,438 | 635 | 619 |
 | `InitSetup.dll` | 76 | 151 | 77 | 76 |
 | `uninstall.dll` | 30 | 34 | 32 | 30 |
 | `unins000.exe` | 519 | 519 | 2,710 | 536 |
 
-The CSV preserves the individual addresses, including calls to imported file,
-registry, UI, HID, audio, graphics, timing, thread, and network APIs. Import
+The table counts include delay-import thunk and caller references for the
+three `OLEACC.dll` entries in `DeviceDriver.exe`; their addresses are listed
+in the delay-import inventory. The CSV preserves individual addresses,
+including calls to imported file, registry, UI, HID, audio, graphics, timing,
+thread, and network APIs. Import
 thunks and repeated references inflate raw counts; these figures do not equal
 unique source-level operations or runtime executions. Windows syscalls made
 inside imported APIs and driver stacks are outside this static user-mode PE
@@ -289,9 +293,11 @@ found these `0F 05`, `0F 34`, and `CD 2E` byte patterns:
 | `uninstall.dll` | 0 | 0 | 0 |
 | `unins000.exe` | 1 | 0 | 0 |
 
-Full disassembly emits `syscall` mnemonics at `0x464224` and `0x464354` in
-`DeviceDriver.exe`, but both lie in lookup-table data, not executable paths.
-Other raw matches overlap call displacements, immediates, or data. No
+The Ghidra listing marks `syscall` mnemonics at `0x464224` and `0x464354` in
+`DeviceDriver.exe` as lookup-table data, with no reachable call path recovered.
+Those byte addresses are in `.text`, so section permissions alone do not
+establish the classification. Other raw matches overlap call displacements,
+immediates, or data. No
 `sysenter` or `int 0x2e` instruction path was decoded. This is not a runtime
 system-call trace and cannot rule out transitions inside imported Windows
 libraries, dynamically loaded modules, COM servers, or device drivers. COM
@@ -311,6 +317,37 @@ COM interface calls then dispatch indirectly, including calls through
 resolves `RoInitialize`/`RoUninitialize` at `0x537476`/`0x53754B`. Its wrapper
 calls `RoInitialize(1)`, which is WinRT framework initialization evidence,
 not a keyboard protocol.
+
+Further resolver call-flow tracing classified these additional targets:
+
+- `DeviceDriver.exe` loads `User32.dll` at `0x450606`, resolves
+  `SetProcessDPIAware` at `0x450618`, and calls it at `0x450622` when present.
+  It loads `MenuEx.dll` at `0x4332A6` and resolves `SetMenuAlign`,
+  `DllPreTranslateMessage`, and `CreateMenuEx` at `0x4332C3`, `0x4332DF`,
+  and `0x4332F4`; nearby exports include `DestroyMenuEx` and `SetGdiInit`.
+  The GDI compatibility path obtains `GDI32.DLL` at `0x470EE7`, resolves
+  `GetLayout` and `SetLayout`, and invokes the resolved pointers on an HDC.
+  Registry cleanup resolves `RegDeleteKeyExW` at `0x4A5418` and falls back to
+  imported `RegDeleteKeyW`.
+- `Update.exe`'s helper at `0x416570` resolves Kernel32 activation-context
+  APIs: `CreateActCtxW`, `ActivateActCtx`, `DeactivateActCtx`,
+  `FindActCtxSectionStringW`, `QueryActCtxW`, and `GetModuleHandleExW`.
+  The activation-context path at `0x4165B6` then loads `Comctl32.dll` at
+  `0x416769`, consistent with side-by-side common-controls setup.
+- `InitSetup.dll` loads `USER32.DLL` at `0x10009450` and resolves
+  `MessageBoxA`, `GetActiveWindow`, `GetLastActivePopup`,
+  `GetUserObjectInformationA`, and `GetProcessWindowStation` at
+  `0x1000946C`, `0x10009489`, `0x1000949E`, `0x100094B3`, and `0x100094CB`.
+  These pointers support modal/error-window handling.
+- `unins000.exe` conditionally loads Advapi32 at `0x4B6BDB` and resolves
+  `GetNamedSecurityInfoW`, `SetNamedSecurityInfoW`, and `SetEntriesInAclW`
+  while preparing ACL updates. Its `LoadLibraryExA` import-thunk call at
+  `0x4A1596` is included in the 128-row callsite inventory; no nearby target
+  string was recovered for that site.
+
+These are Windows UI, compatibility, registry, and uninstall-permission
+flows. Their presence in the PE does not show that each conditional branch
+executes in a normal session.
 
 Targeted callsite inspection narrowed several potentially ambiguous imports:
 the main app's `SetWindowsHookExW` references use thread-scoped CBT,
@@ -700,10 +737,28 @@ RTTI-backed app-owned map links are summarized here:
 
 | Owner class | Map entry / command ID | Notification | Handler | Static interpretation and limit |
 | --- | --- | --- | --- | --- |
-| `CMacroDlg` | `0x005CD558` / `0x0107`; `0x005CD570` / `0x0117` | `WM_COMMAND` code `0x0300` (edit change) | `0x0042B3B0`; `0x0042B530` | A nearby string, `Loop Count = 1 ~ %d`, suggests loop-count validation for at least one edit field; the exact field-to-handler mapping is unresolved. |
-| `CScreenDlg` | `0x005DA4D0` / `0x0107` | `WM_COMMAND` code `0x0300` (edit change) | `0x0046C5B0` | This is a separate screen-dialog map entry sharing numeric ID `0x0107`; the visible control label and full effect are unresolved. |
-| `COemDrvApp` | `0xE146` | `WM_COMMAND`; notification not recovered | `0x0047EEDF` | App-owned command route; exact action is unresolved. |
-| `COemDrvDlg` | `0x6400`, `0x6401` | `WM_COMMAND`; code `0` | `0x00446770`, `0x00446820` | Handler `0x00446820` closes named helper windows, then consults profile/device and event/timer state; visible control label and exact purpose are unresolved. |
+| `CMacroDlg` | `0x005CD558` / `0x0107`; `0x005CD570` / `0x0117` | `WM_COMMAND` code `0x0300` (edit change) | `0x0042B3B0`; `0x0042B530` | The first handler validates a numeric value against a global upper bound and resets invalid input; the second clamps a numeric value to 1–1,048,575. See details below; labels are unresolved. |
+| `CScreenDlg` | `0x005DA4D0` / `0x0107` | `WM_COMMAND` code `0x0300` (edit change) | `0x0046C5B0` | Clamps the numeric value to 65,535 and stores it in dialog state at `this+0x114`; the visible control label is unresolved. |
+| `COemDrvApp` | `0xE146` | `WM_COMMAND`; notification not recovered | `0x0047EEDF` | Branch target returns zero through a shared epilogue; exact command purpose is unresolved. |
+| `COemDrvDlg` | `0x6400`, `0x6401` | `WM_COMMAND`; code `0` | `0x00446770`, `0x00446820` | One handler foregrounds or initializes/shows the dialog; the other closes named helper windows and may save profile data and signal an event. Full downstream effect is unresolved. |
+
+Handler-level inspection refined the macro and screen edit behavior. `CMacroDlg`
+handler `0x0042B3B0` reads the integer child at `this+0x2FA0`, accepts values
+from 1 through global `DAT_611FEC`, resets invalid input to `1` with the
+message format `Loop Count = 1 ~ %d`, and sets bit `0x40000000` in state
+returned by `FUN_0042CC20`; the owner of that state object is unresolved.
+Handler `0x0042B530` reads the child at `this+0x2FA8`, clamps values to
+1–1,048,575, and moves the edit caret to the end. The control labels are not
+recoverable from the generic dialog resources. `CScreenDlg` handler
+`0x0046C5B0` clamps to 65,535 and stores the result at `this+0x114`.
+
+For `COemDrvDlg`, handler `0x00446770` foregrounds the window when visible or
+initializes and shows it otherwise. Handler `0x00446820` closes windows named
+`OemDrvMacroTopWindow` and `OemDrvMsgTopWindow`; with a profile-state flag set,
+it writes active `CDev` blocks to `pro.dct` files and the active ID to
+`curid.dct`, then scans profile/PID records and may signal an event. The file
+writes are visible statically, but the signaled event's consumer and any
+downstream device effect remain unresolved.
 
 The other 26 blocks belong to MFC framework classes including dialogs,
 MDI frames, toolbar customization/property pages, preview/task panes, and

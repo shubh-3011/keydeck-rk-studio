@@ -1,6 +1,6 @@
 # RK native API import inventory
 
-Generated from the installed RK Keyboard Software package by reading PE import tables. No executable was launched and no keyboard interface was opened.
+Generated from the installed RK Keyboard Software package by reading PE import tables. Per-binary counts below cover ordinary imports; delay imports are listed separately. No executable was launched and no keyboard interface was opened.
 
 This inventory lists statically imported DLL entrypoints, not proof that every entrypoint is called at runtime. It does not cover APIs resolved dynamically with `GetProcAddress`, COM methods resolved from interface/vtable calls, calls made by Windows drivers, or behavior hidden behind indirect calls. The full application control-flow and every executed system call remain unproven.
 
@@ -8,7 +8,7 @@ For static addresses of direct IAT calls and callers routed through import thunk
 
 ## Binaries
 
-| Component | Relative path | SHA-256 | Size | Machine | Static imports |
+| Component | Relative path | SHA-256 | Size | Machine | Ordinary imports |
 |---|---|---|---:|---|---:|
 | Main UI and HID driver | `DeviceDriver.exe` | `c03f88bc4e2d78aa4392d7445b0fd62182dc824f97f5d5db40bd009e547a9ab6` | 2,326,528 | x86 | 672 |
 | Model-specific firmware updater | `Dev/01AF/Update.exe` | `27894463b0dfe5bc3f5dc19d4d3351d9dfb692c402bf277bde3889d37e4a206c` | 2,109,952 | x86 | 618 |
@@ -298,4 +298,20 @@ For static addresses of direct IAT calls and callers routed through import thunk
 
 `SysFreeString`
 
-\n
+## Delay imports
+
+`DeviceDriver.exe` has three delay-import entries from `OLEACC.dll`, in
+addition to the 672 ordinary imports shown in the binary table. The delay
+IAT entries and executable references are included in
+[`rk-native-api-xrefs.csv`](rk-native-api-xrefs.csv). The wrapper stubs jump
+through the delay IAT; callers reach those stubs through ordinary relative
+`call` instructions.
+
+| DLL | API | Delay IAT RVA | Delay thunk VA | Caller VAs | Other IAT reference VA |
+| --- | --- | --- | --- | --- | --- |
+| `OLEACC.dll` | `AccessibleObjectFromWindow` | `0x00203D20` | `0x00589379` | `0x005035CD` | `0x0058936F` |
+| `OLEACC.dll` | `LresultFromObject` | `0x00203D24` | `0x00589389` | `0x00477DFB`, `0x00477E23` | `0x0058937F` |
+| `OLEACC.dll` | `CreateStdAccessibleObject` | `0x00203D28` | `0x00589369` | `0x0047348A` | `0x0058934E` |
+
+These are accessibility/UI APIs. Their imported presence and call references
+do not establish which assistive-technology paths execute at runtime.
