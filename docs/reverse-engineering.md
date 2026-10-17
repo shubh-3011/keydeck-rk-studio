@@ -257,23 +257,22 @@ shutdown path at `0x004AE9CC` calls `ExitWindowsEx` at `0x004AEA38` with
 whether a reboot is requested. The exact install/uninstall callback sequence
 and runtime effects were not executed or established.
 
-The IAT byte scan found direct-import calls, calls routed through import
-thunks, and import-forwarding thunks in executable sections:
+The address-level IAT cross-reference CSV classifies these import entries and
+static executable-section references:
 
-| Binary | Import entries (ordinary + delay) | `call [IAT]` sites | Calls through import thunks | `jmp [IAT]` thunks |
-| --- | ---: | ---: | ---: | ---: |
-| `DeviceDriver.exe` | 675 (672 ordinary + 3 delay) | 6,479 | 1,178 | 676 |
-| `Dev/01AF/Update.exe` | 618 | 7,438 | 635 | 619 |
-| `InitSetup.dll` | 76 | 151 | 77 | 76 |
-| `uninstall.dll` | 30 | 34 | 32 | 30 |
-| `unins000.exe` | 519 | 519 | 2,710 | 536 |
+| Binary | Import entries (ordinary + delay) | Direct `call [IAT]` sites | `jmp [IAT]` thunks | Relative calls to thunks | Other absolute references |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `DeviceDriver.exe` | 675 (672 ordinary + 3 delay) | 6,353 | 105 | 601 | 853 |
+| `Dev/01AF/Update.exe` | 618 | 7,391 | 55 | 53 | 590 |
+| `InitSetup.dll` | 76 | 148 | 1 | 2 | 27 |
+| `uninstall.dll` | 30 | 21 | 10 | 12 | 6 |
+| `unins000.exe` | 519 | 0 | 536 | 2,698 | 0 |
 
-The table counts include delay-import thunk and caller references for the
-three `OLEACC.dll` entries in `DeviceDriver.exe`; their addresses are listed
-in the delay-import inventory. The CSV preserves individual addresses,
-including calls to imported file, registry, UI, HID, audio, graphics, timing,
-thread, and network APIs. Import
-thunks and repeated references inflate raw counts; these figures do not equal
+The counts are sums of addresses listed in the CSV, including the delay-import
+thunks and callers for the three `OLEACC.dll` entries in `DeviceDriver.exe`.
+The CSV preserves each address, including calls to imported file, registry,
+UI, HID, audio, graphics, timing, thread, and network APIs. Absolute byte
+references can include data or unreachable code; these counts do not equal
 unique source-level operations or runtime executions. Windows syscalls made
 inside imported APIs and driver stacks are outside this static user-mode PE
 scan. Dynamic targets in the updater are mostly compatibility/framework APIs
@@ -1088,6 +1087,15 @@ attempted “read” is not a passive USB capture. No keyboard feature report wa
 sent, no updater was launched, and no bootloader mode was entered. With the
 evidence available, there is no demonstrated way to copy the running firmware
 while leaving the keyboard unchanged.
+
+The dedicated [updater and firmware readback audit](rk-firmware-readback-audit.md)
+records the parser fields, traced HID verification buffers, UART reads, and
+the limits of this negative result.
+
+The [profile catalog and schema audit](rk-profile-schema-audit.md) covers all
+189 installed `KB.ini` files, the exact tuple coverage of `models.json`,
+profile field omissions, and the unresolved distinction between stored
+mapping rows and rendered keys.
 
 ## External references
 

@@ -16,6 +16,28 @@ For static addresses of direct IAT calls and callers routed through import thunk
 | Uninstaller helper | `uninstall.dll` | `9ca1ebc49998b8b2971debc1776e7aff6086aeb86adcca6cfb95e9fb399eb03c` | 146,944 | x86 | 30 |
 | Uninstaller | `unins000.exe` | `b4ca28b192d5a50307d2b28f3323b58b39cb51edd6682e75706cac2dd69a4a14` | 1,316,301 | x86 | 519 |
 
+## Static call-reference coverage
+
+The cross-reference CSV associates every ordinary or delay import row with
+its IAT address and recognized executable-section reference addresses. The
+following counts distinguish imports with at least one direct `call [IAT]` or
+relative `call` to an import thunk from imports that have no such callsite in
+the inventory:
+
+| Binary | Import entries | Entries with a direct/thunk call reference | Entries without a recorded direct/thunk call reference |
+|---|---:|---:|---:|
+| `DeviceDriver.exe` | 675 | 643 | 32 |
+| `Dev/01AF/Update.exe` | 618 | 606 | 12 |
+| `InitSetup.dll` | 76 | 74 | 2 |
+| `uninstall.dll` | 30 | 27 | 3 |
+| `unins000.exe` | 519 | 507 | 12 |
+| **Total** | **1,918** | **1,857** | **61** |
+
+These are static code-reference findings, not runtime execution counts. An
+entry without a listed direct or relative call can still be addressed through
+an indirect pointer, callback table, or code path not recovered by the scan;
+it should not be treated as proof that the imported API is unused.
+
 ## Main UI and HID driver: `DeviceDriver.exe`
 
 ### `KERNEL32.dll` (171 imports)

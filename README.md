@@ -64,6 +64,8 @@ The extractor writes model names, visual layouts, capability metadata, raw profi
 - [RK S98 product specifications](https://rkgamingstore.com/products/s98-wireless-mechanical-keyboard)
 - [KludgeKnight](https://github.com/vinc3m1/kludgeknight), an open-source RK web configurator used as a behavioral reference
 - [Reverse-engineering audit and limits](docs/reverse-engineering.md)
+- [Updater and firmware readback audit](docs/rk-firmware-readback-audit.md)
+- [Profile catalog and `KB.ini` schema audit](docs/rk-profile-schema-audit.md)
 - [Installed RK package file manifest](docs/rk-installed-package-manifest.csv)
 - [RK profile option field inventory](docs/rk-profile-option-field-inventory.csv)
 - [Static profile-to-driver-family map](docs/rk-profile-driver-family-map.csv)
