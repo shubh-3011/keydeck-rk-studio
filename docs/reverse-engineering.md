@@ -692,7 +692,19 @@ points to base-map function `0x00479866` and the entries, a getter at
 vtable whose complete-object locator names the class. Its IDs include
 `0x4079`–`0x407E`, `0x4091`, and `0x4092`. Those handlers are framework
 customization UI and do not identify an RK keyboard feature. The remaining
-candidate blocks still need equivalent class-owner evidence.
+candidate blocks still need equivalent class-owner evidence. Additional
+RTTI-backed map links are summarized here:
+
+| Owner class | Map entry / command ID | Notification | Handler | Static interpretation and limit |
+| --- | --- | --- | --- | --- |
+| `CMacroDlg` | `0x005CD558` / `0x0107`; `0x005CD570` / `0x0117` | `WM_COMMAND` code `0x0300` (edit change) | `0x0042B3B0`; `0x0042B530` | A nearby string, `Loop Count = 1 ~ %d`, suggests loop-count validation for at least one edit field; the exact field-to-handler mapping is unresolved. |
+| `CScreenDlg` | `0x005DA4D0` / `0x0107` | `WM_COMMAND` code `0x0300` (edit change) | `0x0046C5B0` | This is a separate screen-dialog map entry sharing numeric ID `0x0107`; the visible control label and full effect are unresolved. |
+| `COemDrvApp` | `0xE146` | `WM_COMMAND`; notification not recovered | `0x0047EEDF` | App-owned command route; exact action is unresolved. |
+| `COemDrvDlg` | `0x6400`, `0x6401` | `WM_COMMAND`; notification not recovered | `0x00446770`, `0x00446820` | Dialog-owned routes; exact visible controls and effects are unresolved. |
+
+Other identified MFC owners include framework toolbar/customization,
+keyboard-property-page, and color-dialog classes. Their presence in the
+candidate inventory does not establish an RK hardware feature.
 
 A separate `CDev3632::AccessData` helper accepts up to 512 bytes and splits
 them into 20-byte packets with 14-byte payload chunks. It queues each frame,
