@@ -30,13 +30,17 @@ the inventory:
 | `Dev/01AF/Update.exe` | 618 | 606 | 12 |
 | `InitSetup.dll` | 76 | 74 | 2 |
 | `uninstall.dll` | 30 | 27 | 3 |
-| `unins000.exe` | 519 | 507 | 12 |
-| **Total** | **1,918** | **1,857** | **61** |
+| `unins000.exe` | 519 | 506 | 13 |
+| **Total** | **1,918** | **1,856** | **62** |
 
 These are static code-reference findings, not runtime execution counts. An
 entry without a listed direct or relative call can still be addressed through
 an indirect pointer, callback table, or code path not recovered by the scan;
 it should not be treated as proof that the imported API is unused.
+
+The per-binary call-reference counts, direct-IAT/thunk site totals, dynamic
+loader crosswalk, and native system-call byte-scan limitations are reconciled
+in [`rk-system-api-crosswalk.md`](rk-system-api-crosswalk.md).
 
 ## Main UI and HID driver: `DeviceDriver.exe`
 

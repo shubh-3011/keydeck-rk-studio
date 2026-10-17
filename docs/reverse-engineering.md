@@ -46,7 +46,9 @@ strings are separately recorded in
 [`rk-dynamic-api-targets.csv`](rk-dynamic-api-targets.csv). That inventory has
 128 statically identified `LoadLibrary*`/`GetProcAddress` callsites across the
 five PEs. These are static byte/address-level references, not a function-level
-call graph or a record of executed system calls.
+call graph or a record of executed system calls. The import, IAT-reference,
+dynamic-loader, and raw system-call byte-scan inventories are reconciled in the
+[system API crosswalk](rk-system-api-crosswalk.md).
 
 The static profile selector for every configured model is captured in
 [`rk-profile-driver-family-map.csv`](rk-profile-driver-family-map.csv). It
@@ -231,9 +233,11 @@ to `0x80` with `SetFileAttributesW` at `0x10001265`, deletes files through a
 dynamically resolved `DeleteFileW` pointer at `0x10001273`, normalizes nested
 directory attributes at `0x100012D1`, and removes nested directories with
 `RemoveDirectoryW` at `0x100012D8`. Recursive errors can be logged, but the
-export still returns true for any non-null path. The installer executable
-itself is absent from the installed package snapshot, so the helper's actual
-caller, argument, and place in install flow are unknown.
+export still returns true for any non-null path. Disassembly of compiled
+script records in `unins000.dat` statically links `MyAfterInstall` to this
+export with `%LOCALAPPDATA%\RKKB` as its expanded argument. This proves the
+script-level call and path, but not that the callback ran or the helper was
+loaded. See the [installer/uninstaller script audit](rk-installer-uninstaller-script-audit.md).
 
 `uninstall.dll` has no exports and contains icon/bitmap resources; its imports
 are runtime support only, with no network, keyboard, HID, or service behavior
@@ -244,9 +248,13 @@ uninstall registry key
 `Software\Microsoft\Windows\CurrentVersion\Uninstall\{F5704F18-47C0-41F4-ABF6-0B85B099288E}_is1`.
 It names callbacks including `InitializeSetup`, `MyAfterInstall`,
 `MyAfterInstall2`, `CurUninstallStepChanged`, and
-`InitializeUninstallProgressForm`, plus `SetupInit` and
-`{localappdata}\RKKB`. These are log/script metadata and do not prove which
-callback invokes `SetupInit` or the path passed to it.
+`InitializeUninstallProgressForm`. Offline disassembly of two compiled script
+records shows both call `SetupInit` from `MyAfterInstall` with the expanded
+`{localappdata}\RKKB` path. The second script record adds Turkish, Japanese,
+and Korean language-index branches. The records establish callback bodies,
+not which snapshot the engine selects or whether any callback ran. See the
+[dedicated script audit](rk-installer-uninstaller-script-audit.md) for the
+disassembly findings and open questions.
 
 `unins000.exe` has no HID, SetupAPI, or Service Control Manager imports. It
 dynamically resolves `RegDeleteKeyExW/A` for generic uninstall registry
@@ -255,8 +263,9 @@ cleanup (wide resolver at `0x0047F8E0`; name resolution near
 `FSCTL_SET_COMPRESSION` on a file handle, not a keyboard handle. A conditional
 shutdown path at `0x004AE9CC` calls `ExitWindowsEx` at `0x004AEA38` with
 `EWX_REBOOT`; caller `0x004F5BAC` exists, but runtime conditions determine
-whether a reboot is requested. The exact install/uninstall callback sequence
-and runtime effects were not executed or established.
+whether a reboot is requested. The callback bodies are now statically
+disassembled, but the exact engine dispatch sequence and runtime effects were
+not executed or established.
 
 The address-level IAT cross-reference CSV classifies these import entries and
 static executable-section references:
@@ -907,9 +916,9 @@ The saved Ghidra analysis of the main driver contains 13,735 procedures and
 imports, selected device-family strings, and selected data structures; they
 do not decompile all procedures. The PE import inventory is complete for the
 listed static import tables. Across the five analyzed binaries, the scan found
-127 `GetProcAddress`/`LoadLibrary*` callsites in four binaries: 47 in
-`DeviceDriver.exe`, 54 in `Update.exe`, four in `InitSetup.dll`, and 22 in
-`unins000.exe`. Twenty-one callsites have no nearby literal candidate. Many
+128 `GetProcAddress`/`LoadLibrary*` callsites in four binaries: 47 in
+`DeviceDriver.exe`, 54 in `Update.exe`, four in `InitSetup.dll`, and 23 in
+`unins000.exe`. Twenty-two callsites have no nearby literal candidate. Many
 recoverable names are Windows/MFC compatibility APIs (for example transacted
 file/registry functions, DWM/theme helpers, and task dialogs), but candidate
 strings do not prove argument flow or execution. Some targets are not
