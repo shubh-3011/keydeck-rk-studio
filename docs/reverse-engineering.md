@@ -684,7 +684,8 @@ addresses inside `.text`. The raw `(ID, notification code, target VA, map-row
 VA)` list is in [`rk-mfc-command-map-candidates.csv`](rk-mfc-command-map-candidates.csv). All
 30 blocks were validated against `WM_COMMAND` entry fields and linked to an
 MFC owner through the `AFX_MSGMAP` descriptor, getter, vtable, and RTTI complete
-object locator; the address chains and inheritance caveats are in
+object locator; the descriptor, getter, vtable, COL, RTTI type-descriptor addresses, and
+inheritance caveats are in
 [`rk-mfc-map-owner-evidence.csv`](rk-mfc-map-owner-evidence.csv). Two blocks
 have inherited/shared-getter ambiguity. Class ownership does not reveal every
 visible control or establish its effect. One eight-entry run
