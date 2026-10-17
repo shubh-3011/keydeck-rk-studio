@@ -112,6 +112,17 @@ the 125 `Fw=0` rows route to `CDevRKKB`, and the 63 nonzero-`Fw` rows route to
 the G5 wrapper. This is the static selection rule in this installed build;
 it does not validate which firmware revision a physical model runs.
 
+The checked profile-family CSV has 188 rows and marks every named row as a
+direct profile. All omit an explicit profile VID and `DevTy`, so the configured
+default VID `0x258A` applies. Of the 125 `Fw=0` rows, 124 omit the field and
+use its zero default; `015B` explicitly sets zero. The 63 nonzero rows split
+into 53 `Fw=1` and ten `Fw=2` profiles. The `Fw=2` profile IDs are `01DE`,
+`01D0`, `01CB`, `0215`, `0222`, `020C`, `0210`, `0225`, `01F4`, and `0207`;
+their names and raw fields are in the row-by-row map. Separately, the online
+wireless/companion path can construct `CDev3632` from a nonzero-`Fw` profile
+after descriptor and `Psd` checks. Thus the CSV's `static_handler` is not a
+complete model of the dynamic transport path.
+
 `FUN_004155C0` applies different descriptor criteria by profile family. For
 `Fw=0`, the inspected branch accepts a vendor-defined usage-page/report
 pattern (`FF00`/usage 1 with report marker `0x41`) or a consumer-usage
@@ -411,9 +422,10 @@ none was invoked during this audit.
 | Routine | Static behavior and evidence | Limits |
 | --- | --- | --- |
 | `FUN_0040f030` | Scans candidate screen-device descriptors, opens matching handles, sends report ID `9` / command `0x82`, reads six bytes, then compares them with the keyboard profile's six-byte `Psd`. Its log says “Found screen dev, read psd now.” | This is a descriptor-matching transaction, not a passive descriptor read. The data's origin and exact selection path remain open. |
-| `FUN_004103e0` | A helper logs `GetPassword failed`, uses command `0x82`, and handles a caller-supplied response length in 512-byte chunks through the G5 feature-report path. | The caller, exact payload meaning, and reason for the “password” label are not recovered. |
-| `FUN_0040fd10` | `GetPower` command `0x87`; sends a feature request, reads the response, and returns two bytes. | The meaning and units of the two bytes are unknown. |
-| `FUN_00410045` | `GetRealData` command `0x88`; sends a request and copies caller-requested response bytes from up to 512-byte feature chunks. | Its decompiler output has an instruction-overlap warning; caller and data semantics are unresolved. It is not evidence of firmware-memory access. |
+| `FUN_004103e0` | A helper logs `GetPassword failed`, uses command `0x82`, option `1`, and handles a caller-supplied response length in 512-byte chunks; each feature request is sent before response read and command matching. | The caller, exact payload meaning, and reason for the “password” label are not recovered. Keep this separate from screen-profile matching, which uses command `0x82` on report ID `9` to read six `Psd` bytes. |
+| `FUN_0040fd10` | `GetPower` command `0x87`; sends a one-report request for two bytes, validates response command `0x87`, then copies the bytes into separate DWORD outputs. | The meaning and units of the two bytes and the caller are unknown. |
+| `FUN_00410045` | `GetRealData` command `0x88`; sends a request and copies caller-requested response bytes from chunks of up to 512 bytes. | Its decompiler output has an instruction-overlap warning; caller and data semantics are unresolved. It is not evidence of firmware-memory access. |
+| `FUN_0040fad0` | LED configuration read: G5 command `0x84` requests 128 bytes; 3632 delegates command `0x44`. The G5 path sends a feature report before reading and validates trailing bytes `5A A5`. | This is a read-modify-write step in LED settings apply, not a passive probe. |
 | `FUN_0040f600`, `FUN_004131c0` | Connection checks call `HidD_GetAttributes` on an existing handle, or `CreateFileW` and immediately `CloseHandle` on a stored device path. | These checks establish openability/handle state, not the exact keyboard model or its firmware. |
 | `FUN_00416740` | Descriptor processing calls `HidP_GetSpecificButtonCaps` and `HidP_GetSpecificValueCaps` for input, output, and feature report types. | It examines HID capabilities; no device feature report is sent in this routine. |
 
@@ -565,16 +577,30 @@ RGB flag. It is an active keyboard-write path and was not invoked. The exact
 relationship between the generated bands, the `audio.dct` settings, and the
 transmitted format remains unresolved.
 
-The catalog's `0174` profile is named RK S98RGB. It has `Fw=1`,
-`Psd=6,0,0,0,0,3`, `ShowScreen=1`, `RGBScreen=1`, `MaxScreenFrame=60`,
-`DataUnitSize=512`, screen dimensions `320x172`, and
-`MusicRGBIndex=1,0,2`. This is direct evidence that this installed S98
-profile configures screen and audio-reactive features, not proof those
-features work on the connected keyboard. A different profile, `020F`, is
-named RK A70 Keyboard; it has wireless VID/PID `0x258A:0x0150`,
-`Psd=6,0,0,0,0,56`, and `MusicRGBIndex=1,0,2`, but no screen fields. The
-profile distinction matters because Windows' observed USB ID `0x258A:0x0150`
-matches the A70 receiver profile and is not by itself an S98 identity.
+The catalog has eight S98 profiles, all `Fw=1`, `ShowScreen=1`, `RGBScreen=1`,
+320x172, and limited to 60 frames: `0174` RK S98RGB, `0224` RK-S98 DE, `022B`
+RK-S98 ES, `022F` RK-S98 default, `0230` RK-S98 RU, `0223` RK-S98 TH,
+`01BF` RK-S98RGB ISO Return, and `01AF` RK-S98RGB-New. Their six-byte `Psd`
+signatures are unique within this catalog; `0174` ends in `03`, while the
+others end in `6E`, `72`, `73`, `74`, `6D`, `2C`, and `23`. They all use
+`DataUnitSize=512` and `MusicRGBIndex=1,0,2`. This is catalog evidence, not
+hardware validation. None of the eight S98 profile rows lists wireless
+VID/PID fields.
+
+A different profile, `020F`, is RK A70 Keyboard; it has wireless VID/PID
+`0x258A:0x0150`, `Psd=6,0,0,0,0,56`, and `MusicRGBIndex=1,0,2`, but no screen
+fields. Windows' observed USB ID `0x258A:0x0150` therefore matches the A70
+receiver profile, not an S98 direct-PID row, and cannot identify the connected
+keyboard by itself. All 15 screen profiles are G5 with `RGBScreen=1`. Only
+the N99 profile has
+`ShowScreen=2`; the other 14 use `1`. `FUN_0040F350` gates the secondary
+screen-device/PSD match branch on the value `2`, so that companion-screen
+probe is a profile-specific exception, not a universal screen workflow.
+
+Twenty-nine profiles list `MusicRGBIndex`, and every value is `1,0,2`; they
+are all nonzero-`Fw` profiles and include all 15 display profiles. This
+documents configuration availability, not proof that each model runs audio
+capture or the same music-packet path.
 
 ### Screen and GIF data paths
 
@@ -609,6 +635,35 @@ using profile-row DWORD colors; G5 uses command `6`, while 3632 uses command
 `2`. A reset/flag path may call a virtual function at `+0x38`, but its effect
 is not resolved.
 
+The SetGame/color-group path has a separate dirty mask at configuration
+offset `+0x25C4`. For each dirty group, it reads up to 132 DWORD colors from
+the configuration color array (DWORD index `0x972 + group * 0x84`), then
+remaps entries through records at `0x6169D1` with 16-byte stride. The remap
+record's flag is at `record - 5` and its destination slot is at `record + 0`;
+slots beyond the profile key count (`profile + 0xB6`) are clipped. Three
+selected channel bytes, using tables at `0x612B50`/`0x612B51`/`0x612B52`, are
+serialized per key slot and the group index is passed as the command option.
+G5 sends command `6` after 25 ms; the 3632 wrapper sends command `2` after
+15 ms. The flag at `0x6117CC` has a special selected-profile path, and flag
+`0x10` gates entry to the update; their user-visible meanings and channel
+ordering are unresolved.
+
+`FUN_004102D0` is the one-byte reset helper: G5 sends command `0x0B`, option
+`1`, then waits 25 ms; the 3632 path calls its virtual method at `+0x38`.
+Within `FUN_00411B90`, flag `0x10` and global `0x612B8C` gate a logged reset
+path that calls the same virtual method and may clear a dirty mask based on
+the return value. The LED packers can overlay three `(offset, value)` pairs
+from the table at `0x612B84`; the table's relationship to reset is not
+established. The SendWeb route scans four layers of 132 key records for tag
+`0x0B`, waits 30 ms, then reads a NUL-terminated string from object/config
+offset `+0x3E21`. G5 sends it as command `0x12` using the device report ID and
+waits 25 ms; the 3632 route sends command `0x12`, option `0`, and waits
+15 ms. The string's format and the control that supplies it remain unknown.
+These are active write routes and were not invoked. Static inspection still
+does not recover a dependable brightness-byte mapping; debounce, tap, and
+sleep settings have identified fields, while other LED payload bytes remain
+opaque.
+
 This is a function-level feature map, not a complete MFC button-handler map.
 The PE contains ten dialog resources, but the app-looking templates are
 generic `Dialog/New` shells (IDs 30721 and 30734) and the other inspected
@@ -623,7 +678,8 @@ present—for example IDs `0x420E`–`0x4216` point to handlers at
 `0x0049A5F9`, `0x0049A51A`, `0x00494D2E`, and `0x00497F8F`—but the available
 static evidence does not reliably associate every map with a class, visible
 control, or named feature. A heuristic scan found 112 candidate
-`WM_COMMAND`-shaped rows across 21 multi-entry runs, based on message code
+`WM_COMMAND`-shaped rows in 21 multi-entry runs and additional singleton
+candidates, based on message code
 `0x111`, signature `0x39`, equal ID/range fields, a 24-byte stride, and handler
 addresses inside `.text`. The raw `(ID, notification code, target VA, map-row
 VA)` list is in [`rk-mfc-command-map-candidates.csv`](rk-mfc-command-map-candidates.csv).
