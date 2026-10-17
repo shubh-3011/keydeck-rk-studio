@@ -69,6 +69,13 @@ resulting totals are 1,856 and 62, respectively. Imports without these
 references may be used through an indirect pointer, callback, or path outside
 this scan; they are not proven unused.
 
+The exact 62 rows lacking both a direct IAT call and a relative call to an
+import thunk are extracted in
+[`rk-native-api-callsite-gaps.csv`](rk-native-api-callsite-gaps.csv). The CSV
+retains any other absolute IAT-reference and thunk addresses found for those
+entries. The gap means this scan did not recover a direct call instruction; it
+does not mean that the API is unused.
+
 For `unins000.exe`, the raw executable-section `E8` scan finds candidates at
 `0x0044B2BC`, `0x004A9CE7`, and `0x004F4D04` whose computed targets are known
 import thunks. The first two byte sequences lie within UTF-16 string data. The
@@ -92,11 +99,10 @@ reference count.
 | `uninstall.dll` | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | **Total** | **97** | **5** | **17** | **1** | **8** | **128** | **22** |
 
-The main report's closing summary currently gives 127 callsites, counts 22
-uninstaller callsites, and says 21 rows have no nearby literal candidate.
-The CSV instead gives 128 total, 23 in `unins000.exe`, and 22 with an empty
-candidate list. This appears to be a stale summary rather than a mismatch in
-the CSV. Nearby DLL or export strings are candidates only: adjacency does not
+An earlier main-report summary gave 127 callsites, 22 in `unins000.exe`, and
+21 rows with no nearby literal candidate. This update reconciles it to the CSV:
+128 total, 23 in `unins000.exe`, and 22 with an empty candidate list. Nearby
+DLL or export strings are candidates only: adjacency does not
 prove that a given string is passed to a specific resolver call, that the
 returned pointer is invoked, or that the branch executes. Several API paths
 are traced in the main report, including main-app DPI/menu/GDI compatibility,
@@ -124,6 +130,12 @@ wrapper was recovered. Other matches overlap data, instruction operands, or
 unvalidated boundaries. No runtime system-call trace was taken. Calls inside
 Windows DLLs, kernel drivers, COM servers, dynamically resolved pointers, and
 external device drivers are outside this five-PE import/xref analysis.
+
+Exact candidate addresses, section-relative offsets, and surrounding bytes
+are listed in
+[`rk-native-syscall-byte-matches.csv`](rk-native-syscall-byte-matches.csv).
+Every row is labeled as a raw byte-pattern match; none is promoted to a system
+call without instruction-boundary and reachability evidence.
 
 ## Evidence status and remaining work
 

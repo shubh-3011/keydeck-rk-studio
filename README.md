@@ -74,6 +74,8 @@ The extractor writes model names, visual layouts, capability metadata, raw profi
 - [Static profile-to-driver-family map](docs/rk-profile-driver-family-map.csv)
 - [Static native API import inventory](docs/rk-native-api-imports.md)
 - [Static native API callsite cross-references](docs/rk-native-api-xrefs.csv)
+- [Native API entries without a recovered direct callsite](docs/rk-native-api-callsite-gaps.csv)
+- [Raw native system-call byte matches](docs/rk-native-syscall-byte-matches.csv)
 - [Dynamic API lookup candidates](docs/rk-dynamic-api-targets.csv)
 - [MFC command-map handler candidates](docs/rk-mfc-command-map-candidates.csv)
 - [MFC message-map owner evidence](docs/rk-mfc-map-owner-evidence.csv)

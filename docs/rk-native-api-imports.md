@@ -41,6 +41,9 @@ it should not be treated as proof that the imported API is unused.
 The per-binary call-reference counts, direct-IAT/thunk site totals, dynamic
 loader crosswalk, and native system-call byte-scan limitations are reconciled
 in [`rk-system-api-crosswalk.md`](rk-system-api-crosswalk.md).
+The 62 import rows without a recovered direct-IAT or relative thunk call are
+listed in [`rk-native-api-callsite-gaps.csv`](rk-native-api-callsite-gaps.csv);
+those rows must not be interpreted as unused APIs.
 
 ## Main UI and HID driver: `DeviceDriver.exe`
 
