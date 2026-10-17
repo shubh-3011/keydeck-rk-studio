@@ -285,9 +285,9 @@ send a feature request before `HidD_GetFeature`.
 Additional UI and persistence paths have candidate function starts inferred
 from call references, strings, and code boundaries (medium confidence):
 `0x403270` update callbacks; `0x403E20` update worker; `0x40DD60`
-`WriteMacroData`; `0x42CC80` macro creation and magic validation; `0x42D1F0`
-macro file open/read validation; `0x42D960` macro export; `0x42E320` dirty
-macro flush; and `0x45A310` macro save. Audio visualization configuration
+`WriteMacroData`; `0x42CC80` macro creation and magic validation; `0x42D490`
+macro import chooser; `0x42E480` macro record import/validation; `0x42D960`
+macro export; `0x42E320` dirty macro flush; and `0x45A310` macro save. Audio visualization configuration
 and processing candidates include `0x43BEE0` and `0x438810`; the confirmed
 WASAPI capture path is at `0x43C780` (details below). `0x412890` handles
 screen GIF parameters, and `0x4663C0` is a
@@ -298,13 +298,22 @@ missing PDB, so type and original method names are unavailable.
 Further decompilation confirms separate local persistence paths. `FUN_00428600`
 reads or writes fixed `0x342`-byte `.rkm` records. `FUN_00459FC0` builds a
 record with magic `0xFAFB88A0`, a timestamp, and fields at offsets `0x0c`,
-`0x14`, `0x68`, and `0x6a`; `FUN_0045A310` concatenates eligible records into
-`mac.dct` without a per-record transform or file header. A different `.mck`
-dirty-save path (`FUN_0042E320`) rotates each byte right by two bits before
-writing; its paired import (`FUN_0042E480`) rotates left by two and checks the
-decoded record magic. The `.mck` export path (`FUN_0042D960`) copies an
-internal file. The fixed record size and transform are known, but the full
-macro event schema is not decoded.
+`0x14`, `0x68`, and `0x6a`. `FUN_0045A0A0` copies exactly one record into the
+global macro list, and `FUN_0042CC80` validates the magic before inserting or
+cloning one. `FUN_0045A310` overwrites `mac.dct` and concatenates eligible raw
+records without per-record transform or file header; the node must pass
+nonzero-field checks at record offsets `+4` and `+0x6a`.
+
+The `.mck` save path (`FUN_0042E320`) rotates each byte in the full record
+right by two bits before writing and requires an exact `0x342`-byte write.
+The paired import flow (`FUN_0042D490` → `FUN_0042E480`) opens a selected
+`.mck`, reads exactly `0x342` bytes, rotates left by two bits, checks the
+decoded magic, and applies key compatibility and device-size checks before
+adding a copy. `FUN_0042D960` exports by copying the encoded internal file to
+the selected destination. The local import/export/persistence routines use
+file APIs such as `CreateFileW`, `ReadFile`, `WriteFile`, and `CopyFileW`; the
+inspected routines do not call HID. The format's outer size, magic, and
+rotation are known, but the complete event encoding is not.
 
 Screen artwork is decoded from each device's `screen.gif` into cached
 `screen_img%d.png` frames by `FUN_0046C9F0`; it can delete up to 512 old frame
@@ -382,7 +391,7 @@ The UI labels and static call paths support this more specific feature map:
 | Feature | Native operation path observed | Limits |
 | --- | --- | --- |
 | Keymaps and layers | `FUN_00411260` maps four 132-position layers; dirty layers flow through `FUN_0040F9C0`. G5 uses `FUN_0040F700` command `3`; 3632 uses `FUN_0040D7E0` command `1`. | Key-record translation and macro-buffer ID flow are partly recovered below. Exact command payload argument meaning and some profile slot semantics remain unresolved. |
-| Macros | Apply-setting associates macro-buffer IDs with mapped keys, then sends dirty macro data through G5 command `5` or the 3632 macro path `FUN_0040DD60`. | 3632 command mapping and macro event meaning are incomplete. |
+| Macros | Apply-setting associates macro-buffer IDs with mapped keys, then sends dirty macro data through G5 command `5` or the 3632 macro path `FUN_0040DD60`. | The `.mck` file and event-row formats are partly recovered below; input capture and event serialization remain incomplete. |
 | Lighting and colors | `FUN_0040FAD0` obtains LED/config data; packers `FUN_00411700`/`FUN_00411900` feed G5 command `4` or 3632 command `4`. RGB slot tables use `FUN_004101B0` (G5 command `10`, 3632 command `9`); color groups use G5 command `6` or 3632 command `2`. | The `FUN_0040FAD0` read path sends command `0x84` through `HidD_SetFeature` before `HidD_GetFeature`; this is not a passive probe. RGB values are logged by `FUN_0040CD70`, which is a debug formatter and does not transform the buffer. Slot and tuple semantics remain incomplete. |
 | Audio-reactive data | `FUN_0043C780` captures the default render endpoint with WASAPI loopback and computes visualization bands; separate `FUN_00413340` sends music data in RKKB report chunks through `FUN_00413220`. | DSP parameter-to-UI mapping and data-format meaning remain incomplete. Neither capture nor HID transmit was run. |
 | Screen and GIFs | Screen parameter command `0x0B`, GIF parameter command `0x0D`, and page/frame command `0x0C`; the UI decodes `screen.gif` frames into PNG cache files. | Exact frame field map, delay units, and model-to-transport mapping remain unresolved. These command paths write to the keyboard. |
@@ -466,6 +475,34 @@ the payload into 512- and 16-byte chunks, sets packet count 2 and indices 0/1,
 and uses a 25 ms inter-report delay. The 3632 path dispatches command `1`.
 This establishes the transport length and layer option for the inspected
 profile path; it does not define every DWORD field or profile's wiring map.
+
+Macro data assembled for the driver has a `uint16 offset, uint16 length`
+pair per unique macro, followed by concatenated serialized event blobs. Each
+table offset is based on the end of the `4*n`-byte pair table; the total
+payload size is `4*n + sum(blob lengths)`, and macro count is passed
+separately. G5 sends command `5` through the generic 520-byte feature helper
+with 512-byte payload chunks; 3632 sends command `3` in 20-byte frames with
+14-byte payload chunks and response/retry handling. The serializer behind
+the model vtable `+0x64` remains unresolved, so this does not decode the
+serialized event bytes.
+
+The macro record's event area starts at `+0x6A`; entries are eight bytes
+apart and terminate when their 16-bit code is zero. The first row's DWORD is
+at `+0x6E`. `FUN_0042DEC0` checks event IDs `0x110`–`0x116` against a
+seven-bit capability mask. Those IDs likely correspond to the seven mouse
+actions named in the UI, but that association is inferred and the exact
+mapping is unknown. `FUN_0042A980` estimates device size from event rows
+(`4 + 2` per event, with an additional `4` when the row DWORD exceeds `0x7F`)
+and compares it to a global capacity. The UI strings corroborate
+unsupported-key and too-large-for-device errors. Other row fields and their
+on-wire transformation remain open.
+
+The UI exposes recording, default/fixed delays, keyboard and mouse events,
+editing, import/export, and loop-until-count/key-release/key-press options.
+The specific input-capture route and event-to-record conversion are not
+recovered. Although the executable imports `GetAsyncKeyState` and has
+thread-scoped UI/mouse hooks, no inspected call path ties those APIs to the
+macro dialog recorder.
 
 ### Audio capture path
 
