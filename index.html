@@ -69,7 +69,7 @@
           </button>
         </section>
         <div class="sidebar-footer">
-          <span>UNOFFICIAL OPEN SOURCE PROJECT</span><span>KEYDECK 0.3.0</span>
+          <span>UNOFFICIAL OPEN SOURCE PROJECT</span><span>KEYDECK 0.5.0</span>
         </div>
       </aside>
 
@@ -633,8 +633,9 @@
                 <p class="eyebrow">OFFICIAL WEB DRIVER REGISTRY</p>
                 <h1>RK model catalog</h1>
                 <p class="page-subtitle">
-                  Browse the public RK Drive model and connection entries. This
-                  local index does not communicate with a keyboard.
+                  Browse public model, connection, layer, table, lighting, and
+                  photo references. This index does not run the RK driver or
+                  communicate with a keyboard.
                 </p>
               </div>
               <a class="button button-light" href="https://drive.rkgaming.com/" target="_blank" rel="noopener noreferrer">
@@ -663,10 +664,19 @@
                   <h2 id="driveModelName">Choose a model</h2>
                   <p class="muted" id="driveModelSummary">Official Web Driver model metadata.</p>
                   <div class="drive-connection-list" id="driveConnectionList"></div>
+                  <div class="drive-web-config-data">
+                    <p class="section-kicker">RK DRIVE CONFIGURATOR DATA</p>
+                    <div class="drive-config-capabilities" id="driveConfiguratorCapabilities"></div>
+                    <p class="field-help" id="driveConfiguratorNote">
+                      Model-specific options extracted from the public JavaScript bundle.
+                    </p>
+                  </div>
                   <p class="callout subtle-callout">
                     Shared receiver IDs can match many models. These entries
                     document the site's registry; they do not confirm hardware
-                    compatibility or enable configuration writes.
+                    compatibility or enable configuration writes. Keydeck does
+                    not yet implement RK Drive's advanced-key, performance, or
+                    device-transfer workflows.
                   </p>
                   <a id="driveModelSource" class="text-button" href="https://drive.rkgaming.com/" target="_blank" rel="noopener noreferrer">View official RK Drive</a>
                 </div>

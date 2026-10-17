@@ -499,6 +499,7 @@ function renderDriveCatalog() {
     photo.alt = "";
     photoNote.textContent = "Model images load from RK Drive only while this catalog page is open.";
     sourceLink.href = "https://drive.rkgaming.com/";
+    renderDriveConfiguratorData([]);
     return;
   }
 
@@ -546,6 +547,69 @@ function renderDriveCatalog() {
     item.append(connection, id, detail);
     connectionList.append(item);
   });
+  renderDriveConfiguratorData(selectedEntries);
+}
+
+function renderDriveConfiguratorData(entries) {
+  const host = $("#driveConfiguratorCapabilities");
+  const note = $("#driveConfiguratorNote");
+  host.replaceChildren();
+  const config = entries[0]?.web_configurator;
+  if (!config) {
+    note.textContent = "Configurator details are not available in this catalog snapshot.";
+    return;
+  }
+
+  const effects = Array.isArray(config.lighting_effects)
+    ? config.lighting_effects
+    : [];
+  const facts = [
+    ["Key layers", (config.key_layers || []).join(" · ") || "Not listed"],
+    ["OS tables", (config.key_tables || []).join(" · ") || "Not listed"],
+    ["Layout groups", String(config.layout_group_count || 0)],
+    ["Lighting effects", String(effects.length)],
+  ];
+  facts.forEach(([label, value]) => {
+    const item = document.createElement("div");
+    item.className = "drive-config-fact";
+    const heading = document.createElement("span");
+    heading.textContent = label;
+    const detail = document.createElement("strong");
+    detail.textContent = value;
+    item.append(heading, detail);
+    host.append(item);
+  });
+
+  if (effects.length) {
+    const details = document.createElement("details");
+    details.className = "drive-effect-details";
+    const summary = document.createElement("summary");
+    summary.textContent = "Lighting mode definitions";
+    const list = document.createElement("div");
+    list.className = "drive-effect-list";
+    effects.forEach((effect) => {
+      const item = document.createElement("div");
+      item.className = "drive-effect-item";
+      const name = document.createElement("strong");
+      name.textContent = effect.name;
+      const controls = [
+        effect.speed && "speed",
+        effect.brightness && "brightness",
+        effect.colorValueDefined && "color value",
+        effect.mixColor && "mixColor flag",
+      ].filter(Boolean);
+      const capabilities = document.createElement("small");
+      capabilities.textContent = controls.length
+        ? `Declared fields: ${controls.join(" · ")}`
+        : "No adjustable fields listed";
+      item.append(name, capabilities);
+      list.append(item);
+    });
+    details.append(summary, list);
+    host.append(details);
+  }
+  note.textContent =
+    "These are static options declared by RK Drive for this model label. They are informational; Keydeck stores profile data locally and does not apply settings to the keyboard.";
 }
 
 function renderKeyboard(host) {

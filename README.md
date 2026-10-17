@@ -9,12 +9,12 @@ This is the user-facing project: [web app and Windows desktop profile editor](ht
 - Inspect previously authorized RK keyboards on startup and track connect/disconnect events in Chrome or Edge.
 - Match exact USB product IDs and names against the local RK catalog; show ambiguous receiver IDs as unresolved instead of guessing.
 - Search 188 named model profiles and display model-specific key layouts, region, RGB mode slots, function layers, and optional screen dimensions.
-- Browse the public RK Drive registry snapshot: 96 displayed keyboard labels, 177 wired/2.4 GHz descriptors, USB IDs, protocol-family labels, and direct links to RK-hosted product photos.
+- Browse the public RK Drive registry snapshot: 96 displayed keyboard labels, 177 wired/2.4 GHz descriptors, 91 direct RK-hosted photo references, and model-specific key layers, OS tables, layout groups, and lighting-effect definitions extracted from its JavaScript bundle.
 - Edit local keymap, lighting, screen, macro, and connection preference profiles, then import or export them as JSON.
 - Keep S98 dial and tri-mode preferences in its profile.
 - Run as a hosted web app or as a Windows desktop app with its own persistent WebView2 window.
 
-Keydeck uses the official registry's vendor IDs to offer descriptor-only device identification and to show possible model candidates. It does not open the HID device or send, receive, or replay HID reports. Profile editing is local only. Advanced DKS/SOCD/snap/toggle/mod-tap editing, macro playback, screen transfers, physical connection switching, firmware updates, and hardware writes are not implemented. The **Write changes** control stays disabled. Catalog images are requested directly from RK only while the catalog page is open; they are not bundled with Keydeck.
+Keydeck uses the official registry's vendor IDs to offer descriptor-only device identification and to show possible model candidates. It does not open the HID device or send, receive, or replay HID reports. Profile editing is local only. The catalog records Drive's declared model layers and lighting modes, but Keydeck does not reproduce the full Drive runtime: advanced DKS/SOCD/snap/toggle/mod-tap editing, performance and mouse controls, macro playback, screen transfers, physical connection switching, firmware updates, and hardware writes are not implemented. The **Write changes** control stays disabled. Catalog images are requested directly from RK only while the catalog page is open; they are not bundled with Keydeck.
 
 ## Try the web version
 
@@ -49,7 +49,7 @@ Desktop profiles and preferences stay on this PC in `%LOCALAPPDATA%\Keydeck-RK-S
 
 ## Device identity and scope
 
-The **RK model catalog** page uses a local metadata snapshot extracted from the public RK Drive JavaScript bundle. It lists connection-specific USB identities and links to images hosted by RK. The metadata is packaged with the desktop build; image requests go to RK only when the catalog page is open. The full extraction method and source hashes are documented in the [research archive](https://github.com/shubh-3011/rk-keyboard-software-research/blob/main/docs/rk-drive-web-app-audit.md).
+The **RK model catalog** page uses a local metadata snapshot extracted from the public RK Drive JavaScript bundle. It lists connection-specific USB identities, model-specific key layers, Windows/macOS tables, layout-group counts, lighting-effect names and declared fields, and links to images hosted by RK. The metadata is packaged with the desktop build; image requests go to RK only when the catalog page is open. The full extraction method and source hashes are documented in the [research archive](https://github.com/shubh-3011/rk-keyboard-software-research/blob/main/docs/rk-drive-web-app-audit.md).
 
 Keydeck asks the browser to enumerate devices the user has already authorized. If none are authorized, **Identify keyboard** opens the browser's device chooser for vendor IDs present in the bundled RK Drive registry snapshot. Product name, vendor ID, product ID, and collection count come from the HID descriptor; no HID report is opened.
 
