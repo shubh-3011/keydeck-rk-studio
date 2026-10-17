@@ -124,12 +124,16 @@ executable sections reproduced the existing byte-pattern counts:
 | `unins000.exe` | 1 | 0 | 0 |
 
 These are byte matches, not counts of executed system calls. In the saved
-Ghidra listing, the two `DeviceDriver.exe` `0F 05` locations at `0x00464224`
-and `0x00464354` are represented as lookup-table data; no reachable syscall
-wrapper was recovered. Other matches overlap data, instruction operands, or
-unvalidated boundaries. No runtime system-call trace was taken. Calls inside
-Windows DLLs, kernel drivers, COM servers, dynamically resolved pointers, and
-external device drivers are outside this five-PE import/xref analysis.
+Ghidra analysis, the two `DeviceDriver.exe` `0F 05` locations at `0x00464224`
+and `0x00464354` are lookup-table data. For the remaining 16 matches, GNU
+`objdump`'s linear decode places the bytes inside instruction operands or
+across decoded instruction boundaries; it does not decode them as separate
+`syscall`, `sysenter`, or `int 2e` instructions. Linear decoding can be
+misleading where code sections contain embedded data, so this is not a full
+reachability proof. No reachable direct-system-call wrapper was recovered and
+no runtime system-call trace was taken. Calls inside Windows DLLs, kernel
+drivers, COM servers, dynamically resolved pointers, and external device
+drivers are outside this five-PE import/xref analysis.
 
 Exact candidate addresses, section-relative offsets, and surrounding bytes
 are listed in
