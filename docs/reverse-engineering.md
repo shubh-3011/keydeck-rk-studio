@@ -47,12 +47,22 @@ capabilities plus button/value capability tables. The default `CreateFileW`
 access mask in this path includes read/write access, although this code path
 does not itself issue a feature report.
 
-The discovery path then checks the driver's device table using VID/PID and
-additional HID usage and report-capability criteria before attempting to open
-a matching interface. It selects separate `RKKB` and `G5KB` driver objects
-from that table. This is more informative than matching product ID alone, but
-the mapping from every table row to all profile codes and firmware revisions
-has not been exhaustively recovered.
+The driver initializes its model records from the configured PID list. For
+each profile code, it opens `Dev/<code>/KB.ini`, reads that profile's VID,
+screen flag, firmware/device-type fields, and optional wireless VID/PID, and
+falls back to the configured default VID when the profile has no override.
+The device-change path parses Windows HID interface paths, checks whether a
+profile matches, and schedules follow-up scans. The matcher compares USB IDs
+and additional HID usage/report-capability criteria before trying separate
+`RKKB` and `G5KB` driver objects. This confirms automatic model detection is
+data-driven by `Cfg.ini` and per-model profiles, rather than only a static
+list compiled into the executable. The precise meaning of every table field
+and its relationship to firmware revisions remains open.
+
+The native code also has an online/Bluetooth path that compares six bytes of
+device data with profile records and can instantiate the `3632` handler. This
+is separate from the ordinary Windows HID interface scan; the exact data
+source and complete transition logic remain unresolved.
 
 The decompiled `CDevG5KB::AccessData` path confirms a 520-byte
 (`0x208`) feature report. The observed buffer fields are:
