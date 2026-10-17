@@ -76,7 +76,7 @@ The app's resource paths form this local data graph:
 | `Dev/%04X/screen.gif`, `%04X/screen_img%d.png`, `gif_delay.gcc` | Per-device screen GIF, decoded PNG frame cache (up to 512 stale frames are purged), and a four-byte playback-delay cache. |
 | `Dev/%04X/ET/*`, `Dev/%04X/Cartoon/*`, global `ET/*` / `Cartoon/*` | Effect and animation assets with profile-specific and global fallbacks. |
 | `%s\\%s.mck`, `MacroDir`, `MacroHasMsKey`, `%s mac.dct` | Per-macro storage, index/directory metadata, mouse-event marker, and concatenated macro records. Native code reads/writes `0x342`-byte records; `.mck` saves rotate bytes right by two bits and imports rotate them left by two. |
-| `audio.dct` | Local `0x24`-byte audio-visualization configuration record; its hardware/audio capture relationship is not decoded. |
+| `audio.dct` | Local `0x24`-byte audio-visualization configuration record; its exact parameter-to-UI mapping is not decoded. |
 | `%CSIDL_PERSONAL%\\Log.txt` | Runtime debug log; initialized by `FUN_0040CAA0` and appended by `FUN_0040C9F0`. |
 | `%sOther\\%04X_%04X\\start.exe` | A reachable `CreateProcessW` path constructs an optional per-device helper path from profile VID/PID. The external helper binary and its behavior are not in this package snapshot. |
 | `Dev/%04X/Update.exe`, `update_version.xml` | Per-profile updater and software-update manifest path. The main app reads optional `UpdateURL` from `Cfg.ini`; otherwise it uses `http://www.rkgaming.com/Work/Update-Single/` or `.../Update-RGB/`, adds `update_version.xml?timestamp=%x`, and calls `URLDownloadToFileW` at thunk callsite `0x403DFB` after clearing the URL cache. Payload URLs depend on runtime XML/config. No download was performed. |
@@ -158,10 +158,10 @@ are auto-generated names, not original RK symbols:
 | `FUN_004474D0` | Classify known wireless IDs and profile wireless VID/PID pairs before the online/wireless scan. |
 | `FUN_00415900` | Compare wireless profile VID/PID, nonzero-`Fw`, and six-byte `Psd` data before constructing the 3632 handler. |
 | `FUN_0040f700` | G5 feature-report transport, 520-byte reports and 512-byte payload chunks. A read operation first sends a feature report, then calls `HidD_GetFeature`. |
-| `FUN_00412b10` | G5 screen/page transfer path with chunking, acknowledgements, optional checksum/CRC comparison, retries, progress, and cancellation. |
+| `FUN_00412b10` | G5 screen/page transfer path with chunking, acknowledgements, optional alternating-byte checksum/complement, retries, progress, and cancellation. |
 | `FUN_0040d7e0` | Separate 3632 transport with 20-byte packets and 14-byte data chunks plus checksum/retry handling. |
 | `FUN_00413220` | RKKB 65-byte feature-report writer with up to 62 payload bytes. |
-| `FUN_00411b90` | G5 settings orchestrator for matrix layers, macros, lighting, RGB tables, and game/color groups. |
+| `FUN_00411b90` | Shared G5/3632 settings orchestrator for matrix layers, macros, lighting, RGB tables, and game/color groups. |
 | `FUN_00411260` | Key data mapping across four layers of 132 positions. |
 | `FUN_00411700`, `FUN_00411900` | Two settings packers. Embedded logs label debounce, tap, and sleep fields at different indices (`Cfg[2]/[8]/[9]` in one path; `Cfg[3]/[22]/[24]` in another), so record layouts vary by path/version. |
 | `FUN_004513B0` | Candidate profile initialization path; reads `DebounceUI`, `MacroBufferNum`, `RGBIndex`, `MusicRGBIndex`, `ShowSleepTime`, and LED mask/config options into runtime state. |
@@ -277,6 +277,10 @@ occur at `0x40F14D`, `0x40F87F`, `0x40FBBE`, `0x40FE01`, `0x410062`,
 `HidD_GetFeature` references are at `0x40F1A5`, `0x40F8F1`, `0x40FC19`,
 `0x40FE5C`, `0x4100C1`, and `0x41054E`. These are static callsite addresses
 inside `DeviceDriver.exe`, not verified commands and not safe replay data.
+The call pairs at `0x40FE01`/`0x40FE5C` implement the two-byte `GetPower`
+response (`0x87`); `0x410062`/`0x4100C1` belong to `GetRealData` (`0x88`),
+which reads a caller-requested response length in 512-byte chunks. Both paths
+send a feature request before `HidD_GetFeature`.
 
 Additional UI and persistence paths have candidate function starts inferred
 from call references, strings, and code boundaries (medium confidence):
@@ -284,9 +288,9 @@ from call references, strings, and code boundaries (medium confidence):
 `WriteMacroData`; `0x42CC80` macro creation and magic validation; `0x42D1F0`
 macro file open/read validation; `0x42D960` macro export; `0x42E320` dirty
 macro flush; and `0x45A310` macro save. Audio visualization configuration
-and processing candidates include `0x43BEE0` and `0x438810`; a candidate
-endpoint-selection path is around `0x43C780`, but a WASAPI capture lifecycle
-is not proven. `0x412890` handles screen GIF parameters, and `0x4663C0` is a
+and processing candidates include `0x43BEE0` and `0x438810`; the confirmed
+WASAPI capture path is at `0x43C780` (details below). `0x412890` handles
+screen GIF parameters, and `0x4663C0` is a
 screen burn workflow that passes frame count/timing and supports cancel/retry.
 These candidates are not original symbols; the embedded PDB path refers to a
 missing PDB, so type and original method names are unavailable.
@@ -312,9 +316,10 @@ These are local file operations. The debug log path is initialized as
 wrappers can write to INI or registry storage depending on the active profile
 mode. Audio paths read a text configuration into an in-memory matrix
 (`FUN_0043BEE0`), build an audio-visualization structure (`FUN_00438810`), and
-read/write the `0x24`-byte `audio.dct`. The static call map does not identify
-an `IAudioClient`/`IMMDeviceEnumerator` acquisition path, so the actual audio
-capture/streaming mechanism remains unresolved.
+read/write the `0x24`-byte `audio.dct`. The loopback acquisition/capture
+lifecycle is implemented separately at `FUN_0043C780`, described below; the
+exact relationship between these settings and the resulting music packets is
+still unresolved.
 
 The decompiled `CDevG5KB::AccessData` path confirms a 520-byte
 (`0x208`) feature report. The observed buffer fields are:
@@ -347,10 +352,26 @@ acknowledgments, can compare CRC values, and retries pages. A separate
 `CDevRKKB::WriteDevice` path builds 65-byte (`0x41`) feature reports with
 report ID `10`, packet count/index, and up to 62 bytes of payload.
 
-The central `CDevG5KB::ApplySetting` routine exposes the order of several
-save flows. Depending on dirty flags, it serializes key matrices and writes
-selected layers, serializes macro data, reads then modifies and writes the
-lighting configuration, sends a custom LED RGB table, and writes game/color
+The HID callsite report and targeted decompilation expose several additional
+paths. Every path below that calls `HidD_SetFeature` is an active command path;
+none was invoked during this audit.
+
+| Routine | Static behavior and evidence | Limits |
+| --- | --- | --- |
+| `FUN_0040f030` | Scans candidate screen-device descriptors, opens matching handles, sends report ID `9` / command `0x82`, reads six bytes, then compares them with the keyboard profile's six-byte `Psd`. Its log says “Found screen dev, read psd now.” | This is a descriptor-matching transaction, not a passive descriptor read. The data's origin and exact selection path remain open. |
+| `FUN_004103e0` | A helper logs `GetPassword failed`, uses command `0x82`, and handles a caller-supplied response length in 512-byte chunks through the G5 feature-report path. | The caller, exact payload meaning, and reason for the “password” label are not recovered. |
+| `FUN_0040fd10` | `GetPower` command `0x87`; sends a feature request, reads the response, and returns two bytes. | The meaning and units of the two bytes are unknown. |
+| `FUN_00410045` | `GetRealData` command `0x88`; sends a request and copies caller-requested response bytes from up to 512-byte feature chunks. | Its decompiler output has an instruction-overlap warning; caller and data semantics are unresolved. It is not evidence of firmware-memory access. |
+| `FUN_0040f600`, `FUN_004131c0` | Connection checks call `HidD_GetAttributes` on an existing handle, or `CreateFileW` and immediately `CloseHandle` on a stored device path. | These checks establish openability/handle state, not the exact keyboard model or its firmware. |
+| `FUN_00416740` | Descriptor processing calls `HidP_GetSpecificButtonCaps` and `HidP_GetSpecificValueCaps` for input, output, and feature report types. | It examines HID capabilities; no device feature report is sent in this routine. |
+
+The central settings path exposes the order of several save flows. The
+3632-facing `FUN_0040e690` wrapper checks a busy flag, waits 200 ms, then calls
+the shared `FUN_00411b90` orchestrator. The orchestrator branches to G5
+`FUN_0040f700` or the 3632 routines `FUN_0040d7e0`/`FUN_0040dd60` based on
+the device object. Depending on dirty flags, it serializes key matrices and
+writes selected layers, serializes macro data, reads then modifies and writes
+the lighting configuration, sends a custom LED RGB table, and writes game/color
 groups. Its log strings distinguish `SetMatrix`, `SetMacro`, `SetLED`,
 `SetLedRgbTab`, and `SetGame` failures. This gives a feature-to-path map, but
 the decompiler output does not fully recover the meaning of each matrix byte,
@@ -360,13 +381,153 @@ The UI labels and static call paths support this more specific feature map:
 
 | Feature | Native operation path observed | Limits |
 | --- | --- | --- |
-| Keymaps and layers | `FUN_00411260` packs four 132-position layers; dirty layers flow through `FUN_0040F9C0`. G5 uses `FUN_0040F700` command `3`; 3632 uses `FUN_0040D7E0` command `1`. | Key-code field semantics and all layer flags remain unresolved. |
+| Keymaps and layers | `FUN_00411260` maps four 132-position layers; dirty layers flow through `FUN_0040F9C0`. G5 uses `FUN_0040F700` command `3`; 3632 uses `FUN_0040D7E0` command `1`. | Key-record translation and macro-buffer ID flow are partly recovered below. Exact command payload argument meaning and some profile slot semantics remain unresolved. |
 | Macros | Apply-setting associates macro-buffer IDs with mapped keys, then sends dirty macro data through G5 command `5` or the 3632 macro path `FUN_0040DD60`. | 3632 command mapping and macro event meaning are incomplete. |
-| Lighting and colors | `FUN_0040FAD0` obtains LED/config data; packers `FUN_00411700`/`FUN_00411900` feed G5 command `4` or 3632 command `4`. RGB slot tables use `FUN_004101B0` (G5 command `10`, 3632 command `9`); color groups use G5 command `6` or 3632 command `2`. | The `FUN_0040FAD0` read path sends command `0x84` through `HidD_SetFeature` before `HidD_GetFeature`; this is not a passive probe. Slot and tuple semantics remain incomplete. |
-| Audio-reactive data | `FUN_00413340` sends music data in RKKB report chunks through `FUN_00413220`; the code labels it `SendMusicData`, with command prefix `0` or `6` chosen from `bRGB`. | Audio capture/stream lifecycle is unresolved; this path writes data to the keyboard. |
-| Screen and GIFs | `FUN_00410230` sets screen parameters with command `0x0B`; `FUN_004103E0` sets GIF parameters with command `0x0D`; `FUN_00412B10` transfers screen pages/frames with acknowledgments, retries, and checksum/CRC handling. | Exact mapping of every frame field and screen model to transport is unresolved. |
+| Lighting and colors | `FUN_0040FAD0` obtains LED/config data; packers `FUN_00411700`/`FUN_00411900` feed G5 command `4` or 3632 command `4`. RGB slot tables use `FUN_004101B0` (G5 command `10`, 3632 command `9`); color groups use G5 command `6` or 3632 command `2`. | The `FUN_0040FAD0` read path sends command `0x84` through `HidD_SetFeature` before `HidD_GetFeature`; this is not a passive probe. RGB values are logged by `FUN_0040CD70`, which is a debug formatter and does not transform the buffer. Slot and tuple semantics remain incomplete. |
+| Audio-reactive data | `FUN_0043C780` captures the default render endpoint with WASAPI loopback and computes visualization bands; separate `FUN_00413340` sends music data in RKKB report chunks through `FUN_00413220`. | DSP parameter-to-UI mapping and data-format meaning remain incomplete. Neither capture nor HID transmit was run. |
+| Screen and GIFs | Screen parameter command `0x0B`, GIF parameter command `0x0D`, and page/frame command `0x0C`; the UI decodes `screen.gif` frames into PNG cache files. | Exact frame field map, delay units, and model-to-transport mapping remain unresolved. These command paths write to the keyboard. |
 | Settings and reset | Packets include debounce, tap, and sleep fields. `FUN_004102D0` sends reset command `0x11`; `FUN_00411B90` also has a reset-command branch. | UI warns reset/factory restore clears keyboard data; exact button-to-command dispatch is not mapped. |
 | Software and firmware updates | Main UI software update uses `URLDownloadToFileW`; the per-profile `Update.exe` stages `.upf` data for HID transfer. | MFU section-B/C paths perform bounded readback comparisons after writes; a full-flash dump/save-to-host path was not found. |
+
+### Lighting payload details
+
+The static `ApplySetting` path begins with a dirty-flag mask. For the
+3632-facing wrapper `FUN_0040e690`, the apply operation is gated by the
+instance busy flag at offset `+0x260`, waits 200 ms, and enters
+`FUN_00411b90`. That common routine chooses a G5 path through `FUN_0040f700`
+or 3632 paths through the function pointer at object offset `+0x94` and the
+helpers `FUN_0040d7e0`/`FUN_0040dd60`. These are static control-flow facts;
+the device was not connected by the analysis.
+
+The lighting configuration read helper `FUN_0040fad0` requests G5 command
+`0x84` or 3632 command `0x44`, and reads `0x80` bytes. Its G5 response is
+accepted only when the final two bytes are `0x5A, 0xA5`. Applying LED config
+uses command `4`, with the packer selected by firmware value: `FUN_00411700`
+for firmware value `2`, otherwise `FUN_00411900`. The following source and
+output byte offsets were traced statically:
+
+| Packer | Output field | Source/evidence | Confidence and open meaning |
+| --- | --- | --- | --- |
+| `FUN_00411700` | `+2` | Configuration `+0x3E02`; also logged as debounce | Strong mapping; allowed-value mapping to user-visible timing remains incomplete. |
+| `FUN_00411900` | `+3` | Configuration `+0x3E02`; also logged as debounce | Strong mapping; allowed-value mapping to user-visible timing remains incomplete. |
+| `FUN_00411700` | `+8` | Configuration `+0x3E08`; logged as tap setting | Strong mapping; exact UI labels and units unresolved. |
+| `FUN_00411900` | `+0x16` | Configuration `+0x3E08`; logged as tap setting | Strong mapping; exact UI labels and units unresolved. |
+| `FUN_00411700` | `+9` | Configuration `+0x3E14`; logged as sleep setting | Strong mapping; the zeroing condition and units need more caller/UI tracing. |
+| `FUN_00411900` | `+0x18` | Configuration `+0x3E14`; logged as sleep setting | Strong mapping; the zeroing condition and units need more caller/UI tracing. |
+
+The packers translate debounce and sleep settings through lookup tables.
+`FUN_00411700` zeroes the tap byte when configuration `+0x3E04` is nonzero.
+`FUN_00411900` also sets output `+9` from a selected-profile equality test,
+`+0xA` from the profile row's first byte except for one special row, `+0xB`
+from configuration `+0x25C0 + 0x20`, and `+0x1B` when configuration
+`+0x3E20` is zero; `+0x38` and `+0x39` are initialized to `0xFF`. The source
+and selection mechanics are known, but labels and behavioral meaning are not.
+
+The two packers encode their mode/item data differently. `FUN_00411900`
+iterates runtime rows at configuration `+0x214C + i*0x30`; mode/index is
+looked up from `+0x2144`, with nibble inputs at `+0x2140`, `+0x214C`, and
+`+0x216C`. `FUN_00411700` uses output `+0x21` for the profile-row byte
+(except the special row), `+0x22..+0x24` for selected-mode data, and
+`+0x53+2i`/`+0x54+2i` for item pairs. These offsets are a recovered binary
+layout, not names for undocumented controls.
+
+### Keymap and macro mapping details
+
+`FUN_00411260` consumes four layers from a runtime map object at `+0x38`.
+Each layer contains 132 records with a 16-byte stride (`0x840` bytes per
+layer). For each nonempty record (DWORD at `+0` is nonzero), it calls a driver
+virtual method at vtable offset `+0x60` to translate the record, then uses a
+byte mapping table at `0x616998 + entryOffset` to select an output slot. The
+translated DWORD is stored in that slot; return value `-1` and destination
+slots above `0x83` are rejected. The table/record relationship and the full
+semantic meaning of the translated DWORD remain incomplete. The packed
+output has 132 DWORDs (`0x210` bytes) per layer and four layers (`0x840` bytes)
+in total for a 132-key profile.
+
+Records with tag byte `+3 == 5` take a macro path: their DWORD at `+8` is
+matched to macro nodes, a sequential macro-buffer ID is assigned, and a
+serializer is called through vtable offset `+0x64`. The mapped matrix DWORD
+contains `(bufferID - 1)` in its high byte. The record contains other fields
+used by the virtual translator, but their meanings and all translated DWORD
+bits remain unresolved.
+
+The keymap branch in `FUN_00411B90` runs when apply flag bit 0 is set. The
+map object's dirty-layer mask at `+0x30` selects layers; its excluded/current
+layer index is at `+0x34`. `FUN_00411B50` scans 132 entries for macro tags.
+If a dirty layer references macros, the worker can add other macro-containing
+layers to the dirty mask, then sends macro data only when at least one macro
+is present. It serializes all four layers and calls `FUN_0040F9C0` for each
+selected layer.
+
+For G5, `FUN_0040F9C0` passes the mapped matrix length as profile field
+`+0xB5 * 4` (528 bytes for 132 keys), report ID from device-object byte
+`+0x2D0`, and layer index as the option. `FUN_0040F700` command `3` divides
+the payload into 512- and 16-byte chunks, sets packet count 2 and indices 0/1,
+and uses a 25 ms inter-report delay. The 3632 path dispatches command `1`.
+This establishes the transport length and layer option for the inspected
+profile path; it does not define every DWORD field or profile's wiring map.
+
+### Audio capture path
+
+`FUN_0043C780` statically resolves to a WASAPI loopback capture routine. It
+creates an `IMMDeviceEnumerator`, registers endpoint notifications, obtains
+the default render/console endpoint, activates an `IAudioClient`, reads the
+mix format, and initializes capture with flag `0x20000`
+(`AUDCLNT_STREAMFLAGS_LOOPBACK`). It obtains `IAudioCaptureClient`, polls
+packet size, reads and releases audio buffers, converts PCM to floating-point
+and reduces it to 24 visualization bands, then exits on cancellation/event.
+The audio processing path therefore exists in the native software; this does
+not show that it was started in this audit or that audio was captured.
+
+The separate `FUN_00413340`/`FUN_00413220` path sends music data through
+65-byte RKKB feature reports, using a leading `0` or `[6, 0]` selected by the
+RGB flag. It is an active keyboard-write path and was not invoked. The exact
+relationship between the generated bands, the `audio.dct` settings, and the
+transmitted format remains unresolved.
+
+The catalog's `0174` profile is named RK S98RGB. It has `Fw=1`,
+`Psd=6,0,0,0,0,3`, `ShowScreen=1`, `RGBScreen=1`, `MaxScreenFrame=60`,
+`DataUnitSize=512`, screen dimensions `320x172`, and
+`MusicRGBIndex=1,0,2`. This is direct evidence that this installed S98
+profile configures screen and audio-reactive features, not proof those
+features work on the connected keyboard. A different profile, `020F`, is
+named RK A70 Keyboard; it has wireless VID/PID `0x258A:0x0150`,
+`Psd=6,0,0,0,0,56`, and `MusicRGBIndex=1,0,2`, but no screen fields. The
+profile distinction matters because Windows' observed USB ID `0x258A:0x0150`
+matches the A70 receiver profile and is not by itself an S98 identity.
+
+### Screen and GIF data paths
+
+The UI-side screen workflow decodes `screen.gif` into cached
+`screen_img%d.png` frame images using GDI+. A separate helper reads and writes
+`gif_delay.gcc` as a four-byte DWORD; the unit and full range are not
+established. The installed package includes screen-frame and playback
+settings, but those local files do not show which exact byte values the
+device expects.
+
+The native driver sends screen parameters with G5 command `0x0B`, GIF
+parameters with command `0x0D`, then transfers pages/frames through
+`FUN_00412B10` command `0x0C`. The page helper carries up to 512 data bytes per
+520-byte feature report. Its report ID normally comes from device-object
+offset `+0x2D0`, with an alternate report-ID-9 branch. When the global
+checksum flag at `0x611844` is set, it computes two alternating-byte sums,
+complements them, and places them in the header. A feature-write failure is
+retried four times with 100 ms delays; separate response/acknowledgment,
+checksum, cancellation, progress, and outer-retry handling follow. A worker
+around `0x466450` appears to manage progress and retry flow. The exact meaning
+of all page header fields and response statuses remains unresolved. These are
+screen-write paths and were not executed.
+
+RGB-table updates use a buffer sized `(profile-count + 1) * 0x15` bytes and
+the G5 command `10` or 3632 command `9`. `FUN_0040cd70` is only an optional
+debug dumper gated by a logging flag: it formats input bytes but does not
+modify the RGB buffer. RGB data is copied from six DWORD color values in
+configuration rows beginning at `+0x2150` and selected through channel tables
+at `DAT_00612B48`/`DAT_00612B49`/`DAT_00612B4A`; exact color-space/slot meaning
+is unresolved. Dirty color-group updates serialize three bytes per group
+using profile-row DWORD colors; G5 uses command `6`, while 3632 uses command
+`2`. A reset/flag path may call a virtual function at `+0x38`, but its effect
+is not resolved.
 
 This is a function-level feature map, not a complete MFC button-handler map.
 The PE contains ten dialog resources, but the app-looking templates are
@@ -420,7 +581,7 @@ The three observed transport families have different framing:
 
 G5 wrapper labels include SetMatrix `3`, SetMacro `5`, SetLED `4`, SetGame
 `6`, SetLedRgbTab `10`, SendWeb `0x12`, GetLED `0x84`, GetPower `0x87`, and
-GetRealData `0x88`. RKKB music data uses a leading `0` byte or `[6, 0]`
+GetRealData `0x88`. `GetPower` returns two bytes in the inspected helper. `GetRealData` uses 520-byte feature reports with up to 512 response bytes per chunk, but its caller, returned-data meaning, and any relationship to firmware memory are unresolved. Each chunk begins with a feature request before the read. RKKB music data uses a leading `0` byte or `[6, 0]`
 depending on the RGB flag; the rest of that payload is not decoded. These are
 three observed code paths, not a guarantee that every catalog profile maps
 one-to-one to one of these classes.
