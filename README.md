@@ -8,6 +8,7 @@ This is the user-facing project: [web app and Windows desktop profile editor](ht
 
 - Inspect previously authorized RK keyboards on startup and track connect/disconnect events in Chrome or Edge.
 - Match exact USB product IDs and names against the local RK catalog; show ambiguous receiver IDs as unresolved instead of guessing.
+- Show the connected profile's matching RK Drive photo and model-specific S98 appearance photos. The S98 finish photo is selected by the user because USB identity does not expose physical color; RGB values remain profile settings, not live device readings.
 - Search 188 named model profiles and display model-specific key layouts, region, RGB mode slots, function layers, and optional screen dimensions.
 - Browse the public RK Drive registry snapshot: 177 wired/2.4 GHz keyboard descriptors across 96 labels, plus two separate RK68 HE profiles (98 keyboard labels total), 20 legacy mouse descriptors, and two CB75 mouse connection profiles. Use the searchable photo gallery to scan every listed label and its connection IDs, then inspect VID/PID and HID usage values, declared layers, OS tables, lighting effects, and 96 RK-hosted image references (93 keyboard photos, two keyboard layout backgrounds, one mouse photo). HE identity remains a descriptor candidate because Keydeck does not read the UUID required by RK's web app.
 - Inspect the exact RK Drive lighting-effect names and declared controls as local reference metadata, separate from the installed 4.06 mode slots. Draft direction, second-color, and per-key colors against the selected layout.
@@ -19,7 +20,7 @@ This is the user-facing project: [web app and Windows desktop profile editor](ht
 - Keep S98 dial and tri-mode preferences in its profile.
 - Run as a hosted web app or as a Windows desktop app with its own persistent WebView2 window.
 
-Keydeck uses the official registry's vendor IDs to offer descriptor-only device identification and to show possible model candidates. It does not open the HID device or send, receive, or replay HID reports. Profile editing is local only. The advanced behavior fields, separate OS tables, per-key lighting drafts, and structured macro timeline are Keydeck profile data, not RK-compatible settings; macros are not recorded or played back. Performance fields remain raw profile values with unresolved units. Mouse device configuration, screen transfers, physical connection switching, firmware updates, and hardware writes are not implemented. The **Write changes** control stays disabled. Catalog images are requested directly from RK only while the catalog page is open; they are not bundled with Keydeck. See the [RK Drive feature-parity notes](docs/rk-drive-feature-parity.md) for the exact boundary.
+Keydeck uses the official registry's vendor IDs to offer descriptor-only device identification and to show possible model candidates. It does not open the HID device or send, receive, or replay HID reports. Profile editing is local only. The advanced behavior fields, separate OS tables, per-key lighting drafts, and structured macro timeline are Keydeck profile data, not RK-compatible settings; macros are not recorded or played back. Performance fields remain raw profile values with unresolved units. Mouse device configuration, screen transfers, physical connection switching, firmware updates, and hardware writes are not implemented. The **Write changes** control stays disabled. Catalog and overview images are requested directly from RK; they are not bundled with Keydeck. See the [RK Drive feature-parity notes](docs/rk-drive-feature-parity.md) for the exact boundary.
 
 ## Try the web version
 
@@ -80,11 +81,14 @@ python scripts/extract_rk_drive_catalog.py
 
 This downloads the seven public JavaScript bundles into memory and writes only parsed model metadata, bundle hashes, and RK-hosted image URLs. It does not save vendor JavaScript or image files.
 
+The device overview resolves model photos from the selected profile and layout region. The S98 appearance picker uses image URLs from RK's public product pages for Lavender Purple, Deep Black, Sky Blue, Clay Green, Pink Edition, and Winter Limited Edition. Those photos are fetched at runtime; no RK artwork is bundled. The current product photo selection cannot be inferred from USB IDs, and the profile RGB swatch is explicitly a locally saved value. See [device appearance sources and limits](docs/device-appearance.md).
+
 ## References
 
 - [Standalone RK software reverse-engineering research archive](https://github.com/shubh-3011/rk-keyboard-software-research)
 - [RK's official web configurator](https://drive.rkgaming.com/)
 - [RK Drive feature-parity notes](docs/rk-drive-feature-parity.md)
+- [Device appearance sources and limits](docs/device-appearance.md)
 - [RK S98 product specifications](https://rkgamingstore.com/products/s98-wireless-mechanical-keyboard)
 - [KludgeKnight](https://github.com/vinc3m1/kludgeknight), an open-source RK web configurator used as a behavioral reference
 - [Reverse-engineering audit and limits](docs/reverse-engineering.md)

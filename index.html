@@ -186,6 +186,32 @@
                   </button>
                 </section>
 
+                <section class="panel appearance-panel" id="deviceAppearancePanel">
+                  <div class="panel-heading compact-panel-heading">
+                    <div>
+                      <p class="section-kicker" id="devicePhotoKicker">MODEL APPEARANCE</p>
+                      <h2 id="devicePhotoTitle">Select a keyboard profile</h2>
+                    </div>
+                    <span class="appearance-mark" aria-hidden="true"></span>
+                  </div>
+                  <div class="device-photo-frame" id="devicePhotoFrame">
+                    <img id="devicePhoto" alt="" loading="lazy" hidden />
+                    <div class="device-photo-empty" id="devicePhotoEmpty">Model photo will appear here</div>
+                  </div>
+                  <p class="appearance-note" id="devicePhotoNote">Photos load from RK's official store when available.</p>
+                  <div class="appearance-choices-wrap" id="deviceAppearanceChoicesWrap" hidden>
+                    <span class="field-label">S98 FINISH PHOTO</span>
+                    <div class="appearance-choices" id="deviceAppearanceChoices" role="radiogroup" aria-label="S98 appearance photo"></div>
+                    <p class="appearance-note">Choose the photo that matches your keyboard. USB identity does not report physical color.</p>
+                  </div>
+                  <div class="appearance-rgb" id="deviceRgbAppearance" hidden>
+                    <span class="profile-color-chip" id="deviceRgbSwatch" aria-hidden="true"></span>
+                    <div><span>PROFILE RGB COLOR</span><strong id="deviceRgbValue">#75D6C1</strong></div>
+                    <button class="text-button" data-go="lighting">Edit</button>
+                  </div>
+                  <a class="appearance-source" id="devicePhotoSource" href="https://drive.rkgaming.com/" target="_blank" rel="noreferrer">Image source</a>
+                </section>
+
                 <section class="panel display-status-panel" id="screenFeatureCard">
                   <div class="panel-heading compact-panel-heading">
                     <div>

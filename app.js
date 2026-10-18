@@ -134,6 +134,7 @@ const KEY_ROWS = [
 let modelCatalog = [];
 let modelLayouts = {};
 let driveCatalog = null;
+let appearanceCatalog = { variants: [] };
 let identifiedDevice = null;
 let authorizedDevices = [];
 let identityMatch = null;
@@ -157,6 +158,7 @@ function starterProfile(name) {
     id: makeId(),
     name: name || "Daily setup",
     modelCode: "022F",
+    appearanceVariant: "",
     lighting: { effect: "mode:1", color: "#75D6C1", mixColor: "#80A7FF", brightness: 72, speed: 55, direction: "none", keyColors: {}, driveReferenceModel: "", driveReferenceEffect: "" },
     screen: { brightness: 70, clock: true, assetName: "", width: 0, height: 0 },
     knob: { rotate: "Volume", press: "Play / pause", longPress: "None" },
@@ -199,6 +201,9 @@ function normalizeProfile(profile) {
     typeof value.modelCode === "string"
       ? value.modelCode.toUpperCase()
       : "022F";
+  value.appearanceVariant = typeof value.appearanceVariant === "string"
+    ? value.appearanceVariant.slice(0, 48)
+    : "";
   value.lighting =
     value.lighting && typeof value.lighting === "object" ? value.lighting : {};
   value.lighting.effect = String(value.lighting.effect || "mode:1");
@@ -378,6 +383,123 @@ function modelByCode(code) {
 
 function selectedModel() {
   return modelByCode(activeProfile().modelCode) || modelByCode("022F");
+}
+
+function normalizeCatalogName(value) {
+  return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
+}
+
+function officialImageUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" &&
+      ["drive.rkgaming.com", "rkgamingstore.com"].includes(url.hostname.toLowerCase())
+      ? url.href
+      : "";
+  } catch {
+    return "";
+  }
+}
+
+function drivePhotoForProfile(model) {
+  const family = normalizeCatalogName(model?.family);
+  if (!family) return null;
+  const candidates = (driveCatalog?.models || []).filter((entry) =>
+    entry.image_url && normalizeCatalogName(entry.name).includes(family) &&
+    officialImageUrl(entry.image_url),
+  );
+  if (!candidates.length) return null;
+  const profileName = normalizeCatalogName(model.name);
+  const exactName = candidates
+    .filter((entry) => profileName.startsWith(normalizeCatalogName(entry.name)))
+    .sort((a, b) => normalizeCatalogName(b.name).length - normalizeCatalogName(a.name).length)[0];
+  if (exactName) return exactName;
+  const region = normalizeCatalogName(model.region);
+  if (region && region !== "ansi") {
+    const regional = candidates
+      .filter((entry) => normalizeCatalogName(entry.name).endsWith(region))
+      .sort((a, b) => normalizeCatalogName(b.name).length - normalizeCatalogName(a.name).length)[0];
+    if (regional) return regional;
+  }
+  const generic = candidates.find((entry) => {
+    const label = normalizeCatalogName(entry.name);
+    return label === family || label === `rk${family}`;
+  });
+  if (generic) return generic;
+  return candidates.sort((a, b) => normalizeCatalogName(a.name).length - normalizeCatalogName(b.name).length)[0];
+}
+
+function renderDeviceAppearance() {
+  const model = selectedModel();
+  const connectedExact = Boolean(identityMatch?.model && identityMatch.model.code === model?.code);
+  const photo = $("#devicePhoto");
+  const empty = $("#devicePhotoEmpty");
+  const note = $("#devicePhotoNote");
+  const source = $("#devicePhotoSource");
+  const choicesWrap = $("#deviceAppearanceChoicesWrap");
+  const choices = $("#deviceAppearanceChoices");
+  const rgb = $("#deviceRgbAppearance");
+  if (!photo || !model) return;
+
+  const isS98 = normalizeCatalogName(model.family) === "s98" && model.region === "ANSI";
+  const options = isS98 ? appearanceCatalog.variants || [] : [];
+  const selectedOption = options.find((entry) => entry.id === activeProfile().appearanceVariant)
+    || options.find((entry) => entry.id === "lavender-purple");
+  const drivePhoto = drivePhotoForProfile(model);
+  const imageUrl = selectedOption ? officialImageUrl(selectedOption.imageUrl) : officialImageUrl(drivePhoto?.image_url);
+  const sourceUrl = selectedOption?.sourceUrl || (drivePhoto ? "https://drive.rkgaming.com/" : "");
+
+  $("#devicePhotoKicker").textContent = connectedExact ? "CONNECTED MODEL PHOTO" : "MODEL APPEARANCE";
+  $("#devicePhotoTitle").textContent = model.name;
+  photo.alt = selectedOption
+    ? `${model.name} appearance reference: ${selectedOption.name}`
+    : drivePhoto ? `${model.name} product image` : "";
+  photo.hidden = !imageUrl;
+  empty.hidden = Boolean(imageUrl);
+  empty.textContent = imageUrl ? "" : "No official product photo is mapped for this model";
+  if (photo.dataset.source !== imageUrl) {
+    photo.dataset.source = imageUrl;
+    if (imageUrl) photo.src = imageUrl;
+    else photo.removeAttribute("src");
+  }
+  photo.onerror = () => {
+    if (photo.dataset.source !== imageUrl) return;
+    photo.hidden = true;
+    empty.hidden = false;
+    empty.textContent = "RK's photo host could not be reached";
+    note.textContent = "Try again when online; model and layout identification are still available.";
+  };
+  note.textContent = selectedOption
+    ? `${selectedOption.name} · ${selectedOption.series} photo from RK's official store. USB identity does not detect physical finish.`
+    : drivePhoto
+      ? `${drivePhoto.name} · regional photo from RK Drive. USB identity cannot identify case finish or live lighting.`
+      : "A photo is not listed for this profile in the available RK catalogs.";
+  source.href = sourceUrl || "https://drive.rkgaming.com/";
+  source.hidden = !sourceUrl;
+  source.textContent = selectedOption ? "View official S98 product page" : "View RK Drive image catalog";
+
+  choicesWrap.hidden = options.length === 0;
+  choices.replaceChildren();
+  options.forEach((entry) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "appearance-choice";
+    button.setAttribute("role", "radio");
+    button.setAttribute("aria-checked", String(selectedOption?.id === entry.id));
+    button.textContent = entry.name;
+    button.addEventListener("click", () => {
+      activeProfile().appearanceVariant = entry.id;
+      saveState("S98 appearance photo saved to this profile.");
+      renderDeviceAppearance();
+    });
+    choices.append(button);
+  });
+
+  const profile = activeProfile();
+  const color = /^#[0-9a-f]{6}$/i.test(profile.lighting?.color || "") ? profile.lighting.color : "#75D6C1";
+  rgb.hidden = !model.features?.rgb;
+  $("#deviceRgbSwatch").style.backgroundColor = color;
+  $("#deviceRgbValue").textContent = color.toUpperCase();
 }
 
 function layoutForModel(model = selectedModel()) {
@@ -1760,6 +1882,7 @@ function renderAll() {
   renderMacros();
   renderProfiles();
   if (identifiedDevice) setDeviceStatus(identifiedDevice);
+  renderDeviceAppearance();
 }
 
 function renderModelFeatures() {
@@ -2125,6 +2248,7 @@ function wireEvents() {
     activeProfile().lighting.color = event.target.value.toUpperCase();
     saveState();
     renderLighting();
+    renderDeviceAppearance();
   });
   $("#colorSwatches").addEventListener("click", (event) => {
     const swatch = event.target.closest("[data-color]");
@@ -2132,6 +2256,7 @@ function wireEvents() {
       activeProfile().lighting.color = swatch.dataset.color.toUpperCase();
       saveState();
       renderLighting();
+      renderDeviceAppearance();
     }
   });
   $("#mixColorPicker").addEventListener("input", (event) => {
@@ -2395,6 +2520,18 @@ async function loadModelCatalog() {
     if (!Array.isArray(driveCatalog.models)) driveCatalog = null;
   } catch (error) {
     driveCatalog = null;
+  }
+  try {
+    const response = await fetch("model-appearance.json", { cache: "no-store" });
+    if (!response.ok) throw new Error("appearance catalog unavailable");
+    const catalog = await response.json();
+    appearanceCatalog = {
+      variants: Array.isArray(catalog.variants)
+        ? catalog.variants.filter((entry) => entry && typeof entry.id === "string" && officialImageUrl(entry.imageUrl))
+        : [],
+    };
+  } catch (error) {
+    appearanceCatalog = { variants: [] };
   }
   migrateLegacyMappings();
   renderAll();
