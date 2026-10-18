@@ -622,6 +622,8 @@ function renderDriveCatalog() {
       : "Official model metadata is unavailable in this build.";
   }
 
+  renderDriveModelGallery(grouped, matchingNames, isMouse);
+
   const selectedEntries = grouped.get(selectedDriveModel) || [];
   const name = $("#driveModelName");
   const summary = $("#driveModelSummary");
@@ -719,6 +721,76 @@ function renderDriveCatalog() {
   });
   if (isMouse) renderDriveMouseData(selectedEntries);
   else renderDriveConfiguratorData(selectedEntries);
+}
+
+function renderDriveModelGallery(grouped, names, isMouse) {
+  const gallery = $("#driveModelGallery");
+  const count = $("#driveGalleryCount");
+  gallery.replaceChildren();
+  count.textContent = `${names.length} ${isMouse ? "mouse" : "keyboard"} model labels`;
+  if (!names.length) {
+    const empty = document.createElement("p");
+    empty.className = "micro-note drive-gallery-empty";
+    empty.textContent = "No model labels match this search.";
+    gallery.append(empty);
+    return;
+  }
+
+  names.forEach((name) => {
+    const entries = grouped.get(name) || [];
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "drive-gallery-card";
+    button.dataset.driveModel = name;
+    button.setAttribute("aria-pressed", String(name === selectedDriveModel));
+
+    const media = document.createElement("span");
+    media.className = "drive-gallery-media";
+    const imageEntry = entries.find((entry) => {
+      try {
+        return new URL(entry.image_url).origin === "https://drive.rkgaming.com";
+      } catch (error) {
+        return false;
+      }
+    });
+    if (imageEntry && activePage === "drive-catalog") {
+      const image = document.createElement("img");
+      image.src = imageEntry.image_url;
+      image.alt = `${name} product image hosted by RK Drive`;
+      image.loading = "lazy";
+      image.referrerPolicy = "no-referrer";
+      image.addEventListener("error", () => {
+        image.remove();
+        media.classList.add("image-unavailable");
+        media.textContent = "Image unavailable";
+      }, { once: true });
+      media.append(image);
+    } else {
+      media.classList.add("image-unavailable");
+      media.textContent = imageEntry ? "Open catalog to load image" : "No product image listed";
+    }
+
+    const details = document.createElement("span");
+    details.className = "drive-gallery-details";
+    const title = document.createElement("strong");
+    title.textContent = name;
+    const connections = [...new Set(entries.map((entry) => entry.connection).filter(Boolean))];
+    const connectionText = document.createElement("small");
+    connectionText.textContent = connections.length ? connections.join(" · ") : "Connection not listed";
+    const ids = [...new Set(entries.map((entry) => {
+      const vendor = entry.vendor_id_hex || `0x${hex4(entry.vendor_id)}`;
+      const product = entry.product_id_hex || `0x${hex4(entry.product_id)}`;
+      return `${vendor}:${product}`;
+    }))];
+    const identity = document.createElement("small");
+    identity.className = "drive-gallery-ids";
+    identity.textContent = ids.length
+      ? `${ids.slice(0, 2).join(" · ")}${ids.length > 2 ? ` · +${ids.length - 2}` : ""}`
+      : "No USB identity listed";
+    details.append(title, connectionText, identity);
+    button.append(media, details);
+    gallery.append(button);
+  });
 }
 
 function renderDriveMouseData(entries) {
@@ -1829,6 +1901,13 @@ function wireEvents() {
   $("#driveModelSelect").addEventListener("change", (event) => {
     selectedDriveModel = event.target.value;
     renderDriveCatalog();
+  });
+  $("#driveModelGallery").addEventListener("click", (event) => {
+    const card = event.target.closest("[data-drive-model]");
+    if (!card) return;
+    selectedDriveModel = card.dataset.driveModel;
+    renderDriveCatalog();
+    $("#driveModelCard").scrollIntoView({ behavior: "smooth", block: "start" });
   });
   $("#deviceSelect").addEventListener("change", (event) => {
     const device = authorizedDevices[Number(event.target.value)];
