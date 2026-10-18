@@ -514,6 +514,11 @@ function renderDriveCatalog() {
     : driveCatalog?.models || [];
   const modelLabel = (entry) => isMouse ? entry.model_label : entry.name;
   const filter = String($("#driveModelFilter")?.value || "").trim().toLowerCase();
+  const normalizeSearch = (value) => String(value || "")
+    .toLowerCase()
+    .replace(/0x/g, "")
+    .replace(/[^a-z0-9]/g, "");
+  const query = normalizeSearch(filter);
   const grouped = new Map();
   entries.forEach((entry) => {
     const label = modelLabel(entry);
@@ -521,7 +526,38 @@ function renderDriveCatalog() {
     grouped.get(label).push(entry);
   });
   const matchingNames = [...grouped.keys()]
-    .filter((name) => !filter || `${name} ${grouped.get(name).map((entry) => entry.chooser_alias_labels || "").join(" ")}`.toLowerCase().includes(filter))
+    .filter((name) => {
+      if (!query) return true;
+      const searchText = grouped.get(name).flatMap((entry) => {
+        const vendorHex = entry.vendor_id_hex || `0x${hex4(entry.vendor_id)}`;
+        const productHex = entry.product_id_hex || `0x${hex4(entry.product_id)}`;
+        const usagePageHex = entry.usage_page_hex || `0x${hex4(entry.usage_page)}`;
+        const usageHex = entry.usage_hex || `0x${hex4(entry.usage)}`;
+        return [
+          modelLabel(entry),
+          entry.model_id,
+          entry.chooser_alias_labels,
+          entry.image_asset,
+          entry.connection,
+          entry.device_type,
+          entry.protocol_type,
+          entry.protocol_family,
+          entry.record_type,
+          entry.storage_profile_key,
+          entry.layout_symbol,
+          entry.protocol_factory_symbol,
+          entry.web_configurator?.key_layers,
+          entry.web_configurator?.key_tables,
+          entry.web_configurator?.lighting_effects?.map((effect) => effect.name),
+          `${vendorHex}:${productHex}`,
+          `${vendorHex} ${productHex}`,
+          `${entry.vendor_id} ${entry.product_id}`,
+          `${usagePageHex}:${usageHex}`,
+          `${entry.usage_page} ${entry.usage}`,
+        ];
+      }).map(normalizeSearch).join(" ");
+      return searchText.includes(query);
+    })
     .sort((a, b) => a.localeCompare(b));
   const select = $("#driveModelSelect");
   select.replaceChildren();

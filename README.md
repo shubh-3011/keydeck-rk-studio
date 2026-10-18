@@ -53,7 +53,9 @@ Desktop profiles and preferences stay on this PC in `%LOCALAPPDATA%\Keydeck-RK-S
 
 ## Device identity and scope
 
-The **RK model catalog** page uses a local metadata snapshot extracted from the public RK Drive JavaScript bundle. It can browse keyboard and mouse registry records, connection-specific USB identities, keyboard layers, Windows/macOS tables, layout-group counts, lighting-effect names and declared fields, and links to RK-hosted images. The metadata is packaged with the desktop build; image requests go to RK only when the catalog page is open. The app does not implement mouse configuration or device writes. The full extraction method and source hashes are documented in the [research archive](https://github.com/shubh-3011/rk-keyboard-software-research/blob/main/docs/rk-drive-web-app-audit.md).
+The **RK model catalog** page uses a local metadata snapshot extracted from all seven public RK Drive JavaScript bundles. It can search model names, chooser aliases, VID:PID, HID usage, connection type, and protocol; browse keyboard and mouse descriptors, declared layers/tables/effects; and open RK-hosted product photo references. The snapshot contains 177 keyboard connection descriptors, 20 legacy mouse descriptors, two CB75 mouse connection rows, and 92 image URLs. Images load directly from RK only while the catalog page is open; they are not bundled. Source-free CSV snapshots and the bundle hash manifest are in [the docs folder](docs/rk-drive-js-manifest.csv), and the extractor is [extract_rk_drive_catalog.py](scripts/extract_rk_drive_catalog.py).
+
+The public Web Driver also contains key mapping, macro, lighting, screen/TFT, advanced-key, performance, mouse, settings, and firmware UI paths. Keydeck has local profile editors for key maps, lighting preferences, macros, screen metadata, and descriptive advanced-behavior drafts. It does not reproduce every Web Driver page, mouse configuration, firmware/update behavior, or the vendor's per-model HID serializers. Registry controls and UI labels are not treated as proof that a hardware action is supported. See [the feature parity notes](docs/rk-drive-feature-parity.md) and the [research audit](https://github.com/shubh-3011/rk-keyboard-software-research/blob/main/docs/rk-drive-web-app-audit.md).
 
 Keydeck asks the browser to enumerate devices the user has already authorized. If none are authorized, **Identify keyboard** opens the browser's device chooser for vendor IDs present in the bundled RK Drive registry snapshot. Product name, vendor ID, product ID, and collection count come from the HID descriptor; no HID report is opened.
 
@@ -68,6 +70,14 @@ python scripts/extract_rk_catalog.py --rk-root "C:\Program Files (x86)\RK Keyboa
 ```
 
 The extractor writes model names, visual layouts, capability metadata, raw profile configuration, and unregistered profiles to `models.json`, plus the static profile-to-handler map in `docs/rk-profile-driver-family-map.csv`. It does not copy RK executables, firmware, images, or HID payloads.
+
+To refresh the public RK Drive metadata snapshot and bundle hashes:
+
+```powershell
+python scripts/extract_rk_drive_catalog.py
+```
+
+This downloads the seven public JavaScript bundles into memory and writes only parsed model metadata, bundle hashes, and RK-hosted image URLs. It does not save vendor JavaScript or image files.
 
 ## References
 
