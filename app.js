@@ -142,7 +142,9 @@ let selectedDriveModel = "";
 let selectedDriveCategory = "keyboard";
 let currentLayer = "base";
 let selectedKey = "K34";
+let selectedLightingKey = "";
 let selectedMacroId = "";
+const screenPreviewUrls = new Map();
 let toastTimer = 0;
 
 const $ = (selector) => document.querySelector(selector);
@@ -155,7 +157,7 @@ function starterProfile(name) {
     id: makeId(),
     name: name || "Daily setup",
     modelCode: "022F",
-    lighting: { effect: "mode:1", color: "#75D6C1", brightness: 72, speed: 55, driveReferenceModel: "", driveReferenceEffect: "" },
+    lighting: { effect: "mode:1", color: "#75D6C1", mixColor: "#80A7FF", brightness: 72, speed: 55, direction: "none", keyColors: {}, driveReferenceModel: "", driveReferenceEffect: "" },
     screen: { brightness: 70, clock: true, assetName: "", width: 0, height: 0 },
     knob: { rotate: "Volume", press: "Play / pause", longPress: "None" },
     advanced: {
@@ -167,6 +169,11 @@ function starterProfile(name) {
       performanceNote: "",
     },
     connection: "USB-C",
+    osTable: "Windows",
+    keymaps: {
+      Windows: { base: {}, fn: {}, fn2: {}, game: {} },
+      macOS: { base: {}, fn: {}, fn2: {}, game: {} },
+    },
     layers: { base: {}, fn: {}, fn2: {}, game: {} },
     macros: [
       {
@@ -198,8 +205,16 @@ function normalizeProfile(profile) {
   value.lighting.color = /^#[0-9a-f]{6}$/i.test(value.lighting.color || "")
     ? value.lighting.color.toUpperCase()
     : "#75D6C1";
+  value.lighting.mixColor = /^#[0-9a-f]{6}$/i.test(value.lighting.mixColor || "")
+    ? value.lighting.mixColor.toUpperCase()
+    : "#80A7FF";
   value.lighting.brightness = bounded(value.lighting.brightness, 72);
   value.lighting.speed = bounded(value.lighting.speed, 55);
+  value.lighting.direction = ["none", "left-right", "right-left", "top-bottom", "bottom-top", "center-out"].includes(value.lighting.direction)
+    ? value.lighting.direction
+    : "none";
+  const sourceKeyColors = value.lighting.keyColors && typeof value.lighting.keyColors === "object" ? value.lighting.keyColors : {};
+  value.lighting.keyColors = Object.fromEntries(Object.entries(sourceKeyColors).slice(0, 256).filter(([, color]) => /^#[0-9a-f]{6}$/i.test(String(color))).map(([key, color]) => [String(key).slice(0, 24), String(color).toUpperCase()]));
   value.lighting.driveReferenceModel = String(value.lighting.driveReferenceModel || "").slice(0, 100);
   value.lighting.driveReferenceEffect = String(value.lighting.driveReferenceEffect || "").slice(0, 100);
   value.screen =
@@ -252,11 +267,20 @@ function normalizeProfile(profile) {
   ].includes(value.connection)
     ? value.connection
     : "USB-C";
-  value.layers =
-    value.layers && typeof value.layers === "object" ? value.layers : {};
-  for (const layer of LAYERS)
-    if (!value.layers[layer] || typeof value.layers[layer] !== "object")
-      value.layers[layer] = {};
+  const oldLayers = value.layers && typeof value.layers === "object" ? value.layers : {};
+  const sourceKeymaps = value.keymaps && typeof value.keymaps === "object" ? value.keymaps : {};
+  const normalizeKeymap = (source) => {
+    const keymap = source && typeof source === "object" ? { ...source } : {};
+    for (const layer of LAYERS)
+      if (!keymap[layer] || typeof keymap[layer] !== "object") keymap[layer] = {};
+    return keymap;
+  };
+  const windowsKeymap = normalizeKeymap(sourceKeymaps.Windows || oldLayers);
+  const macKeymap = normalizeKeymap(sourceKeymaps.macOS || {});
+  value.keymaps = { Windows: windowsKeymap, macOS: macKeymap };
+  value.osTable = value.osTable === "macOS" ? "macOS" : "Windows";
+  // Keep the old field as the Windows table for compatibility with existing exports.
+  value.layers = windowsKeymap;
   value.macros = Array.isArray(value.macros)
     ? value.macros
         .filter((macro) => macro && typeof macro === "object")
@@ -312,6 +336,8 @@ const state = loadState();
 const activeProfile = () =>
   state.profiles.find((profile) => profile.id === state.activeProfileId) ||
   state.profiles[0];
+const activeKeymap = (profile = activeProfile()) =>
+  profile.keymaps?.[profile.osTable] || profile.keymaps?.Windows || profile.layers;
 
 function showToast(message) {
   const toast = $("#toast");
@@ -938,17 +964,26 @@ function renderKeyboard(host) {
     key.style.top = `${(y / layoutHeight) * 100}%`;
     key.style.width = `${(w / layoutWidth) * 100}%`;
     key.style.height = `${(h / layoutHeight) * 100}%`;
-    const mapping = profile.layers[currentLayer][id];
+    const mapping = activeKeymap(profile)[currentLayer][id];
+    if (host.id === "lightingKeyboard") {
+      key.classList.add("lighting-keycap");
+      key.style.setProperty("--key-light-color", profile.lighting.keyColors[id] || profile.lighting.color);
+      if (profile.lighting.keyColors[id]) key.classList.add("has-custom-light");
+    }
     if (mapping && mapping.type !== "Default") key.classList.add("mapped");
     if (/shift|ctrl|alt|win|caps|tab|enter|backspace|space|fn/i.test(label))
       key.classList.add("modifier");
-    if (id === selectedKey && activePage === "keys")
+    if ((id === selectedKey && activePage === "keys") || (host.id === "lightingKeyboard" && id === selectedLightingKey && activePage === "lighting"))
       key.classList.add("selected");
     if (mapping && mapping.type !== "Default")
       key.title = `${label} → ${mapping.value || mapping.type}`;
     key.addEventListener("click", () => {
       selectedKey = id;
       if (host.id === "keymapKeyboard") return renderAll();
+      if (host.id === "lightingKeyboard") {
+        selectedLightingKey = id;
+        return renderAll();
+      }
       setPage("keys");
       renderAll();
     });
@@ -998,6 +1033,21 @@ function renderLighting() {
   $("#overviewBrightness").textContent = lighting.brightness + "%";
   $("#speedRange").value = lighting.speed;
   $("#speedValue").textContent = lighting.speed + "%";
+  $("#lightingDirection").value = lighting.direction;
+  $("#mixColorPicker").value = lighting.mixColor;
+  const layoutKeys = layoutForModel(model)?.keys || [];
+  if (!layoutKeys.some((key) => key.id === selectedLightingKey)) selectedLightingKey = layoutKeys[0]?.id || "";
+  const perKeySelect = $("#lightingKeySelect");
+  perKeySelect.replaceChildren();
+  layoutKeys.forEach((key) => {
+    const option = document.createElement("option");
+    option.value = key.id;
+    option.textContent = `${key.label} · ${key.id}`;
+    perKeySelect.append(option);
+  });
+  perKeySelect.value = selectedLightingKey;
+  $("#lightingKeyColor").value = lighting.keyColors[selectedLightingKey] || lighting.color;
+  $("#clearLightingKeyColor").disabled = !lighting.keyColors[selectedLightingKey];
   $("#overviewEffect").textContent = lighting.effect.startsWith("mode:")
     ? `Slot ${lighting.effect.slice(5)}`
     : `Saved: ${lighting.effect}`;
@@ -1009,6 +1059,7 @@ function renderLighting() {
     ),
   );
   renderDriveLightingReference();
+  renderKeyboard($("#lightingKeyboard"));
 }
 
 function renderEditor() {
@@ -1026,7 +1077,9 @@ function renderEditor() {
   });
   if (!layers.some(({ id }) => id === currentLayer)) currentLayer = "base";
   layerSelect.value = currentLayer;
-  const mapping = profile.layers[currentLayer][selectedKey];
+  const keymap = activeKeymap(profile);
+  $("#osTableSelect").value = profile.osTable;
+  const mapping = keymap[currentLayer][selectedKey];
   const descriptor = layout?.keys?.find((key) => key.id === selectedKey);
   const label = descriptor?.label || selectedKey;
   $("#selectedKeyName").textContent = label;
@@ -1037,7 +1090,7 @@ function renderEditor() {
   $("#actionValue").value = mapping?.value || label;
   $("#actionValueWrap").hidden =
     !mapping || !["Custom", "Macro", "Media"].includes(mapping.type);
-  const count = Object.keys(profile.layers[currentLayer]).length;
+  const count = Object.keys(keymap[currentLayer]).length;
   $("#layerSelectCaption").textContent =
     `${layers.length} layer${layers.length === 1 ? "" : "s"} in this model profile`;
   $("#mappingCount").textContent = count
@@ -1175,6 +1228,17 @@ function renderScreen() {
   const model = selectedModel();
   const screenSpec = model?.features?.screen;
   const screen = activeProfile().screen;
+  const previewUrl = screenPreviewUrls.get(activeProfile().id);
+  const previewWrap = $("#screenPreviewWrap");
+  const preview = $("#screenPreview");
+  previewWrap.hidden = !previewUrl;
+  if (previewUrl) {
+    if (preview.src !== previewUrl) preview.src = previewUrl;
+    $("#screenPreviewNote").textContent = "Preview uses the selected local file in this window. The image bytes are not added to profile JSON or sent to the keyboard.";
+  } else {
+    preview.removeAttribute("src");
+    $("#screenPreviewNote").textContent = "Re-select the media file to preview it after reopening Keydeck; only its name and dimensions are saved in the profile.";
+  }
   $("#screenBrightness").value = screen.brightness;
   $("#screenBrightnessValue").textContent = screen.brightness + "%";
   $("#screenClock").checked = screen.clock;
@@ -1182,7 +1246,7 @@ function renderScreen() {
   $("#screenAssetState").textContent = asset || "No display asset selected";
   $("#screenAssetName").textContent = asset || "Choose PNG, JPG or GIF";
   $("#screenAssetDimensions").textContent = asset
-    ? screen.width + " × " + screen.height + " pixels · metadata only"
+    ? screen.width + " × " + screen.height + " pixels · local metadata"
     : "Files are inspected locally in your browser.";
   $("#screenTransferTitle").textContent = asset || "No display asset selected";
   $("#screenTransferText").textContent = asset
@@ -1317,8 +1381,9 @@ function migrateLegacyMappings() {
       if (!keysByLabel.has(normalized)) keysByLabel.set(normalized, []);
       keysByLabel.get(normalized).push(key);
     });
-    Object.values(profile.layers).forEach((layerMap) => {
-      Object.entries(layerMap).forEach(([oldId, mapping]) => {
+    Object.values(profile.keymaps || { Windows: profile.layers }).forEach((table) => {
+      Object.values(table).forEach((layerMap) => {
+        Object.entries(layerMap).forEach(([oldId, mapping]) => {
         if (layout.keys.some((key) => key.id === oldId)) return;
         const legacy = KEY_ROWS.flat().find(([id]) => id === oldId);
         if (!legacy) return;
@@ -1335,6 +1400,7 @@ function migrateLegacyMappings() {
         layerMap[target.id] = mapping;
         delete layerMap[oldId];
         changed = true;
+        });
       });
     });
   });
@@ -1376,6 +1442,7 @@ function renderMacros() {
     list.append(item);
   }
   const selected = profile.macros.find((macro) => macro.id === selectedMacroId);
+  $("#exportMacro").disabled = !selected;
   $("#macroName").value = selected?.name || "";
   $("#macroSequence").value = selected?.sequence || "";
   const stepList = $("#macroStepList");
@@ -1799,6 +1866,35 @@ function saveMacro() {
   renderMacros();
 }
 
+function exportSelectedMacro() {
+  const macro = activeProfile().macros.find((entry) => entry.id === selectedMacroId);
+  if (!macro) return showToast("Choose a macro to export.");
+  const slug = macro.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "macro";
+  downloadJson(`keydeck-${slug}.json`, { format: "keydeck-macro-v1", macro });
+}
+
+async function importMacroFile(file) {
+  if (!file) return;
+  if (file.size > 1024 * 1024) {
+    showToast("Macro JSON must be smaller than 1 MB.");
+    return;
+  }
+  try {
+    const parsed = JSON.parse((await file.text()).replace(/^\uFEFF/, ""));
+    const candidate = parsed.macro || parsed.profile?.macros?.[0] || parsed.macros?.[0] || parsed;
+    if (!candidate || typeof candidate !== "object") throw new Error("macro missing");
+    const imported = normalizeProfile({ macros: [candidate] }).macros[0];
+    imported.id = makeId();
+    imported.name = (imported.name || "Imported macro").slice(0, 40) + " import";
+    activeProfile().macros.push(imported);
+    selectedMacroId = imported.id;
+    saveState("Macro imported into this local profile.");
+    renderMacros();
+  } catch (error) {
+    showToast("That file is not a valid Keydeck macro or profile JSON.");
+  }
+}
+
 function addStructuredMacroStep() {
   const macro = activeProfile().macros.find((entry) => entry.id === selectedMacroId);
   if (!macro) return showToast("Create a macro first.");
@@ -1920,6 +2016,11 @@ function wireEvents() {
     currentLayer = event.target.value;
     renderAll();
   });
+  $("#osTableSelect").addEventListener("change", (event) => {
+    activeProfile().osTable = event.target.value === "macOS" ? "macOS" : "Windows";
+    saveState("Operating-system key table selected.");
+    renderAll();
+  });
   $("#behaviorLayerSelect").addEventListener("change", (event) => {
     currentLayer = event.target.value;
     renderAll();
@@ -1984,10 +2085,11 @@ function wireEvents() {
   });
   $("#saveKeyMapping").addEventListener("click", () => {
     const type = $("#actionSelect").value;
+    const keymap = activeKeymap();
     if (type === "Default")
-      delete activeProfile().layers[currentLayer][selectedKey];
+      delete keymap[currentLayer][selectedKey];
     else
-      activeProfile().layers[currentLayer][selectedKey] = {
+      keymap[currentLayer][selectedKey] = {
         type,
         value: ["Custom", "Macro", "Media"].includes(type)
           ? $("#actionValue").value.trim()
@@ -1997,7 +2099,7 @@ function wireEvents() {
     renderAll();
   });
   $("#clearKeyMapping").addEventListener("click", () => {
-    delete activeProfile().layers[currentLayer][selectedKey];
+    delete activeKeymap()[currentLayer][selectedKey];
     saveState("Key assignment reset.");
     renderAll();
   });
@@ -2032,6 +2134,30 @@ function wireEvents() {
       renderLighting();
     }
   });
+  $("#mixColorPicker").addEventListener("input", (event) => {
+    activeProfile().lighting.mixColor = event.target.value.toUpperCase();
+    saveState();
+  });
+  $("#lightingDirection").addEventListener("change", (event) => {
+    activeProfile().lighting.direction = event.target.value;
+    saveState("Lighting direction preference saved locally.");
+  });
+  $("#lightingKeySelect").addEventListener("change", (event) => {
+    selectedLightingKey = event.target.value;
+    renderLighting();
+  });
+  $("#lightingKeyColor").addEventListener("input", (event) => {
+    if (!selectedLightingKey) return;
+    activeProfile().lighting.keyColors[selectedLightingKey] = event.target.value.toUpperCase();
+    saveState();
+    renderLighting();
+  });
+  $("#clearLightingKeyColor").addEventListener("click", () => {
+    if (!selectedLightingKey) return;
+    delete activeProfile().lighting.keyColors[selectedLightingKey];
+    saveState("Per-key color reset to the base color.");
+    renderLighting();
+  });
   const setBrightness = (value) => {
     activeProfile().lighting.brightness = Number(value);
     saveState();
@@ -2063,13 +2189,22 @@ function wireEvents() {
   $("#screenFile").addEventListener("change", async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
+    if (file.size > 25 * 1024 * 1024) {
+      showToast("Choose a local image under 25 MB for the preview.");
+      event.target.value = "";
+      return;
+    }
     try {
       const bitmap = await createImageBitmap(file);
-      activeProfile().screen.assetName = file.name.slice(0, 180);
-      activeProfile().screen.width = bitmap.width;
-      activeProfile().screen.height = bitmap.height;
+      const profile = activeProfile();
+      profile.screen.assetName = file.name.slice(0, 180);
+      profile.screen.width = bitmap.width;
+      profile.screen.height = bitmap.height;
       bitmap.close();
-      saveState("Image dimensions saved. Image data was not uploaded.");
+      const oldUrl = screenPreviewUrls.get(profile.id);
+      if (oldUrl) URL.revokeObjectURL(oldUrl);
+      screenPreviewUrls.set(profile.id, URL.createObjectURL(file));
+      saveState("Local media preview ready. File bytes were not uploaded or saved in the profile.");
       renderScreen();
     } catch (error) {
       showToast("Could not inspect that image. Try PNG, JPG or GIF.");
@@ -2147,6 +2282,15 @@ function wireEvents() {
     saveState("Loop count saved locally.");
   });
   $("#saveMacro").addEventListener("click", saveMacro);
+  $("#exportMacro").addEventListener("click", () => {
+    saveMacro();
+    exportSelectedMacro();
+  });
+  $("#importMacro").addEventListener("click", () => $("#macroFile").click());
+  $("#macroFile").addEventListener("change", async (event) => {
+    await importMacroFile(event.target.files?.[0]);
+    event.target.value = "";
+  });
   $("#deleteMacro").addEventListener("click", () => {
     if (!selectedMacroId) return;
     activeProfile().macros = activeProfile().macros.filter(

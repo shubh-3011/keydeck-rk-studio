@@ -284,8 +284,9 @@
                 </p>
               </div>
               <div class="layer-picker">
+                <label class="region-control" for="osTableSelect"><span>TABLE</span><select id="osTableSelect"><option value="Windows">Windows</option><option value="macOS">macOS</option></select></label>
                 <label class="region-control" for="layerSelect"><span>LAYER</span><select id="layerSelect"></select></label>
-                <small id="layerSelectCaption" class="field-help">Model layers</small>
+                <small id="layerSelectCaption" class="field-help">Local OS table · model layers</small>
               </div>
             </div>
             <div class="keymap-layout">
@@ -559,6 +560,18 @@
                     value="55"
                   />
                 </div>
+                <label class="field-label" for="lightingDirection">ANIMATION DIRECTION</label>
+                <select class="field-select" id="lightingDirection">
+                  <option value="none">Not set</option>
+                  <option value="left-right">Left to right</option>
+                  <option value="right-left">Right to left</option>
+                  <option value="top-bottom">Top to bottom</option>
+                  <option value="bottom-top">Bottom to top</option>
+                  <option value="center-out">Center outward</option>
+                </select>
+                <small class="field-help">Direction is a Keydeck preference. RK mode names are not mapped to device values.</small>
+                <label class="field-label" for="mixColorPicker">SECOND COLOR</label>
+                <input class="field-input color-field" id="mixColorPicker" type="color" value="#80A7FF" aria-label="Secondary lighting color" />
                 <button class="button button-primary" id="saveLighting">
                   Save lighting profile
                 </button>
@@ -593,6 +606,28 @@
                 <p class="micro-note">Reference metadata only. Drive effects are not mapped to installed profile slots or keyboard commands.</p>
               </aside>
             </div>
+            <section class="panel lighting-key-panel">
+              <div class="panel-heading">
+                <div>
+                  <p class="section-kicker">PER-KEY COLOR DRAFT</p>
+                  <h2>Lighting map</h2>
+                  <p class="muted">Select a key on the layout, then assign a local color. RK Drive lists per-key color controls for some profiles; this editor does not infer device support.</p>
+                </div>
+                <div class="lighting-key-controls">
+                  <label class="field-group">
+                    <span class="field-label">SELECTED KEY</span>
+                    <select class="field-select" id="lightingKeySelect"></select>
+                  </label>
+                  <label class="field-group">
+                    <span class="field-label">KEY COLOR</span>
+                    <input class="field-input color-field" id="lightingKeyColor" type="color" value="#75D6C1" aria-label="Selected key color" />
+                  </label>
+                  <button class="button button-light" id="clearLightingKeyColor">Use base color</button>
+                </div>
+              </div>
+              <div class="keyboard-frame lighting-key-frame"><div class="keyboard-host" id="lightingKeyboard" aria-label="Per-key lighting profile"></div></div>
+              <p class="micro-note">This keyboard illustration uses the installed RK profile layout. Colors are stored in Keydeck profile JSON only.</p>
+            </section>
           </section>
 
           <section class="page" id="page-screen">
@@ -620,6 +655,10 @@
                     type="file"
                     accept="image/png,image/jpeg,image/gif"
                 /></label>
+                <div class="screen-preview-wrap" id="screenPreviewWrap" hidden>
+                  <img id="screenPreview" alt="Local display media preview" />
+                  <small id="screenPreviewNote" class="micro-note"></small>
+                </div>
                 <div class="control-block">
                   <div class="control-heading">
                     <label class="field-label" for="screenBrightness"
@@ -887,6 +926,9 @@
                   The text sequence remains available for older profiles. Structured mouse actions are semantic labels, not RK report codes.
                 </p>
                 <div class="editor-actions">
+                  <button class="button button-light" id="exportMacro">Export macro</button>
+                  <button class="button button-light" id="importMacro">Import macro</button>
+                  <input type="file" id="macroFile" accept="application/json,.json" hidden />
                   <button class="button button-light" id="deleteMacro">
                     Delete macro</button
                   ><button class="button button-primary" id="saveMacro">

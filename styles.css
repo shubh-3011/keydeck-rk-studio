@@ -515,6 +515,18 @@ h2 {
   outline-offset: 1px;
   color: #255b49;
 }
+.keycap.lighting-keycap {
+  background: var(--key-light-color, #75d6c1);
+  border-color: color-mix(in srgb, var(--key-light-color, #75d6c1), #27332c 24%);
+  color: #1f2923;
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--key-light-color, #75d6c1), #27332c 30%);
+}
+.keycap.lighting-keycap.has-custom-light {
+  font-weight: 700;
+}
+.keycap.lighting-keycap.selected {
+  outline-color: #17251d;
+}
 .model-picker {
   width: min(230px, 40%);
   min-width: 175px;
@@ -833,7 +845,7 @@ h2 {
 .layer-picker {
   display: grid;
   justify-items: end;
-  gap: 4px;
+  gap: 6px;
 }
 .layer-picker .field-help {
   padding-right: 3px;
@@ -1921,6 +1933,44 @@ td {
   font-size: 11px;
 }
 
+.lighting-key-panel {
+  margin-top: 18px;
+}
+.lighting-key-controls {
+  display: grid;
+  grid-template-columns: minmax(135px, 1fr) 90px auto;
+  align-items: end;
+  gap: 10px;
+  min-width: min(100%, 430px);
+}
+.color-field {
+  min-height: 34px;
+  padding: 3px 5px;
+}
+.lighting-key-frame {
+  margin-top: 12px;
+}
+.screen-preview-wrap {
+  display: grid;
+  gap: 7px;
+  margin: 12px 0 16px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #f6f8f5;
+}
+.screen-preview-wrap img {
+  display: block;
+  width: 100%;
+  max-height: 260px;
+  object-fit: contain;
+  background: #202522;
+  border-radius: 4px;
+}
+.screen-preview-wrap .micro-note {
+  margin: 0;
+}
+
 @media (max-width: 680px) {
   .advanced-key-pickers,
   .macro-step-composer {
@@ -1930,5 +1980,12 @@ td {
   .macro-step-row {
     align-items: flex-start;
     flex-direction: column;
+  }
+  .lighting-key-controls {
+    grid-template-columns: 1fr 88px;
+    min-width: 0;
+  }
+  .lighting-key-controls > button {
+    grid-column: 1 / -1;
   }
 }
