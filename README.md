@@ -9,12 +9,16 @@ This is the user-facing project: [web app and Windows desktop profile editor](ht
 - Inspect previously authorized RK keyboards on startup and track connect/disconnect events in Chrome or Edge.
 - Match exact USB product IDs and names against the local RK catalog; show ambiguous receiver IDs as unresolved instead of guessing.
 - Search 188 named model profiles and display model-specific key layouts, region, RGB mode slots, function layers, and optional screen dimensions.
-- Browse the public RK Drive registry snapshot: 96 displayed keyboard labels, 177 wired/2.4 GHz descriptors, 91 direct RK-hosted photo references, and model-specific key layers, OS tables, layout groups, and lighting-effect definitions extracted from its JavaScript bundle.
+- Browse the public RK Drive registry snapshot: 96 keyboard labels, 177 wired/2.4 GHz keyboard descriptors, 20 legacy mouse descriptors, two CB75 mouse connection profiles, and 92 direct RK-hosted image references (91 keyboard and one mouse). Inspect model-specific keyboard layers, OS tables, layout groups, lighting effects, and declared CB75 features.
+- Inspect the exact RK Drive lighting-effect names and declared controls as local reference metadata, separate from the installed 4.06 mode slots.
+- Draft per-key DKS, Toggle, and Mod-Tap behavior, plus SOCD and Snap Tap preferences, in Keydeck-owned profile data.
+- Build structured macro timelines from semantic key, mouse-button, delay, and loop steps alongside the legacy text sequence.
+- Inspect raw performance-related values present in the selected installed model profile and attach local notes. Their units and meanings are not decoded.
 - Edit local keymap, lighting, screen, macro, and connection preference profiles, then import or export them as JSON.
 - Keep S98 dial and tri-mode preferences in its profile.
 - Run as a hosted web app or as a Windows desktop app with its own persistent WebView2 window.
 
-Keydeck uses the official registry's vendor IDs to offer descriptor-only device identification and to show possible model candidates. It does not open the HID device or send, receive, or replay HID reports. Profile editing is local only. The catalog records Drive's declared model layers and lighting modes, but Keydeck does not reproduce the full Drive runtime: advanced DKS/SOCD/snap/toggle/mod-tap editing, performance and mouse controls, macro playback, screen transfers, physical connection switching, firmware updates, and hardware writes are not implemented. The **Write changes** control stays disabled. Catalog images are requested directly from RK only while the catalog page is open; they are not bundled with Keydeck.
+Keydeck uses the official registry's vendor IDs to offer descriptor-only device identification and to show possible model candidates. It does not open the HID device or send, receive, or replay HID reports. Profile editing is local only. The new advanced behavior fields and structured macro timeline are Keydeck-local drafts, not RK-compatible settings; macros are not recorded or played back. Performance fields remain raw profile values with unresolved units. Mouse device configuration, screen transfers, physical connection switching, firmware updates, and hardware writes are not implemented. The **Write changes** control stays disabled. Catalog images are requested directly from RK only while the catalog page is open; they are not bundled with Keydeck. See the [RK Drive feature-parity notes](docs/rk-drive-feature-parity.md) for the exact boundary.
 
 ## Try the web version
 
@@ -49,7 +53,7 @@ Desktop profiles and preferences stay on this PC in `%LOCALAPPDATA%\Keydeck-RK-S
 
 ## Device identity and scope
 
-The **RK model catalog** page uses a local metadata snapshot extracted from the public RK Drive JavaScript bundle. It lists connection-specific USB identities, model-specific key layers, Windows/macOS tables, layout-group counts, lighting-effect names and declared fields, and links to images hosted by RK. The metadata is packaged with the desktop build; image requests go to RK only when the catalog page is open. The full extraction method and source hashes are documented in the [research archive](https://github.com/shubh-3011/rk-keyboard-software-research/blob/main/docs/rk-drive-web-app-audit.md).
+The **RK model catalog** page uses a local metadata snapshot extracted from the public RK Drive JavaScript bundle. It can browse keyboard and mouse registry records, connection-specific USB identities, keyboard layers, Windows/macOS tables, layout-group counts, lighting-effect names and declared fields, and links to RK-hosted images. The metadata is packaged with the desktop build; image requests go to RK only when the catalog page is open. The app does not implement mouse configuration or device writes. The full extraction method and source hashes are documented in the [research archive](https://github.com/shubh-3011/rk-keyboard-software-research/blob/main/docs/rk-drive-web-app-audit.md).
 
 Keydeck asks the browser to enumerate devices the user has already authorized. If none are authorized, **Identify keyboard** opens the browser's device chooser for vendor IDs present in the bundled RK Drive registry snapshot. Product name, vendor ID, product ID, and collection count come from the HID descriptor; no HID report is opened.
 
@@ -69,6 +73,7 @@ The extractor writes model names, visual layouts, capability metadata, raw profi
 
 - [Standalone RK software reverse-engineering research archive](https://github.com/shubh-3011/rk-keyboard-software-research)
 - [RK's official web configurator](https://drive.rkgaming.com/)
+- [RK Drive feature-parity notes](docs/rk-drive-feature-parity.md)
 - [RK S98 product specifications](https://rkgamingstore.com/products/s98-wireless-mechanical-keyboard)
 - [KludgeKnight](https://github.com/vinc3m1/kludgeknight), an open-source RK web configurator used as a behavioral reference
 - [Reverse-engineering audit and limits](docs/reverse-engineering.md)

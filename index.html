@@ -29,6 +29,9 @@
           <button class="nav-item" data-page="keys">
             <span class="nav-glyph">02</span>Key map
           </button>
+          <button class="nav-item" data-page="advanced">
+            <span class="nav-glyph">10</span>Advanced behavior
+          </button>
           <button class="nav-item" id="lightingNavButton" data-page="lighting">
             <span class="nav-glyph">03</span>Lighting
           </button>
@@ -69,7 +72,7 @@
           </button>
         </section>
         <div class="sidebar-footer">
-          <span>UNOFFICIAL OPEN SOURCE PROJECT</span><span>KEYDECK 0.5.0</span>
+          <span>UNOFFICIAL OPEN SOURCE PROJECT</span><span>KEYDECK 0.6.0</span>
         </div>
       </aside>
 
@@ -354,6 +357,103 @@
             </div>
           </section>
 
+          <section class="page" id="page-advanced">
+            <div class="page-title-row">
+              <div>
+                <p class="eyebrow">ADVANCED INPUT · LOCAL PROFILE</p>
+                <h1>Behavior drafts</h1>
+                <p class="page-subtitle">
+                  Keep DKS, Mod-Tap, Toggle, SOCD, and Snap Tap ideas with a
+                  profile. These are Keydeck drafts; RK model support and wire
+                  formats are not established.
+                </p>
+              </div>
+              <div class="status-chip">NO DEVICE OUTPUT</div>
+            </div>
+            <div class="settings-columns advanced-columns">
+              <section class="panel settings-panel">
+                <div class="section-kicker">PER-KEY BEHAVIOR</div>
+                <div class="advanced-key-pickers">
+                  <label class="field-group">
+                    <span class="field-label">LAYER</span>
+                    <select class="field-select" id="behaviorLayerSelect"></select>
+                  </label>
+                  <label class="field-group">
+                    <span class="field-label">KEY</span>
+                    <select class="field-select" id="behaviorKeySelect"></select>
+                  </label>
+                </div>
+                <label class="field-label" for="behaviorMode">BEHAVIOR TYPE</label>
+                <select class="field-select" id="behaviorMode">
+                  <option value="none">Standard key</option>
+                  <option value="dks">DKS draft</option>
+                  <option value="toggle">Toggle draft</option>
+                  <option value="mod-tap">Mod-Tap draft</option>
+                </select>
+                <div class="advanced-mode-fields" id="dksFields" hidden>
+                  <p class="field-help">Describe the two actions in sequence. RK trigger thresholds and stage encoding are not known here.</p>
+                  <label class="field-label" for="dksPrimaryAction">FIRST ACTION</label>
+                  <input class="field-input" id="dksPrimaryAction" placeholder="e.g. W" />
+                  <label class="field-label" for="dksSecondaryAction">SECOND ACTION</label>
+                  <input class="field-input" id="dksSecondaryAction" placeholder="e.g. Shift+W" />
+                </div>
+                <div class="advanced-mode-fields" id="toggleFields" hidden>
+                  <p class="field-help">A descriptive action for a local toggle draft.</p>
+                  <label class="field-label" for="toggleAction">TOGGLED ACTION</label>
+                  <input class="field-input" id="toggleAction" placeholder="e.g. Hold W" />
+                </div>
+                <div class="advanced-mode-fields" id="modTapFields" hidden>
+                  <p class="field-help">Store the tap and hold intentions without assigning timing units.</p>
+                  <label class="field-label" for="modTapTapAction">TAP ACTION</label>
+                  <input class="field-input" id="modTapTapAction" placeholder="e.g. Escape" />
+                  <label class="field-label" for="modTapHoldAction">HOLD ACTION</label>
+                  <input class="field-input" id="modTapHoldAction" placeholder="e.g. Control" />
+                </div>
+                <div class="editor-actions">
+                  <button class="button button-light" id="clearAdvancedBehavior">Clear draft</button>
+                  <button class="button button-primary" id="saveAdvancedBehavior">Save draft</button>
+                </div>
+                <div class="callout subtle-callout">
+                  <strong>Not a device profile format</strong>
+                  <p>Keydeck stores these descriptions in its own JSON profile. It does not generate RK reports or claim these settings are supported by the selected model.</p>
+                </div>
+              </section>
+
+              <section class="panel settings-panel">
+                <div class="section-kicker">OPPOSING INPUTS</div>
+                <label class="checkbox-row">
+                  <input id="socdEnabled" type="checkbox" />
+                  <span><strong>SOCD draft</strong><small>Record a resolution preference for an opposing direction pair.</small></span>
+                </label>
+                <label class="field-label" for="socdPair">DIRECTION PAIR</label>
+                <select class="field-select" id="socdPair">
+                  <option value="A/D">A / D</option>
+                  <option value="Left/Right">Left / Right</option>
+                  <option value="W/S">W / S</option>
+                  <option value="Up/Down">Up / Down</option>
+                </select>
+                <label class="field-label" for="socdResolution">SOCD RESOLUTION</label>
+                <select class="field-select" id="socdResolution">
+                  <option value="last-input">Last input wins</option>
+                  <option value="neutral">Neutral when both are held</option>
+                  <option value="first-input">First input wins</option>
+                  <option value="up-priority">Up priority</option>
+                </select>
+                <div class="field-separator"></div>
+                <label class="checkbox-row">
+                  <input id="snapTapEnabled" type="checkbox" />
+                  <span><strong>Snap Tap draft</strong><small>Keep a last-input priority note for the selected direction pair.</small></span>
+                </label>
+                <div class="field-separator"></div>
+                <div class="section-kicker">RAW PERFORMANCE PROFILE FIELDS</div>
+                <p class="field-help">Values below come from the selected installed model profile. Their units and runtime meaning are unresolved.</p>
+                <div class="raw-profile-fields" id="rawPerformanceFields"></div>
+                <label class="field-label" for="performanceNote">YOUR LOCAL NOTES</label>
+                <textarea class="field-textarea" id="performanceNote" rows="3" maxlength="1000" placeholder="Keep observations or tuning ideas with this profile"></textarea>
+              </section>
+            </div>
+          </section>
+
           <section class="page" id="page-lighting">
             <div class="page-title-row">
               <div>
@@ -483,6 +583,14 @@
                 <button class="text-button" data-go="diagnostics">
                   Open device info
                 </button>
+                <div class="field-separator"></div>
+                <div class="section-kicker">RK DRIVE EFFECT REFERENCE</div>
+                <label class="field-label" for="driveLightingModelSelect">MODEL LABEL</label>
+                <select class="field-select" id="driveLightingModelSelect"></select>
+                <label class="field-label" for="driveLightingEffectSelect">DECLARED EFFECT</label>
+                <select class="field-select" id="driveLightingEffectSelect"></select>
+                <p class="field-help" id="driveLightingEffectInfo">Choose a model to inspect its public Drive effect metadata.</p>
+                <p class="micro-note">Reference metadata only. Drive effects are not mapped to installed profile slots or keyboard commands.</p>
               </aside>
             </div>
           </section>
@@ -645,8 +753,16 @@
             <section class="panel drive-catalog-panel">
               <div class="drive-catalog-toolbar">
                 <div>
+                  <label class="field-label" for="driveCatalogType">DEVICE FAMILY</label>
+                  <select class="field-input" id="driveCatalogType" aria-label="Choose an RK Drive device family">
+                    <option value="keyboard">Keyboards</option>
+                    <option value="mouse">Mice</option>
+                  </select>
+                  <small class="field-help">Registry metadata only; device configuration is not implemented.</small>
+                </div>
+                <div>
                   <label class="field-label" for="driveModelFilter">SEARCH MODELS</label>
-                  <input class="field-input" id="driveModelFilter" type="search" placeholder="Search model or region" autocomplete="off" />
+                  <input class="field-input" id="driveModelFilter" type="search" placeholder="Search model or chooser alias" autocomplete="off" />
                   <small class="field-help" id="driveModelCount">Loading official registry</small>
                 </div>
                 <div>
@@ -665,7 +781,7 @@
                   <p class="muted" id="driveModelSummary">Official Web Driver model metadata.</p>
                   <div class="drive-connection-list" id="driveConnectionList"></div>
                   <div class="drive-web-config-data">
-                    <p class="section-kicker">RK DRIVE CONFIGURATOR DATA</p>
+                    <p class="section-kicker">SOURCE DECLARED CAPABILITIES</p>
                     <div class="drive-config-capabilities" id="driveConfiguratorCapabilities"></div>
                     <p class="field-help" id="driveConfiguratorNote">
                       Model-specific options extracted from the public JavaScript bundle.
@@ -674,9 +790,10 @@
                   <p class="callout subtle-callout">
                     Shared receiver IDs can match many models. These entries
                     document the site's registry; they do not confirm hardware
-                    compatibility or enable configuration writes. Keydeck does
-                    not yet implement RK Drive's advanced-key, performance, or
-                    device-transfer workflows.
+                    compatibility or enable configuration writes. Keydeck has
+                    local-only behavior drafts and raw performance references;
+                    it does not implement device transfer, mouse configuration,
+                    or RK-compatible advanced settings.
                   </p>
                   <a id="driveModelSource" class="text-button" href="https://drive.rkgaming.com/" target="_blank" rel="noopener noreferrer">View official RK Drive</a>
                 </div>
@@ -718,8 +835,45 @@
                   rows="10"
                   placeholder="TAP H\nWAIT 60 ms\nTAP I\nTAP ENTER"
                 ></textarea>
+                <div class="field-separator"></div>
+                <div class="structured-macro-heading">
+                  <div>
+                    <div class="section-kicker">STRUCTURED TIMELINE</div>
+                    <small class="field-help">Key, mouse-button, delay, and loop intent. This timeline is not playable.</small>
+                  </div>
+                  <button class="button button-light" id="addMacroStep">Add step</button>
+                </div>
+                <div class="macro-step-list" id="macroStepList"></div>
+                <div class="macro-step-composer">
+                  <label class="field-group">
+                    <span class="field-label">STEP TYPE</span>
+                    <select class="field-select" id="macroStepKind">
+                      <option value="key">Key</option>
+                      <option value="mouse">Mouse button</option>
+                      <option value="delay">Delay</option>
+                    </select>
+                  </label>
+                  <label class="field-group" id="macroStepActionWrap">
+                    <span class="field-label">ACTION LABEL</span>
+                    <input class="field-input" id="macroStepAction" placeholder="e.g. Ctrl+C or Left button" />
+                  </label>
+                  <label class="field-group">
+                    <span class="field-label">DELAY (MS)</span>
+                    <input class="field-input" id="macroStepDelay" type="number" min="0" max="60000" value="0" />
+                  </label>
+                </div>
+                <label class="field-label" for="macroLoopMode">LOOP INTENT</label>
+                <div class="macro-step-composer">
+                  <select class="field-select" id="macroLoopMode">
+                    <option value="none">No loop</option>
+                    <option value="count">Repeat a fixed count</option>
+                    <option value="while-held">While trigger is held</option>
+                    <option value="until-press">Until trigger is pressed</option>
+                  </select>
+                  <input class="field-input" id="macroLoopCount" type="number" min="1" max="99" value="1" aria-label="Loop count" />
+                </div>
                 <p class="micro-note">
-                  One action per line. Sequence is saved as profile data only.
+                  The text sequence remains available for older profiles. Structured mouse actions are semantic labels, not RK report codes.
                 </p>
                 <div class="editor-actions">
                   <button class="button button-light" id="deleteMacro">

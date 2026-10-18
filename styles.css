@@ -528,9 +528,9 @@ h2 {
 
 .drive-catalog-toolbar {
   display: grid;
-  grid-template-columns: minmax(220px, 1fr) minmax(260px, 1fr);
+  grid-template-columns: minmax(160px, 0.75fr) minmax(220px, 1fr) minmax(260px, 1.1fr);
   gap: 18px;
-  max-width: 860px;
+  max-width: 1120px;
   margin-bottom: 24px;
 }
 
@@ -1716,4 +1716,109 @@ td {
 }
 .button:disabled {
   opacity: 0.48;
+}
+
+.advanced-key-pickers,
+.macro-step-composer {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 14px 0;
+}
+
+.field-group {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+}
+
+.advanced-mode-fields {
+  margin: 16px 0;
+  padding: 14px;
+  border: 1px solid #dfe4df;
+  border-radius: 8px;
+  background: #fafbf8;
+}
+
+.advanced-mode-fields .field-help {
+  display: block;
+  margin: 0 0 12px;
+}
+
+.raw-profile-fields {
+  display: grid;
+  gap: 7px;
+  margin: 12px 0 18px;
+}
+
+.raw-field-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 11px;
+  border: 1px solid #dfe4df;
+  border-radius: 8px;
+  color: #68706b;
+  font-size: 12px;
+}
+
+.raw-field-row code {
+  color: #1c211e;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
+
+.structured-macro-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 4px 0 10px;
+}
+
+.macro-step-list {
+  display: grid;
+  gap: 7px;
+  margin: 10px 0 14px;
+}
+
+.macro-step-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 11px;
+  border: 1px solid #dfe4df;
+  border-radius: 8px;
+  background: #fafbf8;
+  color: #1c211e;
+  font-size: 12px;
+}
+
+.macro-step-row > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.macro-step-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+}
+
+.macro-step-actions .text-button {
+  font-size: 11px;
+}
+
+@media (max-width: 680px) {
+  .advanced-key-pickers,
+  .macro-step-composer {
+    grid-template-columns: 1fr;
+  }
+
+  .macro-step-row {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }

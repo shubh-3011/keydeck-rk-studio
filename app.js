@@ -139,6 +139,7 @@ let authorizedDevices = [];
 let identityMatch = null;
 let activePage = "device";
 let selectedDriveModel = "";
+let selectedDriveCategory = "keyboard";
 let currentLayer = "base";
 let selectedKey = "K34";
 let selectedMacroId = "";
@@ -154,9 +155,17 @@ function starterProfile(name) {
     id: makeId(),
     name: name || "Daily setup",
     modelCode: "022F",
-    lighting: { effect: "mode:1", color: "#75D6C1", brightness: 72, speed: 55 },
+    lighting: { effect: "mode:1", color: "#75D6C1", brightness: 72, speed: 55, driveReferenceModel: "", driveReferenceEffect: "" },
     screen: { brightness: 70, clock: true, assetName: "", width: 0, height: 0 },
     knob: { rotate: "Volume", press: "Play / pause", longPress: "None" },
+    advanced: {
+      schema: "keydeck-local-draft-v1",
+      deviceWrite: false,
+      behaviors: {},
+      socd: { enabled: false, pair: "A/D", resolution: "last-input" },
+      snapTap: false,
+      performanceNote: "",
+    },
     connection: "USB-C",
     layers: { base: {}, fn: {}, fn2: {}, game: {} },
     macros: [
@@ -164,6 +173,8 @@ function starterProfile(name) {
         id: makeId(),
         name: "Quick reply",
         sequence: "TAP H\nWAIT 60 ms\nTAP I\nTAP ENTER",
+        steps: [],
+        loop: { mode: "none", count: 1 },
       },
     ],
   };
@@ -189,6 +200,8 @@ function normalizeProfile(profile) {
     : "#75D6C1";
   value.lighting.brightness = bounded(value.lighting.brightness, 72);
   value.lighting.speed = bounded(value.lighting.speed, 55);
+  value.lighting.driveReferenceModel = String(value.lighting.driveReferenceModel || "").slice(0, 100);
+  value.lighting.driveReferenceEffect = String(value.lighting.driveReferenceEffect || "").slice(0, 100);
   value.screen =
     value.screen && typeof value.screen === "object" ? value.screen : {};
   value.screen.brightness = bounded(value.screen.brightness, 70);
@@ -203,6 +216,33 @@ function normalizeProfile(profile) {
   value.knob.rotate = String(value.knob.rotate || "Volume");
   value.knob.press = String(value.knob.press || "Play / pause");
   value.knob.longPress = String(value.knob.longPress || "None");
+  value.advanced = value.advanced && typeof value.advanced === "object" ? value.advanced : {};
+  value.advanced.schema = "keydeck-local-draft-v1";
+  value.advanced.deviceWrite = false;
+  value.advanced.behaviors = value.advanced.behaviors && typeof value.advanced.behaviors === "object" ? value.advanced.behaviors : {};
+  for (const layer of LAYERS) {
+    const entries = value.advanced.behaviors[layer] && typeof value.advanced.behaviors[layer] === "object" ? value.advanced.behaviors[layer] : {};
+    const safeEntries = {};
+    Object.entries(entries).slice(0, 256).forEach(([keyId, behavior]) => {
+      if (!behavior || typeof behavior !== "object") return;
+      const mode = ["dks", "toggle", "mod-tap"].includes(behavior.mode) ? behavior.mode : "none";
+      if (mode === "none") return;
+      safeEntries[String(keyId).slice(0, 24)] = {
+        mode,
+        primaryAction: String(behavior.primaryAction || "").slice(0, 80),
+        secondaryAction: String(behavior.secondaryAction || "").slice(0, 80),
+        tapAction: String(behavior.tapAction || "").slice(0, 80),
+        holdAction: String(behavior.holdAction || "").slice(0, 80),
+      };
+    });
+    value.advanced.behaviors[layer] = safeEntries;
+  }
+  value.advanced.socd = value.advanced.socd && typeof value.advanced.socd === "object" ? value.advanced.socd : {};
+  value.advanced.socd.enabled = value.advanced.socd.enabled === true;
+  value.advanced.socd.pair = ["A/D", "Left/Right", "W/S", "Up/Down"].includes(value.advanced.socd.pair) ? value.advanced.socd.pair : "A/D";
+  value.advanced.socd.resolution = ["last-input", "neutral", "first-input", "up-priority"].includes(value.advanced.socd.resolution) ? value.advanced.socd.resolution : "last-input";
+  value.advanced.snapTap = value.advanced.snapTap === true;
+  value.advanced.performanceNote = String(value.advanced.performanceNote || "").slice(0, 1000);
   value.connection = [
     "USB-C",
     "2.4 GHz",
@@ -224,6 +264,16 @@ function normalizeProfile(profile) {
           id: macro.id || makeId(),
           name: String(macro.name || "Untitled macro").slice(0, 48),
           sequence: String(macro.sequence || "").slice(0, 8000),
+          steps: Array.isArray(macro.steps) ? macro.steps.slice(0, 200).map((step) => ({
+            id: step?.id || makeId(),
+            kind: ["key", "mouse", "delay"].includes(step?.kind) ? step.kind : "key",
+            action: String(step?.action || "").slice(0, 100),
+            delayMs: bounded(step?.delayMs, 0, 60000),
+          })) : [],
+          loop: {
+            mode: ["none", "count", "while-held", "until-press"].includes(macro.loop?.mode) ? macro.loop.mode : "none",
+            count: bounded(macro.loop?.count, 1, 99),
+          },
         }))
     : [];
   return value;
@@ -458,31 +508,45 @@ function renderModelSelect() {
 }
 
 function renderDriveCatalog() {
-  const entries = driveCatalog?.models || [];
+  const isMouse = selectedDriveCategory === "mouse";
+  const entries = isMouse
+    ? driveCatalog?.mouseModels || []
+    : driveCatalog?.models || [];
+  const modelLabel = (entry) => isMouse ? entry.model_label : entry.name;
   const filter = String($("#driveModelFilter")?.value || "").trim().toLowerCase();
   const grouped = new Map();
   entries.forEach((entry) => {
-    if (!grouped.has(entry.name)) grouped.set(entry.name, []);
-    grouped.get(entry.name).push(entry);
+    const label = modelLabel(entry);
+    if (!grouped.has(label)) grouped.set(label, []);
+    grouped.get(label).push(entry);
   });
   const matchingNames = [...grouped.keys()]
-    .filter((name) => !filter || name.toLowerCase().includes(filter))
+    .filter((name) => !filter || `${name} ${grouped.get(name).map((entry) => entry.chooser_alias_labels || "").join(" ")}`.toLowerCase().includes(filter))
     .sort((a, b) => a.localeCompare(b));
   const select = $("#driveModelSelect");
   select.replaceChildren();
   matchingNames.forEach((name) => {
     const option = document.createElement("option");
     option.value = name;
-    option.textContent = `${name} · ${grouped.get(name).length} connection ${grouped.get(name).length === 1 ? "entry" : "entries"}`;
+    option.textContent = `${name} · ${grouped.get(name).length} ${isMouse ? "mouse" : "keyboard"} connection ${grouped.get(name).length === 1 ? "entry" : "entries"}`;
     select.append(option);
   });
   if (!matchingNames.includes(selectedDriveModel)) {
-    selectedDriveModel = matchingNames.includes("RK-S98") ? "RK-S98" : matchingNames[0] || "";
+    const preferred = isMouse ? "CB75-Mouse" : "RK-S98";
+    selectedDriveModel = matchingNames.includes(preferred) ? preferred : matchingNames[0] || "";
   }
   select.value = selectedDriveModel;
-  $("#driveModelCount").textContent = entries.length
-    ? `${entries.length} connection descriptors · ${grouped.size} labels · ${driveCatalog.imageReferenceCount || 0} RK-hosted images · snapshot ${String(driveCatalog.retrievedAtUtc || "date unknown").slice(0, 10)}`
-    : "Official model metadata is unavailable in this build.";
+  if (isMouse) {
+    const legacyCount = entries.filter((entry) => entry.record_type === "legacy_mouse_descriptor").length;
+    const profileCount = entries.filter((entry) => entry.record_type === "TLW_mouse_model_profile").length;
+    $("#driveModelCount").textContent = entries.length
+      ? `${legacyCount} legacy mouse descriptors · ${profileCount} CB75 connection rows · ${grouped.size} model labels · snapshot ${String(driveCatalog.retrievedAtUtc || "date unknown").slice(0, 10)}`
+      : "Mouse registry metadata is unavailable in this build.";
+  } else {
+    $("#driveModelCount").textContent = entries.length
+      ? `${entries.length} keyboard connection descriptors · ${grouped.size} labels · ${driveCatalog.keyboardImageReferenceCount || driveCatalog.imageReferenceCount || 0} keyboard images · snapshot ${String(driveCatalog.retrievedAtUtc || "date unknown").slice(0, 10)}`
+      : "Official model metadata is unavailable in this build.";
+  }
 
   const selectedEntries = grouped.get(selectedDriveModel) || [];
   const name = $("#driveModelName");
@@ -494,30 +558,37 @@ function renderDriveCatalog() {
   connectionList.replaceChildren();
   if (!selectedEntries.length) {
     name.textContent = "No model selected";
-    summary.textContent = "Search the public RK Drive registry to browse its listed keyboard variants.";
+    summary.textContent = isMouse
+      ? "Search the public RK Drive registry to browse its listed mouse descriptors."
+      : "Search the public RK Drive registry to browse its listed keyboard variants.";
     photo.removeAttribute("src");
     photo.alt = "";
     photoNote.textContent = "Model images load from RK Drive only while this catalog page is open.";
     sourceLink.href = "https://drive.rkgaming.com/";
+    sourceLink.textContent = "View official RK Drive";
     renderDriveConfiguratorData([]);
     return;
   }
 
   const representative = selectedEntries[0];
-  name.textContent = representative.name;
-  summary.textContent = `${selectedEntries.length} connection descriptor${selectedEntries.length === 1 ? "" : "s"} in the official Web Driver registry.`;
-  let imageUrl;
-  try {
-    imageUrl = new URL(representative.image_url);
-  } catch (error) {
-    imageUrl = null;
+  name.textContent = modelLabel(representative);
+  summary.textContent = isMouse
+    ? `${selectedEntries.length} mouse connection/profile entr${selectedEntries.length === 1 ? "y" : "ies"} declared by the public RK Drive registry.`
+    : `${selectedEntries.length} connection descriptor${selectedEntries.length === 1 ? "" : "s"} in the official Web Driver registry.`;
+  let imageUrl = null;
+  if (representative.image_url) {
+    try {
+      imageUrl = new URL(representative.image_url);
+    } catch (error) {
+      imageUrl = null;
+    }
   }
   if (imageUrl?.origin === "https://drive.rkgaming.com") {
     sourceLink.href = imageUrl.href;
     sourceLink.textContent = "Open RK-hosted image";
     if (activePage === "drive-catalog") {
       photo.src = imageUrl.href;
-      photo.alt = `${representative.name} image hosted by RK Drive`;
+      photo.alt = `${modelLabel(representative)} image hosted by RK Drive`;
       photo.onerror = () => {
         photo.removeAttribute("src");
         photoNote.textContent = "RK Drive did not return this image. The local catalog entry is still available.";
@@ -531,8 +602,13 @@ function renderDriveCatalog() {
   } else {
     photo.removeAttribute("src");
     photo.alt = "";
-    photoNote.textContent = "Image reference is not on the expected RK Drive host.";
+    photoNote.textContent = representative.image_url
+      ? "Image reference is not on the expected RK Drive host."
+      : isMouse
+        ? "No product image is declared for this legacy mouse descriptor."
+        : "No model image is declared in this registry entry.";
     sourceLink.href = "https://drive.rkgaming.com/";
+    sourceLink.textContent = "View official RK Drive";
   }
 
   selectedEntries.forEach((entry) => {
@@ -543,11 +619,52 @@ function renderDriveCatalog() {
     const id = document.createElement("strong");
     id.textContent = `${entry.vendor_id_hex}:${entry.product_id_hex}`;
     const detail = document.createElement("small");
-    detail.textContent = `HID usage ${entry.usage_page_hex}:${entry.usage_hex} · ${entry.protocol_type} protocol`;
+    const usagePage = entry.usage_page_hex || `0x${hex4(entry.usage_page)}`;
+    const usage = entry.usage_hex || `0x${hex4(entry.usage)}`;
+    const protocol = entry.protocol_type || entry.protocol_family || "unknown";
+    const reportSize = entry.reported_size_bytes ? ` · declared data size ${entry.reported_size_bytes} bytes` : "";
+    const reportId = entry.hid_report_id ? ` · report ID ${entry.hid_report_id}` : "";
+    detail.textContent = `HID usage ${usagePage}:${usage} · ${protocol} protocol${reportSize}${reportId}`;
     item.append(connection, id, detail);
     connectionList.append(item);
   });
-  renderDriveConfiguratorData(selectedEntries);
+  if (isMouse) renderDriveMouseData(selectedEntries);
+  else renderDriveConfiguratorData(selectedEntries);
+}
+
+function renderDriveMouseData(entries) {
+  const host = $("#driveConfiguratorCapabilities");
+  const note = $("#driveConfiguratorNote");
+  host.replaceChildren();
+  const entry = entries[0] || {};
+  const flags = entry.declared_feature_flags;
+  let featureText = "No feature flags listed";
+  if (flags) {
+    try {
+      const parsed = typeof flags === "string" ? JSON.parse(flags) : flags;
+      const enabled = Object.entries(parsed || {}).filter(([, value]) => value).map(([key]) => key);
+      featureText = enabled.length ? enabled.join(" · ") : "No enabled flags listed";
+    } catch (error) {
+      featureText = String(flags);
+    }
+  }
+  const facts = [
+    ["Protocol family", entry.protocol_family || "Not listed"],
+    ["Declared feature flags", featureText],
+    ["Profile storage key", entry.storage_profile_key || "Not listed"],
+    ["Descriptor type", entry.record_type === "TLW_mouse_model_profile" ? "Model profile expanded to connections" : "Legacy mouse descriptor"],
+  ];
+  facts.forEach(([label, value]) => {
+    const item = document.createElement("div");
+    item.className = "drive-config-fact";
+    const heading = document.createElement("span");
+    heading.textContent = label;
+    const detail = document.createElement("strong");
+    detail.textContent = value;
+    item.append(heading, detail);
+    host.append(item);
+  });
+  note.textContent = "Static public mouse-registry metadata only. Keydeck does not implement mouse settings, report handling, or device writes.";
 }
 
 function renderDriveConfiguratorData(entries) {
@@ -707,6 +824,7 @@ function renderLighting() {
       swatch.dataset.color.toUpperCase() === lighting.color.toUpperCase(),
     ),
   );
+  renderDriveLightingReference();
 }
 
 function renderEditor() {
@@ -745,6 +863,128 @@ function renderEditor() {
       " in " +
       LAYER_LABELS[currentLayer]
     : "No remaps in " + LAYER_LABELS[currentLayer];
+}
+
+function renderAdvanced() {
+  const profile = activeProfile();
+  const model = selectedModel();
+  const layout = layoutForModel(model);
+  const layerSelect = $("#behaviorLayerSelect");
+  const keySelect = $("#behaviorKeySelect");
+  layerSelect.replaceChildren();
+  layerEntries(model).forEach(({ id, label }) => {
+    const option = document.createElement("option");
+    option.value = id;
+    option.textContent = label;
+    layerSelect.append(option);
+  });
+  if (![...layerSelect.options].some((option) => option.value === currentLayer))
+    currentLayer = layerSelect.options[0]?.value || "base";
+  layerSelect.value = currentLayer;
+
+  const keys = layout?.keys || [];
+  keySelect.replaceChildren();
+  keys.forEach((key) => {
+    const option = document.createElement("option");
+    option.value = key.id;
+    option.textContent = key.label + " · " + key.id;
+    keySelect.append(option);
+  });
+  if (!keys.some((key) => key.id === selectedKey)) selectedKey = keys[0]?.id || "";
+  keySelect.value = selectedKey;
+
+  const behavior = profile.advanced.behaviors[currentLayer]?.[selectedKey] || { mode: "none" };
+  $("#behaviorMode").value = behavior.mode || "none";
+  $("#dksPrimaryAction").value = behavior.primaryAction || "";
+  $("#dksSecondaryAction").value = behavior.secondaryAction || "";
+  $("#toggleAction").value = behavior.primaryAction || "";
+  $("#modTapTapAction").value = behavior.tapAction || "";
+  $("#modTapHoldAction").value = behavior.holdAction || "";
+  $("#dksFields").hidden = behavior.mode !== "dks";
+  $("#toggleFields").hidden = behavior.mode !== "toggle";
+  $("#modTapFields").hidden = behavior.mode !== "mod-tap";
+
+  const socd = profile.advanced.socd;
+  $("#socdEnabled").checked = socd.enabled;
+  $("#socdPair").value = socd.pair;
+  $("#socdResolution").value = socd.resolution;
+  $("#snapTapEnabled").checked = profile.advanced.snapTap;
+  $("#performanceNote").value = profile.advanced.performanceNote;
+
+  const host = $("#rawPerformanceFields");
+  host.replaceChildren();
+  const rawOptions = model?.profileData?.options || {};
+  const rawFieldNames = ["DebounceUI", "DebounceHW", "DebounceName", "TapRange", "SpeedParam", "LayerMask", "LayerNum"];
+  const found = rawFieldNames.filter((field) => Object.hasOwn(rawOptions, field));
+  if (!found.length) {
+    const empty = document.createElement("p");
+    empty.className = "micro-note";
+    empty.textContent = "No named performance fields are present in this profile.";
+    host.append(empty);
+  } else {
+    found.forEach((field) => {
+      const row = document.createElement("div");
+      row.className = "raw-field-row";
+      const label = document.createElement("span");
+      label.textContent = field;
+      const value = document.createElement("code");
+      value.textContent = String(rawOptions[field]);
+      row.append(label, value);
+      host.append(row);
+    });
+  }
+}
+
+function renderDriveLightingReference() {
+  const lighting = activeProfile().lighting;
+  const modelSelect = $("#driveLightingModelSelect");
+  const effectSelect = $("#driveLightingEffectSelect");
+  const labels = [...new Set((driveCatalog?.models || []).map((entry) => entry.name))].sort((a, b) => a.localeCompare(b));
+  modelSelect.replaceChildren();
+  labels.forEach((label) => {
+    const option = document.createElement("option");
+    option.value = label;
+    option.textContent = label;
+    modelSelect.append(option);
+  });
+  const chosenModel = labels.includes(lighting.driveReferenceModel)
+    ? lighting.driveReferenceModel
+    : labels.includes(selectedDriveModel)
+      ? selectedDriveModel
+      : labels.includes("RK-S98")
+        ? "RK-S98"
+        : labels[0] || "";
+  modelSelect.value = chosenModel;
+  const entries = (driveCatalog?.models || []).filter((entry) => entry.name === chosenModel);
+  const effects = entries.find((entry) => entry.web_configurator?.lighting_effects)?.web_configurator?.lighting_effects || [];
+  effectSelect.replaceChildren();
+  effects.forEach((effect) => {
+    const option = document.createElement("option");
+    option.value = effect.name;
+    option.textContent = effect.name;
+    effectSelect.append(option);
+  });
+  const chosenEffect = effects.some((effect) => effect.name === lighting.driveReferenceEffect)
+    ? lighting.driveReferenceEffect
+    : effects[0]?.name || "";
+  if (lighting.driveReferenceEffect && !effects.some((effect) => effect.name === lighting.driveReferenceEffect)) {
+    const option = document.createElement("option");
+    option.value = lighting.driveReferenceEffect;
+    option.textContent = "Saved label: " + lighting.driveReferenceEffect;
+    effectSelect.append(option);
+  }
+  effectSelect.value = chosenEffect || lighting.driveReferenceEffect;
+  effectSelect.disabled = effects.length === 0;
+  const effect = effects.find((item) => item.name === effectSelect.value);
+  const controls = [
+    effect?.speed && "speed",
+    effect?.brightness && "brightness",
+    effect?.colorValueDefined && "color value",
+    effect?.mixColor && "mixColor",
+  ].filter(Boolean);
+  $("#driveLightingEffectInfo").textContent = effect
+    ? (controls.length ? "Declared controls: " + controls.join(" · ") : "No adjustable fields listed") + " · local reference only"
+    : "No lighting effect definitions are listed for this model label.";
 }
 
 function renderScreen() {
@@ -938,11 +1178,12 @@ function renderMacros() {
     item.type = "button";
     item.className =
       "macro-list-item" + (macro.id === selectedMacroId ? " active" : "");
+    const stepCount = macro.steps.length || macro.sequence.split(/\r?\n/).filter(Boolean).length;
     item.innerHTML =
       "<strong>" +
       escapeHtml(macro.name) +
       "</strong><small>" +
-      macro.sequence.split(/\r?\n/).filter(Boolean).length +
+      stepCount +
       " steps</small>";
     item.addEventListener("click", () => {
       selectedMacroId = macro.id;
@@ -953,6 +1194,31 @@ function renderMacros() {
   const selected = profile.macros.find((macro) => macro.id === selectedMacroId);
   $("#macroName").value = selected?.name || "";
   $("#macroSequence").value = selected?.sequence || "";
+  const stepList = $("#macroStepList");
+  stepList.replaceChildren();
+  (selected?.steps || []).forEach((step, index) => {
+    const row = document.createElement("div");
+    row.className = "macro-step-row";
+    const summary = document.createElement("span");
+    summary.textContent = (index + 1) + ". " + step.kind + (step.action ? " · " + step.action : "") + (step.delayMs ? " · " + step.delayMs + " ms" : "");
+    const actions = document.createElement("div");
+    actions.className = "macro-step-actions";
+    [["up", "Up"], ["down", "Down"], ["delete", "Remove"]].forEach(([action, label]) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "text-button";
+      button.dataset.stepAction = action;
+      button.dataset.stepIndex = String(index);
+      button.textContent = label;
+      button.disabled = action === "up" ? index === 0 : action === "down" ? index === selected.steps.length - 1 : false;
+      actions.append(button);
+    });
+    row.append(summary, actions);
+    stepList.append(row);
+  });
+  $("#macroLoopMode").value = selected?.loop?.mode || "none";
+  $("#macroLoopCount").value = selected?.loop?.count || 1;
+  $("#macroStepActionWrap").hidden = $("#macroStepKind").value === "delay";
   $("#deleteMacro").disabled = !selected;
 }
 
@@ -1226,6 +1492,7 @@ function renderAll() {
   renderKeyboard($("#keymapKeyboard"));
   renderLighting();
   renderEditor();
+  renderAdvanced();
   renderScreen();
   renderKnob();
   renderMacros();
@@ -1286,6 +1553,7 @@ function setPage(page) {
   const titles = {
     device: "Device",
     keys: "Key map",
+    advanced: "Advanced behavior",
     lighting: "Lighting",
     screen: "Smart display",
     knob: "Controls & modes",
@@ -1328,7 +1596,29 @@ function saveMacro() {
   if (!macro) return showToast("Create a macro first.");
   macro.name = $("#macroName").value.trim() || "Untitled macro";
   macro.sequence = $("#macroSequence").value.slice(0, 8000);
+  macro.loop = {
+    mode: $("#macroLoopMode").value,
+    count: bounded($("#macroLoopCount").value, 1, 99),
+  };
   saveState("Macro saved to this profile.");
+  renderMacros();
+}
+
+function addStructuredMacroStep() {
+  const macro = activeProfile().macros.find((entry) => entry.id === selectedMacroId);
+  if (!macro) return showToast("Create a macro first.");
+  const kind = $("#macroStepKind").value;
+  const action = $("#macroStepAction").value.trim().slice(0, 100);
+  if (kind !== "delay" && !action) return showToast("Enter an action label for this step.");
+  macro.steps.push({
+    id: makeId(),
+    kind,
+    action: kind === "delay" ? "" : action,
+    delayMs: bounded($("#macroStepDelay").value, 0, 60000),
+  });
+  $("#macroStepAction").value = "";
+  $("#macroStepDelay").value = "0";
+  saveState("Structured step saved locally.");
   renderMacros();
 }
 
@@ -1407,6 +1697,11 @@ function wireEvents() {
     renderAll();
   });
   $("#modelFilter").addEventListener("input", renderModelSelect);
+  $("#driveCatalogType").addEventListener("change", (event) => {
+    selectedDriveCategory = event.target.value === "mouse" ? "mouse" : "keyboard";
+    selectedDriveModel = "";
+    renderDriveCatalog();
+  });
   $("#driveModelFilter").addEventListener("input", renderDriveCatalog);
   $("#driveModelSelect").addEventListener("change", (event) => {
     selectedDriveModel = event.target.value;
@@ -1422,6 +1717,63 @@ function wireEvents() {
   $("#layerSelect").addEventListener("change", (event) => {
     currentLayer = event.target.value;
     renderAll();
+  });
+  $("#behaviorLayerSelect").addEventListener("change", (event) => {
+    currentLayer = event.target.value;
+    renderAll();
+  });
+  $("#behaviorKeySelect").addEventListener("change", (event) => {
+    selectedKey = event.target.value;
+    renderAll();
+  });
+  $("#behaviorMode").addEventListener("change", () => {
+    const mode = $("#behaviorMode").value;
+    $("#dksFields").hidden = mode !== "dks";
+    $("#toggleFields").hidden = mode !== "toggle";
+    $("#modTapFields").hidden = mode !== "mod-tap";
+  });
+  $("#saveAdvancedBehavior").addEventListener("click", () => {
+    const profile = activeProfile();
+    const mode = $("#behaviorMode").value;
+    const byLayer = profile.advanced.behaviors[currentLayer] || (profile.advanced.behaviors[currentLayer] = {});
+    if (mode === "none") {
+      delete byLayer[selectedKey];
+    } else {
+      byLayer[selectedKey] = {
+        mode,
+        primaryAction: mode === "dks" ? $("#dksPrimaryAction").value.trim() : mode === "toggle" ? $("#toggleAction").value.trim() : "",
+        secondaryAction: mode === "dks" ? $("#dksSecondaryAction").value.trim() : "",
+        tapAction: mode === "mod-tap" ? $("#modTapTapAction").value.trim() : "",
+        holdAction: mode === "mod-tap" ? $("#modTapHoldAction").value.trim() : "",
+      };
+    }
+    saveState("Behavior draft saved to this profile.");
+    renderAdvanced();
+  });
+  $("#clearAdvancedBehavior").addEventListener("click", () => {
+    delete activeProfile().advanced.behaviors[currentLayer]?.[selectedKey];
+    saveState("Behavior draft cleared.");
+    renderAdvanced();
+  });
+  $("#socdEnabled").addEventListener("change", (event) => {
+    activeProfile().advanced.socd.enabled = event.target.checked;
+    saveState("SOCD draft updated.");
+  });
+  $("#socdPair").addEventListener("change", (event) => {
+    activeProfile().advanced.socd.pair = event.target.value;
+    saveState();
+  });
+  $("#socdResolution").addEventListener("change", (event) => {
+    activeProfile().advanced.socd.resolution = event.target.value;
+    saveState();
+  });
+  $("#snapTapEnabled").addEventListener("change", (event) => {
+    activeProfile().advanced.snapTap = event.target.checked;
+    saveState("Snap Tap draft updated.");
+  });
+  $("#performanceNote").addEventListener("input", (event) => {
+    activeProfile().advanced.performanceNote = event.target.value.slice(0, 1000);
+    saveState();
   });
   $("#actionSelect").addEventListener("change", () => {
     $("#actionValueWrap").hidden = !["Custom", "Macro", "Media"].includes(
@@ -1451,6 +1803,19 @@ function wireEvents() {
     activeProfile().lighting.effect = event.target.value;
     saveState();
     renderAll();
+  });
+  $("#driveLightingModelSelect").addEventListener("change", (event) => {
+    const lighting = activeProfile().lighting;
+    lighting.driveReferenceModel = event.target.value;
+    const entry = (driveCatalog?.models || []).find((item) => item.name === event.target.value && item.web_configurator?.lighting_effects);
+    lighting.driveReferenceEffect = entry?.web_configurator?.lighting_effects?.[0]?.name || "";
+    saveState("RK Drive effect reference saved.");
+    renderLighting();
+  });
+  $("#driveLightingEffectSelect").addEventListener("change", (event) => {
+    activeProfile().lighting.driveReferenceEffect = event.target.value;
+    saveState("RK Drive effect reference saved.");
+    renderDriveLightingReference();
   });
   $("#colorPicker").addEventListener("input", (event) => {
     activeProfile().lighting.color = event.target.value.toUpperCase();
@@ -1538,11 +1903,46 @@ function wireEvents() {
       id: makeId(),
       name: "New macro",
       sequence: "TAP W\nWAIT 40 ms\nTAP ENTER",
+      steps: [],
+      loop: { mode: "none", count: 1 },
     };
     activeProfile().macros.push(macro);
     selectedMacroId = macro.id;
     saveState("Macro created.");
     renderMacros();
+  });
+  $("#macroStepKind").addEventListener("change", (event) => {
+    $("#macroStepActionWrap").hidden = event.target.value === "delay";
+  });
+  $("#addMacroStep").addEventListener("click", addStructuredMacroStep);
+  $("#macroStepList").addEventListener("click", (event) => {
+    const button = event.target.closest("[data-step-action]");
+    if (!button) return;
+    const macro = activeProfile().macros.find((entry) => entry.id === selectedMacroId);
+    if (!macro) return;
+    const index = Number(button.dataset.stepIndex);
+    const action = button.dataset.stepAction;
+    if (action === "delete") macro.steps.splice(index, 1);
+    else {
+      const nextIndex = action === "up" ? index - 1 : index + 1;
+      if (nextIndex < 0 || nextIndex >= macro.steps.length) return;
+      [macro.steps[index], macro.steps[nextIndex]] = [macro.steps[nextIndex], macro.steps[index]];
+    }
+    saveState("Timeline updated.");
+    renderMacros();
+  });
+  $("#macroLoopMode").addEventListener("change", (event) => {
+    const macro = activeProfile().macros.find((entry) => entry.id === selectedMacroId);
+    if (!macro) return;
+    macro.loop.mode = event.target.value;
+    saveState("Loop intent saved locally.");
+  });
+  $("#macroLoopCount").addEventListener("change", (event) => {
+    const macro = activeProfile().macros.find((entry) => entry.id === selectedMacroId);
+    if (!macro) return;
+    macro.loop.count = bounded(event.target.value, 1, 99);
+    event.target.value = macro.loop.count;
+    saveState("Loop count saved locally.");
   });
   $("#saveMacro").addEventListener("click", saveMacro);
   $("#deleteMacro").addEventListener("click", () => {

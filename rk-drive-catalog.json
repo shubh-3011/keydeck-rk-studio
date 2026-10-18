@@ -1,13 +1,14 @@
 {
   "source": "https://drive.rkgaming.com/",
-  "retrievedAtUtc": "2026-10-17T23:38:27+00:00",
+  "retrievedAtUtc": "2026-10-18T00:00:31+00:00",
   "sourceBundle": {
     "url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
     "sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee"
   },
   "descriptorCount": 177,
   "modelLabelCount": 96,
-  "imageReferenceCount": 91,
+  "keyboardImageReferenceCount": 91,
+  "imageReferenceCount": 92,
   "models": [
     {
       "name": "RK-R87PRO",
@@ -169,7 +170,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-R87PRO",
@@ -331,7 +332,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-R87PRO RF",
@@ -493,7 +494,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-R87PRO RF",
@@ -655,7 +656,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M87",
@@ -817,7 +818,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M87",
@@ -979,7 +980,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M87 TH",
@@ -1141,7 +1142,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M87 TH",
@@ -1303,7 +1304,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M87 RU",
@@ -1465,7 +1466,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M87 RU",
@@ -1627,7 +1628,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M87 JP",
@@ -1789,7 +1790,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M87 JP",
@@ -1951,7 +1952,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M87 UK",
@@ -2113,7 +2114,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M87 UK",
@@ -2275,7 +2276,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M87 ES",
@@ -2437,7 +2438,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M87 ES",
@@ -2599,7 +2600,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M87 DE",
@@ -2761,7 +2762,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M87 DE",
@@ -2923,7 +2924,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M87 FR",
@@ -3085,7 +3086,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M87 FR",
@@ -3247,7 +3248,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-L75",
@@ -3409,7 +3410,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-L75",
@@ -3571,7 +3572,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-L75 UK",
@@ -3733,7 +3734,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-L75 UK",
@@ -3895,7 +3896,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-L75 TH",
@@ -4057,7 +4058,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-L75 TH",
@@ -4219,7 +4220,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-L75 RU",
@@ -4381,7 +4382,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-L75 RU",
@@ -4543,7 +4544,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-L75 JP",
@@ -4705,7 +4706,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-L75 JP",
@@ -4867,7 +4868,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "CB75-keyboard",
@@ -5029,7 +5030,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "CB75-keyboard",
@@ -5191,7 +5192,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "R104pro",
@@ -5345,7 +5346,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "R104pro",
@@ -5499,7 +5500,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "CB68-keyboard",
@@ -5660,7 +5661,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "CB68-keyboard",
@@ -5821,7 +5822,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M65",
@@ -5983,7 +5984,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M65",
@@ -6145,7 +6146,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M65 UK",
@@ -6307,7 +6308,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M65 UK",
@@ -6469,7 +6470,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M65 DE",
@@ -6631,7 +6632,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M65 DE",
@@ -6793,7 +6794,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M65 FR",
@@ -6955,7 +6956,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M65 FR",
@@ -7117,7 +7118,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M65 RU",
@@ -7279,7 +7280,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M65 RU",
@@ -7441,7 +7442,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-M70",
@@ -7602,7 +7603,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-M70",
@@ -7763,7 +7764,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-M70 UK",
@@ -7924,7 +7925,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-M70 UK",
@@ -8085,7 +8086,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-M70 DE",
@@ -8247,7 +8248,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-M70 DE",
@@ -8409,7 +8410,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-M70 FR",
@@ -8571,7 +8572,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-M70 FR",
@@ -8733,7 +8734,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-M70 RU",
@@ -8895,7 +8896,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-M70 RU",
@@ -9057,7 +9058,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-L98",
@@ -9218,7 +9219,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-L98",
@@ -9379,7 +9380,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-N99",
@@ -9541,7 +9542,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-N99",
@@ -9703,7 +9704,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-N99 RU",
@@ -9865,7 +9866,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-N99 RU",
@@ -10027,7 +10028,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-N99 TH",
@@ -10189,7 +10190,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-N99 TH",
@@ -10351,7 +10352,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-N99 ES",
@@ -10513,7 +10514,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-N99 ES",
@@ -10675,7 +10676,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK R98PRO",
@@ -10708,7 +10709,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK R98PRO GER",
@@ -10741,7 +10742,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK R98PRO FR",
@@ -10774,7 +10775,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK R98PRO ES",
@@ -10807,7 +10808,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK R98PRO JP1",
@@ -10840,7 +10841,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK R98PRO JP",
@@ -10873,7 +10874,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK R98PRO RU",
@@ -10906,7 +10907,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK R98PRO 3",
@@ -10939,7 +10940,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK R98PRO 3",
@@ -10972,7 +10973,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-S98",
@@ -11158,7 +11159,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-S98",
@@ -11344,7 +11345,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-S98 TH",
@@ -11530,7 +11531,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-S98 TH",
@@ -11716,7 +11717,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-S98 RU",
@@ -11902,7 +11903,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-S98 RU",
@@ -12088,7 +12089,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-S98 JP",
@@ -12274,7 +12275,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-S98 JP",
@@ -12460,7 +12461,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-S98 ES",
@@ -12646,7 +12647,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-S98 ES",
@@ -12832,7 +12833,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-S98 FR",
@@ -13018,7 +13019,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-S98 FR",
@@ -13204,7 +13205,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-S98 KR",
@@ -13390,7 +13391,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-S98 KR",
@@ -13576,7 +13577,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-S98 TC",
@@ -13762,7 +13763,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-S98 TC",
@@ -13948,7 +13949,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-S98 DE",
@@ -14134,7 +14135,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-S98 DE",
@@ -14320,7 +14321,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-S98 POR",
@@ -14506,7 +14507,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-S98 POR",
@@ -14692,7 +14693,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-F99",
@@ -14854,7 +14855,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-F99",
@@ -15016,7 +15017,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK X87",
@@ -15049,7 +15050,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK X87",
@@ -15082,7 +15083,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK X87 ES",
@@ -15115,7 +15116,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK X87 ES",
@@ -15148,7 +15149,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-K99",
@@ -15310,7 +15311,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-K99",
@@ -15472,7 +15473,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-A70",
@@ -15634,7 +15635,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-A70",
@@ -15796,7 +15797,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-A72",
@@ -15829,7 +15830,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-A72",
@@ -15862,7 +15863,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-R75 JP",
@@ -16024,7 +16025,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK R65 JP",
@@ -16210,7 +16211,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK R65",
@@ -16396,7 +16397,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK R65",
@@ -16582,7 +16583,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK S104",
@@ -16768,7 +16769,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK S104",
@@ -16954,7 +16955,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK S104 JP",
@@ -17140,7 +17141,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK S104 JP",
@@ -17326,7 +17327,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK S104 FR",
@@ -17512,7 +17513,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK S104 FR",
@@ -17698,7 +17699,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK S104 US1",
@@ -17884,7 +17885,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK S104 US1",
@@ -18070,7 +18071,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK S104 ES",
@@ -18256,7 +18257,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK S104 ES",
@@ -18442,7 +18443,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK S85",
@@ -18628,7 +18629,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK S85",
@@ -18814,7 +18815,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK S85 TH",
@@ -19000,7 +19001,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK S85 TH",
@@ -19186,7 +19187,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK S85 RU",
@@ -19372,7 +19373,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK S85 RU",
@@ -19558,7 +19559,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK S85 ES",
@@ -19744,7 +19745,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK S85 ES",
@@ -19930,7 +19931,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M100",
@@ -20092,7 +20093,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M100",
@@ -20254,7 +20255,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M100 JP",
@@ -20416,7 +20417,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M100 JP",
@@ -20578,7 +20579,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M100 DE",
@@ -20740,7 +20741,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M100 DE",
@@ -20902,7 +20903,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M100 FR",
@@ -21064,7 +21065,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M100 FR",
@@ -21226,7 +21227,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M100 JP1",
@@ -21388,7 +21389,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M100 JP1",
@@ -21550,7 +21551,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK Ultra65",
@@ -21711,7 +21712,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK 84",
@@ -21873,7 +21874,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK 84 DE",
@@ -22035,7 +22036,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK 84 FR",
@@ -22197,7 +22198,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK 84 ES",
@@ -22359,7 +22360,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK 68",
@@ -22520,7 +22521,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK 68",
@@ -22681,7 +22682,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK N80",
@@ -22843,7 +22844,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK N80",
@@ -23005,7 +23006,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK N80 RU",
@@ -23167,7 +23168,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK N80 RU",
@@ -23329,7 +23330,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK As68",
@@ -23359,7 +23360,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK S70",
@@ -23389,7 +23390,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M75",
@@ -23551,7 +23552,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M75",
@@ -23713,7 +23714,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M75 UK",
@@ -23875,7 +23876,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M75 UK",
@@ -24037,7 +24038,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M75 ES",
@@ -24199,7 +24200,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M75 ES",
@@ -24361,7 +24362,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M75 PT",
@@ -24523,7 +24524,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M75 PT",
@@ -24685,7 +24686,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M75 DE",
@@ -24847,7 +24848,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M75 DE",
@@ -25009,7 +25010,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M75 FR",
@@ -25171,7 +25172,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK M75 FR",
@@ -25333,7 +25334,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK R98PRO V2",
@@ -25366,7 +25367,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK R98PRO V2",
@@ -25399,7 +25400,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK R108PRO",
@@ -25432,7 +25433,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK R108PRO",
@@ -25465,7 +25466,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK R75PRO V2",
@@ -25627,7 +25628,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK R75PRO V2",
@@ -25789,7 +25790,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK R87 PRO JP",
@@ -25975,7 +25976,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-S85",
@@ -26003,7 +26004,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-S85",
@@ -26031,7 +26032,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK-S85",
@@ -26059,7 +26060,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK L75Pro",
@@ -26087,7 +26088,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK L75Pro",
@@ -26115,7 +26116,7 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     },
     {
       "name": "RK L75Pro",
@@ -26143,7 +26144,561 @@
       },
       "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
       "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
-      "retrieved_at_utc": "2026-10-17T23:38:27+00:00"
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
+    }
+  ],
+  "mouseDescriptorCount": 20,
+  "mouseConnectionProfileCount": 22,
+  "mouseModels": [
+    {
+      "record_type": "legacy_mouse_descriptor",
+      "model_label": "RK-M3",
+      "model_id": "",
+      "vendor_id": 14126,
+      "vendor_id_hex": "0x372E",
+      "product_id": 4138,
+      "product_id_hex": "0x102A",
+      "usage_page": 65280,
+      "usage_page_hex": "0xFF00",
+      "usage": 1,
+      "connection": "wired",
+      "protocol_family": "BeiYing",
+      "layout_symbol": "DTe",
+      "protocol_factory_symbol": "dye.create",
+      "reported_size_bytes": "",
+      "hid_report_id": "",
+      "declared_feature_flags": "",
+      "storage_profile_key": "",
+      "image_url": "",
+      "chooser_alias_labels": "rk m3 wire",
+      "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
+      "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
+    },
+    {
+      "record_type": "legacy_mouse_descriptor",
+      "model_label": "RK-M3",
+      "model_id": "",
+      "vendor_id": 14126,
+      "vendor_id_hex": "0x372E",
+      "product_id": 4121,
+      "product_id_hex": "0x1019",
+      "usage_page": 65280,
+      "usage_page_hex": "0xFF00",
+      "usage": 1,
+      "connection": "2.4 GHz receiver",
+      "protocol_family": "BeiYing",
+      "layout_symbol": "DTe",
+      "protocol_factory_symbol": "dye.create",
+      "reported_size_bytes": "",
+      "hid_report_id": "",
+      "declared_feature_flags": "",
+      "storage_profile_key": "",
+      "image_url": "",
+      "chooser_alias_labels": "rk m3 24G",
+      "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
+      "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
+    },
+    {
+      "record_type": "legacy_mouse_descriptor",
+      "model_label": "RK-M30",
+      "model_id": "",
+      "vendor_id": 9610,
+      "vendor_id_hex": "0x258A",
+      "product_id": 310,
+      "product_id_hex": "0x0136",
+      "usage_page": 65280,
+      "usage_page_hex": "0xFF00",
+      "usage": 1,
+      "connection": "wired",
+      "protocol_family": "BeiYing",
+      "layout_symbol": "MTe",
+      "protocol_factory_symbol": "_ye.create",
+      "reported_size_bytes": "",
+      "hid_report_id": "",
+      "declared_feature_flags": "",
+      "storage_profile_key": "",
+      "image_url": "",
+      "chooser_alias_labels": "rk m30 wire",
+      "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
+      "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
+    },
+    {
+      "record_type": "legacy_mouse_descriptor",
+      "model_label": "RK-M30",
+      "model_id": "",
+      "vendor_id": 9610,
+      "vendor_id_hex": "0x258A",
+      "product_id": 312,
+      "product_id_hex": "0x0138",
+      "usage_page": 65280,
+      "usage_page_hex": "0xFF00",
+      "usage": 1,
+      "connection": "2.4 GHz receiver",
+      "protocol_family": "BeiYing",
+      "layout_symbol": "MTe",
+      "protocol_factory_symbol": "_ye.create",
+      "reported_size_bytes": "",
+      "hid_report_id": "",
+      "declared_feature_flags": "",
+      "storage_profile_key": "",
+      "image_url": "",
+      "chooser_alias_labels": "rk m30 24G | rk mo1 24G | rk mo3 24G",
+      "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
+      "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
+    },
+    {
+      "record_type": "legacy_mouse_descriptor",
+      "model_label": "RK-K3",
+      "model_id": "",
+      "vendor_id": 14126,
+      "vendor_id_hex": "0x372E",
+      "product_id": 4165,
+      "product_id_hex": "0x1045",
+      "usage_page": 65280,
+      "usage_page_hex": "0xFF00",
+      "usage": 1,
+      "connection": "wired",
+      "protocol_family": "BeiYing",
+      "layout_symbol": "CTe",
+      "protocol_factory_symbol": "yye.create",
+      "reported_size_bytes": "",
+      "hid_report_id": "",
+      "declared_feature_flags": "",
+      "storage_profile_key": "",
+      "image_url": "",
+      "chooser_alias_labels": "rk k3 wire",
+      "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
+      "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
+    },
+    {
+      "record_type": "legacy_mouse_descriptor",
+      "model_label": "RK-K3",
+      "model_id": "",
+      "vendor_id": 14126,
+      "vendor_id_hex": "0x372E",
+      "product_id": 4159,
+      "product_id_hex": "0x103F",
+      "usage_page": 65280,
+      "usage_page_hex": "0xFF00",
+      "usage": 1,
+      "connection": "2.4 GHz receiver",
+      "protocol_family": "BeiYing",
+      "layout_symbol": "CTe",
+      "protocol_factory_symbol": "yye.create",
+      "reported_size_bytes": "",
+      "hid_report_id": "",
+      "declared_feature_flags": "",
+      "storage_profile_key": "",
+      "image_url": "",
+      "chooser_alias_labels": "rk k3 24G | rk mg5 24G",
+      "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
+      "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
+    },
+    {
+      "record_type": "legacy_mouse_descriptor",
+      "model_label": "RK-MG5",
+      "model_id": "",
+      "vendor_id": 14126,
+      "vendor_id_hex": "0x372E",
+      "product_id": 4211,
+      "product_id_hex": "0x1073",
+      "usage_page": 65280,
+      "usage_page_hex": "0xFF00",
+      "usage": 1,
+      "connection": "wired",
+      "protocol_family": "BeiYing",
+      "layout_symbol": "RTe",
+      "protocol_factory_symbol": "uye.create",
+      "reported_size_bytes": "",
+      "hid_report_id": "",
+      "declared_feature_flags": "",
+      "storage_profile_key": "",
+      "image_url": "",
+      "chooser_alias_labels": "rk mg5 wire",
+      "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
+      "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
+    },
+    {
+      "record_type": "legacy_mouse_descriptor",
+      "model_label": "RK-MG5",
+      "model_id": "",
+      "vendor_id": 14126,
+      "vendor_id_hex": "0x372E",
+      "product_id": 4159,
+      "product_id_hex": "0x103F",
+      "usage_page": 65280,
+      "usage_page_hex": "0xFF00",
+      "usage": 1,
+      "connection": "2.4 GHz receiver",
+      "protocol_family": "BeiYing",
+      "layout_symbol": "RTe",
+      "protocol_factory_symbol": "uye.create",
+      "reported_size_bytes": "",
+      "hid_report_id": "",
+      "declared_feature_flags": "",
+      "storage_profile_key": "",
+      "image_url": "",
+      "chooser_alias_labels": "rk k3 24G | rk mg5 24G",
+      "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
+      "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
+    },
+    {
+      "record_type": "legacy_mouse_descriptor",
+      "model_label": "MO1",
+      "model_id": "",
+      "vendor_id": 9610,
+      "vendor_id_hex": "0x258A",
+      "product_id": 644,
+      "product_id_hex": "0x0284",
+      "usage_page": 65280,
+      "usage_page_hex": "0xFF00",
+      "usage": 1,
+      "connection": "wired",
+      "protocol_family": "BeiYing",
+      "layout_symbol": "LTe",
+      "protocol_factory_symbol": "fye.create",
+      "reported_size_bytes": "",
+      "hid_report_id": "",
+      "declared_feature_flags": "",
+      "storage_profile_key": "",
+      "image_url": "",
+      "chooser_alias_labels": "rk mo1 wire",
+      "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
+      "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
+    },
+    {
+      "record_type": "legacy_mouse_descriptor",
+      "model_label": "MO1",
+      "model_id": "",
+      "vendor_id": 9610,
+      "vendor_id_hex": "0x258A",
+      "product_id": 312,
+      "product_id_hex": "0x0138",
+      "usage_page": 65280,
+      "usage_page_hex": "0xFF00",
+      "usage": 1,
+      "connection": "2.4 GHz receiver",
+      "protocol_family": "BeiYing",
+      "layout_symbol": "LTe",
+      "protocol_factory_symbol": "fye.create",
+      "reported_size_bytes": "",
+      "hid_report_id": "",
+      "declared_feature_flags": "",
+      "storage_profile_key": "",
+      "image_url": "",
+      "chooser_alias_labels": "rk m30 24G | rk mo1 24G | rk mo3 24G",
+      "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
+      "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
+    },
+    {
+      "record_type": "legacy_mouse_descriptor",
+      "model_label": "MO3",
+      "model_id": "",
+      "vendor_id": 9610,
+      "vendor_id_hex": "0x258A",
+      "product_id": 643,
+      "product_id_hex": "0x0283",
+      "usage_page": 65280,
+      "usage_page_hex": "0xFF00",
+      "usage": 1,
+      "connection": "wired",
+      "protocol_family": "BeiYing",
+      "layout_symbol": "ITe",
+      "protocol_factory_symbol": "pye.create",
+      "reported_size_bytes": "",
+      "hid_report_id": "",
+      "declared_feature_flags": "",
+      "storage_profile_key": "",
+      "image_url": "",
+      "chooser_alias_labels": "rk mo3 wire",
+      "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
+      "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
+    },
+    {
+      "record_type": "legacy_mouse_descriptor",
+      "model_label": "MO3",
+      "model_id": "",
+      "vendor_id": 9610,
+      "vendor_id_hex": "0x258A",
+      "product_id": 312,
+      "product_id_hex": "0x0138",
+      "usage_page": 65280,
+      "usage_page_hex": "0xFF00",
+      "usage": 1,
+      "connection": "2.4 GHz receiver",
+      "protocol_family": "BeiYing",
+      "layout_symbol": "ITe",
+      "protocol_factory_symbol": "pye.create",
+      "reported_size_bytes": "",
+      "hid_report_id": "",
+      "declared_feature_flags": "",
+      "storage_profile_key": "",
+      "image_url": "",
+      "chooser_alias_labels": "rk m30 24G | rk mo1 24G | rk mo3 24G",
+      "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
+      "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
+    },
+    {
+      "record_type": "legacy_mouse_descriptor",
+      "model_label": "RK MG6 Pro",
+      "model_id": "",
+      "vendor_id": 11836,
+      "vendor_id_hex": "0x2E3C",
+      "product_id": 165,
+      "product_id_hex": "0x00A5",
+      "usage_page": 65522,
+      "usage_page_hex": "0xFFF2",
+      "usage": 1,
+      "connection": "wired",
+      "protocol_family": "QiWang",
+      "layout_symbol": "s5",
+      "protocol_factory_symbol": "kte.create",
+      "reported_size_bytes": "",
+      "hid_report_id": "",
+      "declared_feature_flags": "",
+      "storage_profile_key": "",
+      "image_url": "",
+      "chooser_alias_labels": "rk mg6 pro wire",
+      "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
+      "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
+    },
+    {
+      "record_type": "legacy_mouse_descriptor",
+      "model_label": "RK MG6 Pro",
+      "model_id": "",
+      "vendor_id": 11836,
+      "vendor_id_hex": "0x2E3C",
+      "product_id": 166,
+      "product_id_hex": "0x00A6",
+      "usage_page": 65280,
+      "usage_page_hex": "0xFF00",
+      "usage": 1,
+      "connection": "2.4 GHz receiver",
+      "protocol_family": "QiWang",
+      "layout_symbol": "s5",
+      "protocol_factory_symbol": "r0e.create",
+      "reported_size_bytes": "",
+      "hid_report_id": "",
+      "declared_feature_flags": "",
+      "storage_profile_key": "",
+      "image_url": "",
+      "chooser_alias_labels": "rk mg6 pro 24G",
+      "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
+      "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
+    },
+    {
+      "record_type": "legacy_mouse_descriptor",
+      "model_label": "RK MG6 Pro",
+      "model_id": "",
+      "vendor_id": 11836,
+      "vendor_id_hex": "0x2E3C",
+      "product_id": 229,
+      "product_id_hex": "0x00E5",
+      "usage_page": 65522,
+      "usage_page_hex": "0xFFF2",
+      "usage": 1,
+      "connection": "wired",
+      "protocol_family": "QiWang",
+      "layout_symbol": "s5",
+      "protocol_factory_symbol": "kte.create",
+      "reported_size_bytes": "",
+      "hid_report_id": "",
+      "declared_feature_flags": "",
+      "storage_profile_key": "",
+      "image_url": "",
+      "chooser_alias_labels": "rk mg6 pro 1 wire",
+      "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
+      "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
+    },
+    {
+      "record_type": "legacy_mouse_descriptor",
+      "model_label": "RK MG6 Pro",
+      "model_id": "",
+      "vendor_id": 11836,
+      "vendor_id_hex": "0x2E3C",
+      "product_id": 230,
+      "product_id_hex": "0x00E6",
+      "usage_page": 65280,
+      "usage_page_hex": "0xFF00",
+      "usage": 1,
+      "connection": "2.4 GHz receiver",
+      "protocol_family": "QiWang",
+      "layout_symbol": "s5",
+      "protocol_factory_symbol": "r0e.create",
+      "reported_size_bytes": "",
+      "hid_report_id": "",
+      "declared_feature_flags": "",
+      "storage_profile_key": "",
+      "image_url": "",
+      "chooser_alias_labels": "rk mg6 pro 1 24G",
+      "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
+      "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
+    },
+    {
+      "record_type": "legacy_mouse_descriptor",
+      "model_label": "RK-MG6",
+      "model_id": "",
+      "vendor_id": 3938,
+      "vendor_id_hex": "0x0F62",
+      "product_id": 4115,
+      "product_id_hex": "0x1013",
+      "usage_page": 65534,
+      "usage_page_hex": "0xFFFE",
+      "usage": 1,
+      "connection": "wired",
+      "protocol_family": "QiWang",
+      "layout_symbol": "B8",
+      "protocol_factory_symbol": "n0e.create",
+      "reported_size_bytes": "",
+      "hid_report_id": "",
+      "declared_feature_flags": "",
+      "storage_profile_key": "",
+      "image_url": "",
+      "chooser_alias_labels": "rk 5391k wire",
+      "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
+      "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
+    },
+    {
+      "record_type": "legacy_mouse_descriptor",
+      "model_label": "RK-MG6",
+      "model_id": "",
+      "vendor_id": 3938,
+      "vendor_id_hex": "0x0F62",
+      "product_id": 4116,
+      "product_id_hex": "0x1014",
+      "usage_page": 65532,
+      "usage_page_hex": "0xFFFC",
+      "usage": 1,
+      "connection": "2.4 GHz receiver",
+      "protocol_family": "QiWang",
+      "layout_symbol": "B8",
+      "protocol_factory_symbol": "n0e.create",
+      "reported_size_bytes": "",
+      "hid_report_id": "",
+      "declared_feature_flags": "",
+      "storage_profile_key": "",
+      "image_url": "",
+      "chooser_alias_labels": "rk 5391k 24G",
+      "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
+      "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
+    },
+    {
+      "record_type": "legacy_mouse_descriptor",
+      "model_label": "RK-QiWang-Mouse-Boot-Usb",
+      "model_id": "",
+      "vendor_id": 65535,
+      "vendor_id_hex": "0xFFFF",
+      "product_id": 65535,
+      "product_id_hex": "0xFFFF",
+      "usage_page": 65522,
+      "usage_page_hex": "0xFFF2",
+      "usage": 1,
+      "connection": "wired",
+      "protocol_family": "QiWang",
+      "layout_symbol": "s5",
+      "protocol_factory_symbol": "c0e.create",
+      "reported_size_bytes": "",
+      "hid_report_id": "",
+      "declared_feature_flags": "",
+      "storage_profile_key": "",
+      "image_url": "",
+      "chooser_alias_labels": "rk qiwang mouse boot usb",
+      "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
+      "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
+    },
+    {
+      "record_type": "legacy_mouse_descriptor",
+      "model_label": "RK-QiWang-Mouse-Boot-Dongle",
+      "model_id": "",
+      "vendor_id": 65535,
+      "vendor_id_hex": "0xFFFF",
+      "product_id": 65535,
+      "product_id_hex": "0xFFFF",
+      "usage_page": 65280,
+      "usage_page_hex": "0xFF00",
+      "usage": 1,
+      "connection": "2.4 GHz receiver",
+      "protocol_family": "QiWang",
+      "layout_symbol": "s5",
+      "protocol_factory_symbol": "c0e.create",
+      "reported_size_bytes": "",
+      "hid_report_id": "",
+      "declared_feature_flags": "",
+      "storage_profile_key": "",
+      "image_url": "",
+      "chooser_alias_labels": "rk qiwang mouse boot dongle",
+      "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
+      "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
+    },
+    {
+      "record_type": "TLW_mouse_model_profile",
+      "model_label": "CB75-Mouse",
+      "model_id": "cb75",
+      "vendor_id": 12815,
+      "vendor_id_hex": "0x320F",
+      "product_id": 8946,
+      "product_id_hex": "0x22F2",
+      "usage_page": 65308,
+      "usage_page_hex": "0xFF1C",
+      "usage": 146,
+      "connection": "wired",
+      "protocol_family": "TLW",
+      "layout_symbol": "",
+      "protocol_factory_symbol": "",
+      "reported_size_bytes": 56,
+      "hid_report_id": "4",
+      "declared_feature_flags": "{\"lighting\":true}",
+      "storage_profile_key": "cb75-mouse.profiles.v1",
+      "image_url": "https://drive.rkgaming.com/assets/cb75-mouse-Ch095Wok.png",
+      "chooser_alias_labels": "",
+      "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
+      "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
+    },
+    {
+      "record_type": "TLW_mouse_model_profile",
+      "model_label": "CB75-Mouse",
+      "model_id": "cb75",
+      "vendor_id": 12815,
+      "vendor_id_hex": "0x320F",
+      "product_id": 8947,
+      "product_id_hex": "0x22F3",
+      "usage_page": 65308,
+      "usage_page_hex": "0xFF1C",
+      "usage": 146,
+      "connection": "wireless",
+      "protocol_family": "TLW",
+      "layout_symbol": "",
+      "protocol_factory_symbol": "",
+      "reported_size_bytes": 24,
+      "hid_report_id": "4",
+      "declared_feature_flags": "{\"lighting\":true}",
+      "storage_profile_key": "cb75-mouse.profiles.v1",
+      "image_url": "https://drive.rkgaming.com/assets/cb75-mouse-Ch095Wok.png",
+      "chooser_alias_labels": "",
+      "source_bundle_url": "https://drive.rkgaming.com/assets/index-DSCGl9KV.js",
+      "source_bundle_sha256": "ec50777e49f34f24f4564c8624d5c39b52447980199fad43e24734826e6531ee",
+      "retrieved_at_utc": "2026-10-18T00:00:31+00:00"
     }
   ]
 }
