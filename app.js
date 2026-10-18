@@ -401,6 +401,14 @@ function officialImageUrl(value) {
   }
 }
 
+function appearanceThumbnailUrl(value, width = 360) {
+  const source = officialImageUrl(value);
+  if (!source) return "";
+  const url = new URL(source);
+  url.searchParams.set("width", String(width));
+  return url.href;
+}
+
 function drivePhotoForProfile(model) {
   const family = normalizeCatalogName(model?.family);
   if (!family) return null;
@@ -460,10 +468,14 @@ function renderDeviceAppearance() {
           ? "CONNECTED DEVICE · SELECTED PROFILE"
           : "CONNECTED DEVICE · MODEL UNCONFIRMED"
       : "MODEL APPEARANCE";
-  $("#devicePhotoTitle").textContent = model.name;
+  $("#devicePhotoTitle").textContent = selectedOption
+    ? `${model.name} · ${selectedOption.name}`
+    : model.name;
   photo.alt = selectedOption
     ? `${model.name} appearance reference: ${selectedOption.name}`
     : drivePhoto ? `${model.name} product image` : "";
+  photo.loading = "eager";
+  photo.decoding = "async";
   photo.hidden = !imageUrl;
   empty.hidden = Boolean(imageUrl);
   empty.textContent = imageUrl ? "" : "No official product photo is mapped for this model";
@@ -508,10 +520,24 @@ function renderDeviceAppearance() {
     button.className = "appearance-choice";
     button.setAttribute("role", "radio");
     button.setAttribute("aria-checked", String(selectedOption?.id === entry.id));
-    button.textContent = entry.name;
+    button.setAttribute("aria-label", `Show ${model.name} in ${entry.name}`);
+    button.title = `Show the official ${entry.name} product photo`;
+    const thumbnail = document.createElement("img");
+    thumbnail.src = appearanceThumbnailUrl(entry.imageUrl);
+    thumbnail.alt = "";
+    thumbnail.loading = "lazy";
+    thumbnail.decoding = "async";
+    thumbnail.onerror = () => { thumbnail.hidden = true; };
+    const label = document.createElement("span");
+    label.className = "appearance-choice-name";
+    label.textContent = entry.name;
+    const series = document.createElement("small");
+    series.className = "appearance-choice-series";
+    series.textContent = entry.series === "Special edition" ? "Special edition" : "Standard finish";
+    button.append(thumbnail, label, series);
     button.addEventListener("click", () => {
       activeProfile().appearanceVariant = entry.id;
-      saveState("S98 appearance photo saved to this profile.");
+      saveState(`${entry.name} appearance saved to this profile.`);
       renderDeviceAppearance();
     });
     choices.append(button);

@@ -81,7 +81,7 @@ python scripts/extract_rk_drive_catalog.py
 
 This downloads the seven public JavaScript bundles into memory and writes only parsed model metadata, bundle hashes, and RK-hosted image URLs. It does not save vendor JavaScript or image files.
 
-The device overview resolves model photos from the selected profile and layout region. The S98 appearance picker uses image URLs from RK's public product pages for Lavender Purple, Deep Black, Sky Blue, Clay Green, Pink Edition, and Winter Limited Edition. Those photos are fetched at runtime; no RK artwork is bundled. The current product photo selection cannot be inferred from USB IDs, and the profile RGB swatch is explicitly a locally saved value. See [device appearance sources and limits](docs/device-appearance.md).
+The device overview resolves model photos from the selected profile and layout region. For S98, the appearance gallery shows official product-photo thumbnails for Lavender Purple, Deep Black, Sky Blue, Clay Green, Pink Edition, and Winter Limited Edition; choosing one updates the large photo and saves the finish with that profile. Photos are fetched from RK at runtime; no RK artwork is bundled. USB IDs cannot identify case/keycap finish or live RGB, so the finish is user-selected and the RGB swatch is a saved profile value. See [device appearance sources and limits](docs/device-appearance.md).
 
 ## References
 

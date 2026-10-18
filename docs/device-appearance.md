@@ -9,17 +9,19 @@ The S98 picker lists six official appearance references: Lavender Purple, Deep
 Black, Sky Blue, Clay Green, Pink Edition, and Winter Limited Edition. The
 image URLs and product-page URLs are recorded in
 [`model-appearance.json`](../model-appearance.json) and fetched directly at
-runtime. They are not copied into this repository or executable. Selection is
-saved with the local Keydeck profile.
+runtime. The gallery shows a thumbnail for each finish; choosing one updates
+the overview photo, labels the selected finish, and saves it with the Keydeck
+profile. The images are not copied into this repository or executable.
 
 The connected USB/HID descriptor can identify a model/profile in some cases,
 but some receiver IDs are shared by many catalog profiles. If the connected
 identity is ambiguous, Keydeck keeps the selected profile, marks the photo as a
 profile reference, and reports the candidate ambiguity instead of claiming an
 exact model match. The S98 appearance selector is manual because USB/HID
-descriptors do not reveal case finish or keycap color. A regional profile may
-use its RK Drive layout photo instead of a standard ANSI finish photo so its
-key legends remain appropriate.
+descriptors do not reveal case finish or keycap color. After the user chooses a
+finish, that matching photo comes back with the saved profile; it is not a live
+color detection. A regional profile may use its RK Drive layout photo instead
+of a standard ANSI finish photo so its key legends remain appropriate.
 
 The RGB value on the overview is the selected profile's saved lighting color.
 It is not read from the keyboard. Keydeck does not open a HID report or read
