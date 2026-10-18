@@ -431,7 +431,9 @@ function drivePhotoForProfile(model) {
 
 function renderDeviceAppearance() {
   const model = selectedModel();
-  const connectedExact = Boolean(identityMatch?.model && identityMatch.model.code === model?.code);
+  const matchedModel = identityMatch?.model || null;
+  const connectedExact = Boolean(matchedModel && matchedModel.code === model?.code);
+  const selectedModelIsCandidate = Boolean(model && identityMatch?.candidates?.some((entry) => entry.code === model.code));
   const photo = $("#devicePhoto");
   const empty = $("#devicePhotoEmpty");
   const note = $("#devicePhotoNote");
@@ -449,7 +451,15 @@ function renderDeviceAppearance() {
   const imageUrl = selectedOption ? officialImageUrl(selectedOption.imageUrl) : officialImageUrl(drivePhoto?.image_url);
   const sourceUrl = selectedOption?.sourceUrl || (drivePhoto ? "https://drive.rkgaming.com/" : "");
 
-  $("#devicePhotoKicker").textContent = connectedExact ? "CONNECTED MODEL PHOTO" : "MODEL APPEARANCE";
+  $("#devicePhotoKicker").textContent = connectedExact
+    ? "CONNECTED MODEL PHOTO"
+    : identifiedDevice
+      ? matchedModel
+        ? "SELECTED PROFILE PHOTO · MODEL MISMATCH"
+        : selectedModelIsCandidate
+          ? "CONNECTED DEVICE · SELECTED PROFILE"
+          : "CONNECTED DEVICE · MODEL UNCONFIRMED"
+      : "MODEL APPEARANCE";
   $("#devicePhotoTitle").textContent = model.name;
   photo.alt = selectedOption
     ? `${model.name} appearance reference: ${selectedOption.name}`
@@ -469,11 +479,23 @@ function renderDeviceAppearance() {
     empty.textContent = "RK's photo host could not be reached";
     note.textContent = "Try again when online; model and layout identification are still available.";
   };
-  note.textContent = selectedOption
+  const photoNote = selectedOption
     ? `${selectedOption.name} · ${selectedOption.series} photo from RK's official store. USB identity does not detect physical finish.`
     : drivePhoto
       ? `${drivePhoto.name} · regional photo from RK Drive. USB identity cannot identify case finish or live lighting.`
       : "A photo is not listed for this profile in the available RK catalogs.";
+  if (identifiedDevice && !connectedExact) {
+    const deviceId = `${hex4(identifiedDevice.vendorId)}:${hex4(identifiedDevice.productId)}`;
+    const candidateCount = identityMatch?.candidates?.length || 0;
+    const connectionNote = matchedModel
+      ? `USB ${deviceId} identifies ${matchedModel.name}; this image follows the selected ${model.name} profile.`
+      : selectedModelIsCandidate
+        ? `USB ${deviceId} is shared by ${candidateCount} catalog profiles; this image follows the selected ${model.name} profile.`
+        : `USB ${deviceId} does not confirm this profile; the image follows the selected ${model.name} profile.`;
+    note.textContent = `${photoNote} ${connectionNote}`;
+  } else {
+    note.textContent = photoNote;
+  }
   source.href = sourceUrl || "https://drive.rkgaming.com/";
   source.hidden = !sourceUrl;
   source.textContent = selectedOption ? "View official S98 product page" : "View RK Drive image catalog";

@@ -13,9 +13,13 @@ runtime. They are not copied into this repository or executable. Selection is
 saved with the local Keydeck profile.
 
 The connected USB/HID descriptor can identify a model/profile in some cases,
-but does not reveal case finish or keycap color. The S98 appearance selector is
-therefore manual. A regional profile may use its RK Drive layout photo instead
-of a standard ANSI finish photo so its key legends remain appropriate.
+but some receiver IDs are shared by many catalog profiles. If the connected
+identity is ambiguous, Keydeck keeps the selected profile, marks the photo as a
+profile reference, and reports the candidate ambiguity instead of claiming an
+exact model match. The S98 appearance selector is manual because USB/HID
+descriptors do not reveal case finish or keycap color. A regional profile may
+use its RK Drive layout photo instead of a standard ANSI finish photo so its
+key legends remain appropriate.
 
 The RGB value on the overview is the selected profile's saved lighting color.
 It is not read from the keyboard. Keydeck does not open a HID report or read
