@@ -453,27 +453,34 @@ function renderDeviceAppearance() {
 
   const isS98 = normalizeCatalogName(model.family) === "s98" && model.region === "ANSI";
   const options = isS98 ? appearanceCatalog.variants || [] : [];
-  const selectedOption = options.find((entry) => entry.id === activeProfile().appearanceVariant)
-    || options.find((entry) => entry.id === "lavender-purple");
+  const selectedOption = options.find((entry) => entry.id === activeProfile().appearanceVariant);
   const drivePhoto = drivePhotoForProfile(model);
   const imageUrl = selectedOption ? officialImageUrl(selectedOption.imageUrl) : officialImageUrl(drivePhoto?.image_url);
   const sourceUrl = selectedOption?.sourceUrl || (drivePhoto ? "https://drive.rkgaming.com/" : "");
 
-  $("#devicePhotoKicker").textContent = connectedExact
-    ? "CONNECTED MODEL PHOTO"
-    : identifiedDevice
-      ? matchedModel
-        ? "SELECTED PROFILE PHOTO · MODEL MISMATCH"
-        : selectedModelIsCandidate
-          ? "CONNECTED DEVICE · SELECTED PROFILE"
-          : "CONNECTED DEVICE · MODEL UNCONFIRMED"
-      : "MODEL APPEARANCE";
+  $("#devicePhotoKicker").textContent = selectedOption
+    ? "USER-SELECTED FINISH PHOTO"
+    : isS98
+      ? connectedExact
+        ? "CONNECTED S98 MODEL · FINISH UNCONFIRMED"
+        : "S98 MODEL PHOTO · FINISH UNCONFIRMED"
+      : connectedExact
+        ? "CONNECTED MODEL PHOTO"
+        : identifiedDevice
+          ? matchedModel
+            ? "SELECTED PROFILE PHOTO · MODEL MISMATCH"
+            : selectedModelIsCandidate
+              ? "CONNECTED DEVICE · SELECTED PROFILE"
+              : "CONNECTED DEVICE · MODEL UNCONFIRMED"
+          : "MODEL APPEARANCE";
   $("#devicePhotoTitle").textContent = selectedOption
     ? `${model.name} · ${selectedOption.name}`
-    : model.name;
+    : isS98
+      ? `${model.name} · Finish not confirmed`
+      : model.name;
   photo.alt = selectedOption
     ? `${model.name} appearance reference: ${selectedOption.name}`
-    : drivePhoto ? `${model.name} product image` : "";
+    : drivePhoto ? `${model.name} model and layout reference; physical finish not confirmed` : "";
   photo.loading = "eager";
   photo.decoding = "async";
   photo.hidden = !imageUrl;
@@ -492,7 +499,9 @@ function renderDeviceAppearance() {
     note.textContent = "Try again when online; model and layout identification are still available.";
   };
   const photoNote = selectedOption
-    ? `${selectedOption.name} · ${selectedOption.series} photo from RK's official store. USB identity does not detect physical finish.`
+    ? `Selected finish: ${selectedOption.name} · ${selectedOption.series} photo from RK's official store. USB identity does not report physical finish.`
+    : isS98 && drivePhoto
+      ? `S98 model/layout reference photo from RK Drive. Physical finish is not selected and cannot be detected from USB.`
     : drivePhoto
       ? `${drivePhoto.name} · regional photo from RK Drive. USB identity cannot identify case finish or live lighting.`
       : "A photo is not listed for this profile in the available RK catalogs.";
@@ -510,7 +519,7 @@ function renderDeviceAppearance() {
   }
   source.href = sourceUrl || "https://drive.rkgaming.com/";
   source.hidden = !sourceUrl;
-  source.textContent = selectedOption ? "View official S98 product page" : "View RK Drive image catalog";
+  source.textContent = selectedOption ? "View official S98 product page" : "View RK Drive model image";
 
   choicesWrap.hidden = options.length === 0;
   choices.replaceChildren();

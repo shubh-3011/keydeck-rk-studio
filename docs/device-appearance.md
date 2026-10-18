@@ -3,15 +3,18 @@
 Keydeck selects the device overview photo from the current model profile. The
 model profile takes precedence over a conflicting shared PID alias; its region
 selects a regional RK Drive image when one is listed. For the RK-S98 ANSI
-profile (catalog code `021E`), the default is the standard S98 product photo.
+profile (catalog code `021E`), the initial photo is the RK Drive model/layout
+reference. Keydeck does not choose a finish until the user selects one.
 
 The S98 picker lists six official appearance references: Lavender Purple, Deep
 Black, Sky Blue, Clay Green, Pink Edition, and Winter Limited Edition. The
 image URLs and product-page URLs are recorded in
 [`model-appearance.json`](../model-appearance.json) and fetched directly at
 runtime. The gallery shows a thumbnail for each finish; choosing one updates
-the overview photo, labels the selected finish, and saves it with the Keydeck
-profile. The images are not copied into this repository or executable.
+the overview photo, labels it as user-selected, and saves it with the Keydeck
+profile. An existing saved choice is restored. With no saved choice, the
+gallery has no selected finish and the model photo is labelled “Finish not
+confirmed.” The images are not copied into this repository or executable.
 
 The connected USB/HID descriptor can identify a model/profile in some cases,
 but some receiver IDs are shared by many catalog profiles. If the connected
