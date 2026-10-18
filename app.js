@@ -359,7 +359,10 @@ function layoutForModel(model = selectedModel()) {
 }
 
 function driveDescriptors(device) {
-  const entries = driveCatalog?.models || [];
+  const entries = [
+    ...(driveCatalog?.models || []),
+    ...(driveCatalog?.specializedKeyboardProfiles || []),
+  ];
   if (!device) return [];
   const matchingIds = entries.filter(
     (entry) => Number(entry.vendor_id) === Number(device.vendorId) &&
@@ -374,13 +377,17 @@ function driveDescriptors(device) {
   const matchingCollections = matchingIds.filter((entry) =>
     collectionPairs.has(`${Number(entry.usage_page)}:${Number(entry.usage)}`),
   );
-  return matchingCollections.length ? matchingCollections : matchingIds;
+  if (matchingCollections.length) return matchingCollections;
+  return matchingIds.filter(
+    (entry) => entry.record_type !== "specialized_keyboard_model_profile",
+  );
 }
 
 function supportedVendorIds() {
   return [...new Set([
     0x258a,
     ...(driveCatalog?.models || []).map((entry) => Number(entry.vendor_id)),
+    ...(driveCatalog?.specializedKeyboardProfiles || []).map((entry) => Number(entry.vendor_id)),
   ].filter((value) => Number.isInteger(value) && value > 0))];
 }
 
@@ -418,6 +425,23 @@ function deviceModelMatch(device) {
     return { kind: "product-name", model: nameMatches[0], candidates: nameMatches };
   if (nameMatches.length > 1)
     return { kind: "product-name-family", model: null, candidates: nameMatches };
+
+  const profileCandidates = (driveCatalog?.specializedKeyboardProfiles || []).filter(
+    (entry) => Number(entry.vendor_id) === Number(device.vendorId) &&
+      Number(entry.product_id) === Number(device.productId),
+  );
+  if (profileCandidates.length) {
+    const collectionPairs = new Set(
+      (device.collections || []).map(
+        (collection) => `${Number(collection.usagePage)}:${Number(collection.usage)}`,
+      ),
+    );
+    const exactCollection = profileCandidates.find((entry) =>
+      collectionPairs.has(`${Number(entry.usage_page)}:${Number(entry.usage)}`),
+    );
+    if (exactCollection)
+      return { kind: "specialized-profile", model: null, driveProfile: exactCollection, candidates: [] };
+  }
 
   const direct = modelByCode(pid);
   const directVendor = String(direct?.features?.wirelessVendorId || "").toUpperCase();
@@ -511,7 +535,10 @@ function renderDriveCatalog() {
   const isMouse = selectedDriveCategory === "mouse";
   const entries = isMouse
     ? driveCatalog?.mouseModels || []
-    : driveCatalog?.models || [];
+    : [
+        ...(driveCatalog?.models || []),
+        ...(driveCatalog?.specializedKeyboardProfiles || []),
+      ];
   const modelLabel = (entry) => isMouse ? entry.model_label : entry.name;
   const filter = String($("#driveModelFilter")?.value || "").trim().toLowerCase();
   const normalizeSearch = (value) => String(value || "")
@@ -536,6 +563,8 @@ function renderDriveCatalog() {
         return [
           modelLabel(entry),
           entry.model_id,
+          entry.profile_id,
+          entry.uuid,
           entry.chooser_alias_labels,
           entry.image_asset,
           entry.connection,
@@ -564,7 +593,16 @@ function renderDriveCatalog() {
   matchingNames.forEach((name) => {
     const option = document.createElement("option");
     option.value = name;
-    option.textContent = `${name} · ${grouped.get(name).length} ${isMouse ? "mouse" : "keyboard"} connection ${grouped.get(name).length === 1 ? "entry" : "entries"}`;
+    const items = grouped.get(name);
+    const profileOnly = !isMouse && items.every(
+      (entry) => entry.record_type === "specialized_keyboard_model_profile",
+    );
+    const itemType = isMouse
+      ? "mouse connection"
+      : profileOnly
+        ? "keyboard profile"
+        : "keyboard connection";
+    option.textContent = `${name} · ${items.length} ${itemType} ${items.length === 1 ? "entry" : "entries"}`;
     select.append(option);
   });
   if (!matchingNames.includes(selectedDriveModel)) {
@@ -580,7 +618,7 @@ function renderDriveCatalog() {
       : "Mouse registry metadata is unavailable in this build.";
   } else {
     $("#driveModelCount").textContent = entries.length
-      ? `${entries.length} keyboard connection descriptors · ${grouped.size} labels · ${driveCatalog.keyboardImageReferenceCount || driveCatalog.imageReferenceCount || 0} keyboard images · snapshot ${String(driveCatalog.retrievedAtUtc || "date unknown").slice(0, 10)}`
+      ? `${driveCatalog.descriptorCount || 0} connection descriptors · ${driveCatalog.specializedKeyboardProfileCount || 0} specialized profiles · ${grouped.size} labels · ${driveCatalog.keyboardProductImageReferenceCount || driveCatalog.keyboardImageReferenceCount || 0} product photos · snapshot ${String(driveCatalog.retrievedAtUtc || "date unknown").slice(0, 10)}`
       : "Official model metadata is unavailable in this build.";
   }
 
@@ -589,6 +627,7 @@ function renderDriveCatalog() {
   const summary = $("#driveModelSummary");
   const photo = $("#driveModelPhoto");
   const photoNote = $("#driveModelPhotoNote");
+  const layoutAssetLink = $("#driveModelLayoutAsset");
   const connectionList = $("#driveConnectionList");
   const sourceLink = $("#driveModelSource");
   connectionList.replaceChildren();
@@ -600,6 +639,7 @@ function renderDriveCatalog() {
     photo.removeAttribute("src");
     photo.alt = "";
     photoNote.textContent = "Model images load from RK Drive only while this catalog page is open.";
+    layoutAssetLink.hidden = true;
     sourceLink.href = "https://drive.rkgaming.com/";
     sourceLink.textContent = "View official RK Drive";
     renderDriveConfiguratorData([]);
@@ -608,9 +648,12 @@ function renderDriveCatalog() {
 
   const representative = selectedEntries[0];
   name.textContent = modelLabel(representative);
-  summary.textContent = isMouse
-    ? `${selectedEntries.length} mouse connection/profile entr${selectedEntries.length === 1 ? "y" : "ies"} declared by the public RK Drive registry.`
-    : `${selectedEntries.length} connection descriptor${selectedEntries.length === 1 ? "" : "s"} in the official Web Driver registry.`;
+  summary.textContent =
+    representative.record_type === "specialized_keyboard_model_profile"
+      ? `${representative.protocol_type} model profile declared separately from the general keyboard connection registry.`
+      : isMouse
+        ? `${selectedEntries.length} mouse connection/profile entr${selectedEntries.length === 1 ? "y" : "ies"} declared by the public RK Drive registry.`
+        : `${selectedEntries.length} connection descriptor${selectedEntries.length === 1 ? "" : "s"} in the official Web Driver registry.`;
   let imageUrl = null;
   if (representative.image_url) {
     try {
@@ -645,6 +688,16 @@ function renderDriveCatalog() {
         : "No model image is declared in this registry entry.";
     sourceLink.href = "https://drive.rkgaming.com/";
     sourceLink.textContent = "View official RK Drive";
+  }
+
+  const backgroundUrl = representative.background_image_url;
+  if (!isMouse && backgroundUrl?.startsWith("https://drive.rkgaming.com/")) {
+    layoutAssetLink.href = backgroundUrl;
+    layoutAssetLink.textContent = "Open RK68 HE layout background";
+    layoutAssetLink.hidden = false;
+  } else {
+    layoutAssetLink.hidden = true;
+    layoutAssetLink.removeAttribute("href");
   }
 
   selectedEntries.forEach((entry) => {
@@ -709,7 +762,30 @@ function renderDriveConfiguratorData(entries) {
   host.replaceChildren();
   const config = entries[0]?.web_configurator;
   if (!config) {
-    note.textContent = "Configurator details are not available in this catalog snapshot.";
+    const profile = entries.find((entry) => entry.record_type === "specialized_keyboard_model_profile");
+    if (!profile) {
+      note.textContent = "Configurator details are not available in this catalog snapshot.";
+      return;
+    }
+    const uuidHex = BigInt(profile.uuid).toString(16).toUpperCase();
+    const facts = [
+      ["Protocol family", profile.protocol_type || "Not listed"],
+      ["UUID", `0x${uuidHex}`],
+      ["Minimum firmware field", String(profile.min_firmware_version)],
+      ["Side light", profile.has_side_light ? "Listed" : "Not listed"],
+      ["Hidden keycode entries", String(profile.hidden_keycodes?.length || 0)],
+    ];
+    facts.forEach(([label, value]) => {
+      const item = document.createElement("div");
+      item.className = "drive-config-fact";
+      const heading = document.createElement("span");
+      heading.textContent = label;
+      const detail = document.createElement("strong");
+      detail.textContent = value;
+      item.append(heading, detail);
+      host.append(item);
+    });
+    note.textContent = "Specialized RK68 HE identity/profile fields from RK Drive. Its magnetic-switch pages and data paths remain research-only; Keydeck does not open the device or apply settings.";
     return;
   }
 
@@ -1341,18 +1417,19 @@ function setDeviceStatus(device) {
   const connected = Boolean(device);
   identityMatch = connected ? deviceModelMatch(device) : null;
   const match = identityMatch;
+  const displayModelName = match?.model?.name || match?.driveProfile?.name;
   if (match?.model && activeProfile().modelCode !== match.model.code) {
     activeProfile().modelCode = match.model.code;
     saveState();
   }
   const lampText = connected ? "RK HID device detected" : "No keyboard detected";
   $("#sidebarDeviceState").textContent = lampText;
-  $("#sidebarDeviceName").textContent = match?.model?.name || descriptorName(device) || deviceIdLabel(device) || "Choose a model";
+  $("#sidebarDeviceName").textContent = displayModelName || descriptorName(device) || deviceIdLabel(device) || "Choose a model";
   $("#sidebarDeviceId").textContent = connected
     ? `VID:PID ${hex4(device.vendorId)}:${hex4(device.productId)} · descriptor only`
     : "USB device access is off";
   $("#devicePillText").textContent = connected
-    ? match?.model?.name || "RK keyboard detected · model unresolved"
+    ? displayModelName || "RK keyboard detected · model unresolved"
     : "Not identified";
   $("#deviceIdentity").textContent = connected
     ? "Browser permission granted. This app reads the USB/HID descriptor only; HID reports are not opened or exchanged."
@@ -1381,6 +1458,8 @@ function setDeviceStatus(device) {
     ? "USB product ID"
     : match?.kind === "product-name"
       ? "USB product name"
+      : match?.kind === "specialized-profile"
+        ? "VID/PID and HID collection; profile UUID not read"
       : "";
   if (!connected) {
     $("#diagProfile").textContent = "None";
@@ -1390,6 +1469,10 @@ function setDeviceStatus(device) {
     $("#diagProfile").textContent = `${match.model.name} · ${method}`;
     callout.innerHTML =
       `<strong>Model match: ${escapeHtml(match.model.name)}</strong><p>Matched by ${escapeHtml(method)} against profile ${escapeHtml(match.model.code)}. The app has not opened a HID report.</p>`;
+  } else if (match?.driveProfile) {
+    $("#diagProfile").textContent = `${match.driveProfile.name} · descriptor candidate`;
+    callout.innerHTML =
+      `<strong>${escapeHtml(match.driveProfile.name)} descriptor candidate</strong><p>VID/PID and HID collection match this RK Drive profile. RK's web app performs an additional UUID check; Keydeck does not read that UUID or open a HID report.</p>`;
   } else if (match?.candidates?.length) {
     const shown = match.candidates.slice(0, 4).map((model) => model.name);
     const names = shown.join(", ") +
@@ -1410,6 +1493,8 @@ function setDeviceStatus(device) {
     : "Not identified";
   $("#deviceModelState").textContent = match?.model
     ? `${match.model.name} · matched by ${method}`
+    : match?.driveProfile
+      ? `${match.driveProfile.name} · descriptor candidate; UUID unverified`
     : connected
       ? "Model unresolved · choose a profile below"
       : "No keyboard selected";
@@ -1472,6 +1557,8 @@ async function identifyDevice() {
     renderAll();
     showToast(identityMatch?.model
       ? `${identityMatch.model.name} matched from the USB descriptor.`
+      : identityMatch?.driveProfile
+        ? `${identityMatch.driveProfile.name} is a descriptor candidate; profile UUID was not read.`
       : "RK keyboard identified. Choose a model profile; no HID report was opened.");
   } catch (error) {
     if (error && error.name === "NotFoundError") return;
